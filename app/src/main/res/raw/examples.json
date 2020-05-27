@@ -1,0 +1,7 @@
+[
+  {
+    "title": "Image classification",
+    "description": "Test an image classification solution with a pre-trained model that can recognize 1000 different types of items from input frames on a mobile camera.",
+    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_image.png"
+  }
+]
