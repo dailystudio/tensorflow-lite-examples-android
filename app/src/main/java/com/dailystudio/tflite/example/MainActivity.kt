@@ -4,8 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.utils.FileUtils
 import com.dailystudio.devbricksx.utils.JSONUtils
 import com.dailystudio.tflite.example.model.ExampleViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +26,6 @@ class MainActivity : AppCompatActivity() {
                     viewModel.insertExample(example)
                 }
             }
-
         }
     }
 }

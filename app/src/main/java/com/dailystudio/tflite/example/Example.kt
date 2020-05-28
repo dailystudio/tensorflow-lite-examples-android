@@ -13,8 +13,9 @@ import java.util.*
 
 @ViewModel
 @Adapter(viewHolder = ExampleViewHolder::class,
-    viewType = ViewType.Card)
-@ListFragment(gridLayout = true)
+    viewType = ViewType.CardInformative
+)
+@ListFragment(gridLayout = false)
 @DiffUtil
 @InMemoryRepository(key = Int::class)
 @InMemoryManager(key = Int::class)
@@ -64,7 +65,11 @@ class ExampleViewHolder(itemView: View): AbsCardViewHolder<Example>(itemView) {
     }
 
     override fun getSupportingText(item: Example): CharSequence? {
-         return null
+         return item.description
+    }
+
+    override fun shouldDisplayDivider(): Boolean {
+        return true
     }
 
 }
