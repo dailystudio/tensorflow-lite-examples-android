@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <dimen name="lv_item_space_v">8dp</dimen>
+    <dimen name="lv_item_space_h">16dp</dimen>
+    <dimen name="card_supporting_text_font_size">16dp</dimen>
 </resources>

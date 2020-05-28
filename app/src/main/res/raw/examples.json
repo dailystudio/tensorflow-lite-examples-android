@@ -3,66 +3,66 @@
     "id": 0,
     "title": "Image classification",
     "description": "Test an image classification solution with a pre-trained model that can recognize 1000 different types of items from input frames on a mobile camera.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_image.png"
+    "image": "assets://model_icons/tile_model_image.png"
   },
   {
     "id": 1,
     "title": "Object detection",
     "description": "Explore an app using a pre-trained model that draws and labels bounding boxes around 1000 different recognizable objects from input frames on a mobile camera.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_shapes.png"
+    "image": "assets://model_icons/tile_model_shapes.png"
   },
   {
     "id": 2,
     "title": "Pose estimation",
     "description": "Explore an app that estimates poses of people in an image.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_pose.png"
+    "image": "assets://model_icons/tile_model_pose.png"
   },
   {
     "id": 3,
     "title": "Speech recognition",
     "description": "Explore an app that uses a microphone to spot keywords and return a probability score for the words spoken.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_audio.png"
+    "image": "assets://model_icons/tile_model_audio.png"
   },
   {
     "id": 4,
     "title": "Gesture recognition",
     "description": "Train a neural network to recognize gestures caught on your webcam using TensorFlow.js, then use TensorFlow Lite to convert the model to run inference on your device.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_pose.png"
+    "image": "assets://model_icons/tile_model_pose.png"
   },
   {
     "id": 5,
     "title": "Smart reply",
     "description": "Generate reply suggestions to input conversational chat messages.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_smart.png"
+    "image": "assets://model_icons/tile_model_smart.png"
   },
   {
     "id": 6,
     "title": "Image segmentation",
     "description": "Predict whether each pixel of an image is associated with a certain class. Trained with people, places, animals, and more.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_paw.png"
+    "image": "assets://model_icons/tile_model_paw.png"
   },
   {
     "id": 7,
     "title": "Style transfer",
     "description": "Apply any styles on an input image to create a new artistic image.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_style.png"
+    "image": "assets://model_icons/tile_model_style.png"
   },
   {
     "id": 8,
     "title": "Digit classifier",
     "description": "Use a TensorFlow Lite model to classify your handwritten digits.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_digit.png"
+    "image": "assets://model_icons/tile_model_digit.png"
   },
   {
     "id": 9,
     "title": "Text classification",
     "description": "Categorize free text into predefined groups. Potential applications include abusive content moderation, tone detection and more.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_text.png"
+    "image": "assets://model_icons/tile_model_text.png"
   },
   {
     "id": 10,
     "title": "Question and answer",
     "description": "Answer user queries based on information extracted from a given text archive.",
-    "image": "https://www.tensorflow.org/site-assets/images/marketing/icon/tile_model_question.png"
+    "image": "assets://model_icons/tile_model_question.png"
   }
 ]
