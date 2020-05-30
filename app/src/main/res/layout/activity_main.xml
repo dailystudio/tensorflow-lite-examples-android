@@ -8,7 +8,7 @@
     tools:context="com.dailystudio.tflite.example.MainActivity">
 
     <fragment
-        android:name="com.dailystudio.tflite.example.fragment.ExamplesFragment"
+        android:name="com.dailystudio.tflite.example.fragment.ExamplesFragmentExt"
         android:id="@+id/examples"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

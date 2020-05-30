@@ -2,6 +2,7 @@
   {
     "id": 0,
     "title": "Image classification",
+    "package": "imageclassification",
     "description": "Test an image classification solution with a pre-trained model that can recognize 1000 different types of items from input frames on a mobile camera.",
     "image": "assets://model_icons/tile_model_image.png"
   },

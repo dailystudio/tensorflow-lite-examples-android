@@ -1,5 +1,7 @@
 package com.dailystudio.tflite.example
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
@@ -17,6 +19,7 @@ import com.nostra13.universalimageloader.core.ImageLoader
 @InMemoryRepository(key = Int::class)
 @InMemoryManager(key = Int::class)
 class Example(val id: Int,
+              val `package`: String,
               val title: String,
               val description: String,
               val image: String) : InMemoryObject<Int> {
@@ -28,9 +31,24 @@ class Example(val id: Int,
     override fun toString(): String {
         return buildString {
             append("id: $id, ")
+            append("package: $`package`, ")
             append("title: $title, ")
             append("description: $description, ")
             append("image: $image")
+        }
+    }
+
+    fun getBaseIntent(context: Context): Intent {
+        return Intent().apply {
+            setClassName(context.applicationContext.packageName,
+                buildString {
+                    append(this@Example::class.java.`package`?.name)
+                    append('.')
+                    append(this@Example.`package`)
+                    append('.')
+                    append("ExampleActivity")
+                }
+            )
         }
     }
 
