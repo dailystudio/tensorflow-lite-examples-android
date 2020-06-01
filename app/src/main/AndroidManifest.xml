@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".imageclassification.ExampleActivity"/>
+        <activity android:name=".imageclassification.ExampleActivity"
+            android:theme="@style/ExampleActivity"/>
 
     </application>
 
