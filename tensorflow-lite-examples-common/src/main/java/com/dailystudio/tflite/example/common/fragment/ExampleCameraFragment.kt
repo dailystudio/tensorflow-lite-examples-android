@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.fragment
+package com.dailystudio.tflite.example.common.fragment
 
 import com.dailystudio.devbricksx.camera.CameraFragment
 
