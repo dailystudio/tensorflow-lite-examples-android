@@ -8,7 +8,7 @@ android {
     buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
-        applicationId "com.dailystudio.tflite.example"
+        applicationId "com.dailystudio.tflite.example.image.classification"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode VERSION_CODE

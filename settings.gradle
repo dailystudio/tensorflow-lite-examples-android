@@ -1,1 +1,3 @@
 include ':app'
+include ':example-image-classification'
+include ':tensorflow-lite-examples-common'

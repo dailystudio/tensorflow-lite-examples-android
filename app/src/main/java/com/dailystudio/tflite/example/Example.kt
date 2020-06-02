@@ -8,6 +8,7 @@ import android.widget.ImageView
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsInformativeCardViewHolder
+import com.dailystudio.tflite.example.common.Constants
 import com.nostra13.universalimageloader.core.ImageLoader
 
 @ViewModel
@@ -40,20 +41,21 @@ class Example(val id: Int,
 
     fun getBaseIntent(context: Context): Intent {
         return Intent().apply {
-            setClassName(context.applicationContext.packageName,
-                buildString {
-                    append(this@Example::class.java.`package`?.name)
-                    append('.')
-                    append(this@Example.`package`)
-                    append('.')
-                    append("ExampleActivity")
-                }
-            )
+            this@Example.`package`?.let {
+                action = Constants.ACTION_MAIN
+                addCategory(Intent.CATEGORY_DEFAULT)
+
+                setClassName(it,
+                    buildString {
+                        append(it)
+                        append(Constants.EXAMPLE_ACTIVITY_CLASS_NAME)
+                    }
+                )
+            }
         }
     }
 
 }
-
 
 class ExampleViewHolder(itemView: View): AbsInformativeCardViewHolder<Example>(itemView) {
 

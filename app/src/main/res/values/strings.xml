@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name_release">Tensorflow Lite Examples</string>
-    <string name="app_name_debug">Tensorflow Lite Examples (Debug)</string>
+    <string name="app_name">Tensorflow Lite Examples</string>
 </resources>

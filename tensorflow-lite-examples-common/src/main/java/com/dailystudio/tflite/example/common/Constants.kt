@@ -1,8 +1,11 @@
-package com.dailystudio.tflite.example
+package com.dailystudio.tflite.example.common
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 
 object Constants {
+
+    const val ACTION_MAIN = "com.dailystudio.tflite.example.ACTION_MAIN"
+    const val EXAMPLE_ACTIVITY_CLASS_NAME = ".ExampleActivity"
 
     val DEFAULT_IMAGE_LOADER_OPTIONS: DisplayImageOptions = DisplayImageOptions.Builder()
         .cacheInMemory(true)

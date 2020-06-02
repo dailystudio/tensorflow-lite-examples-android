@@ -1,0 +1,54 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion COMPILE_SDK
+    buildToolsVersion BUILD_TOOLS
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    api "com.facebook.stetho:stetho:${project.ext.stethoVersion}"
+    api "com.rasalexman.kdispatcher:kdispatcher:${project.ext.kDispactherVersion}"
+    api "com.nostra13.universalimageloader:universal-image-loader:${project.ext.imageLoaderVersion}"
+    api "com.squareup.retrofit2:retrofit:${project.ext.retrofitVersion}"
+    api "com.squareup.retrofit2:converter-gson:${project.ext.retrofitVersion}"
+
+    api "com.dailystudio:devbricksx:${project.ext.devbricksxVersion}"
+    api "com.dailystudio:devbricksx-camera:${project.ext.devbricksxVersion}"
+
+    // Build off of nightly TensorFlow Lite
+    api("org.tensorflow:tensorflow-lite:${project.ext.tfliteVersion}") { changing = true }
+    api("org.tensorflow:tensorflow-lite-gpu:${project.ext.tfliteVersion}") { changing = true }
+    api("org.tensorflow:tensorflow-lite-support:${project.ext.tfliteVersion}") { changing = true }
+
+    // Test helpers
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation "androidx.room:room-testing:${project.ext.roomVersion}"
+}

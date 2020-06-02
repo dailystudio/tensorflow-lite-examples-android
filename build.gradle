@@ -26,3 +26,27 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    // Compile Settings
+    COMPILE_SDK = 29
+    BUILD_TOOLS = '29.0.3'
+    VERSION_NAME = version()
+    VERSION_CODE = versionCode().toInteger()
+}
+
+def String version() {
+    def versionPropsFile = file('version.properties')
+    def Properties versionProps = new Properties()
+    versionProps.load(new FileInputStream(versionPropsFile))
+
+    return versionProps['major'] + "." + versionProps['minor'] + "." + versionProps['patch']
+}
+
+def String versionCode() {
+    def versionPropsFile = file('version.properties')
+    def Properties versionProps = new Properties()
+    versionProps.load(new FileInputStream(versionPropsFile))
+
+    return versionProps['code']
+}
