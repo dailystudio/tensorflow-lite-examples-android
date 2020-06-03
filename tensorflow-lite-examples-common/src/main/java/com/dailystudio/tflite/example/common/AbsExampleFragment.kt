@@ -33,6 +33,10 @@ abstract class AbsExampleFragment : CameraFragment() {
         return cases
     }
 
+    override fun getLayoutResId(): Int {
+        return R.layout.fragment_example
+    }
+
     abstract fun createAnalyzer(screenAspectRatio: Int, rotation: Int): ImageAnalysis.Analyzer
 
 }
