@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.common.fragment
+package com.dailystudio.tflite.example.common
 
 import android.os.Bundle
 import androidx.camera.core.ImageAnalysis
@@ -7,7 +7,7 @@ import com.dailystudio.devbricksx.camera.CameraFragment
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-abstract class ExampleCameraFragment : CameraFragment() {
+abstract class AbsExampleFragment : CameraFragment() {
 
     private lateinit var analyzerExecutor: ExecutorService
 

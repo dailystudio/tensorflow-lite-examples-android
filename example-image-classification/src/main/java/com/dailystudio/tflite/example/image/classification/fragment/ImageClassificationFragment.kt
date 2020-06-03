@@ -2,19 +2,15 @@ package com.dailystudio.tflite.example.image.classification.fragment
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.os.SystemClock
 import android.util.Size
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
-import com.dailystudio.tflite.example.common.fragment.ExampleCameraFragment
+import com.dailystudio.tflite.example.common.AbsExampleFragment
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
-import java.nio.ByteBuffer
-import kotlin.math.min
 
 private class ImageClassificationAnalyzer(private val rotation: Int) : ImageAnalysis.Analyzer {
 
@@ -28,9 +24,6 @@ private class ImageClassificationAnalyzer(private val rotation: Int) : ImageAnal
         image.image?.let { image ->
             rgbFrameBitmap = image.toBitmap()
             rgbFrameBitmap?.let { bitmap ->
-                val rotatedBitmap = ImageUtils.rotateBitmap(bitmap, rotation)
-                val cropSize: Int = min(bitmap.width, bitmap.height)
-
                 if (classifier == null) {
                     val context = GlobalContextWrapper.context
                     context?.let {
@@ -57,7 +50,7 @@ private class ImageClassificationAnalyzer(private val rotation: Int) : ImageAnal
     }
 }
 
-class ImageClassificationFragment : ExampleCameraFragment() {
+class ImageClassificationFragment : AbsExampleFragment() {
 
     override fun createAnalyzer(screenAspectRatio: Int, rotation: Int): ImageAnalysis.Analyzer {
         return ImageClassificationAnalyzer(rotation)

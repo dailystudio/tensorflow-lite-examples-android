@@ -1,14 +1,13 @@
 package com.dailystudio.tflite.example.image.classification
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import com.dailystudio.tflite.example.common.AbsExampleActivity
+import com.dailystudio.tflite.example.common.AbsExampleFragment
+import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationFragment
 
-class ExampleActivity : AppCompatActivity() {
+class ExampleActivity : AbsExampleActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_example_image_classification)
+    override fun createExampleFragment(): AbsExampleFragment {
+        return ImageClassificationFragment()
     }
 
 }
