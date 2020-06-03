@@ -15,7 +15,7 @@ limitations under the License.
 
 package org.tensorflow.lite.examples.classification.tflite;
 
-import android.app.Activity;
+import android.content.Context;
 
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
@@ -41,11 +41,11 @@ public class ClassifierQuantizedMobileNet extends Classifier {
   /**
    * Initializes a {@code ClassifierQuantizedMobileNet}.
    *
-   * @param activity
+   * @param context
    */
-  public ClassifierQuantizedMobileNet(Activity activity, Device device, int numThreads)
+  public ClassifierQuantizedMobileNet(Context context, Device device, int numThreads)
       throws IOException {
-    super(activity, device, numThreads);
+    super(context, device, numThreads);
   }
 
   @Override

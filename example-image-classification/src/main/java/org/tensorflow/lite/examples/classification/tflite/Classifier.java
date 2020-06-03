@@ -15,7 +15,7 @@ limitations under the License.
 
 package org.tensorflow.lite.examples.classification.tflite;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.SystemClock;
@@ -104,22 +104,22 @@ public abstract class Classifier {
   /**
    * Creates a classifier with the provided configuration.
    *
-   * @param activity The current Activity.
+   * @param context The current Activity.
    * @param model The model to use for classification.
    * @param device The device to use for classification.
    * @param numThreads The number of threads to use for classification.
    * @return A classifier with the desired configuration.
    */
-  public static Classifier create(Activity activity, Model model, Device device, int numThreads)
+  public static Classifier create(Context context, Model model, Device device, int numThreads)
       throws IOException {
     if (model == Model.QUANTIZED_MOBILENET) {
-      return new ClassifierQuantizedMobileNet(activity, device, numThreads);
+      return new ClassifierQuantizedMobileNet(context, device, numThreads);
     } else if (model == Model.FLOAT_MOBILENET) {
-      return new ClassifierFloatMobileNet(activity, device, numThreads);
+      return new ClassifierFloatMobileNet(context, device, numThreads);
     } else if (model == Model.FLOAT_EFFICIENTNET) {
-      return new ClassifierFloatEfficientNet(activity, device, numThreads);
+      return new ClassifierFloatEfficientNet(context, device, numThreads);
     } else if (model == Model.QUANTIZED_EFFICIENTNET) {
-      return new ClassifierQuantizedEfficientNet(activity, device, numThreads);
+      return new ClassifierQuantizedEfficientNet(context, device, numThreads);
     } else {
       throw new UnsupportedOperationException();
     }
@@ -196,8 +196,10 @@ public abstract class Classifier {
   }
 
   /** Initializes a {@code Classifier}. */
-  protected Classifier(Activity activity, Device device, int numThreads) throws IOException {
-    tfliteModel = FileUtil.loadMappedFile(activity, getModelPath());
+  protected Classifier(Context context, Device device, int numThreads) throws IOException {
+    String modelPath = getModelPath();
+    Logger.INSTANCE.debug("model path: %s", modelPath);
+    tfliteModel = FileUtil.loadMappedFile(context, getModelPath());
     switch (device) {
       case NNAPI:
         nnApiDelegate = new NnApiDelegate();
@@ -214,7 +216,7 @@ public abstract class Classifier {
     tflite = new Interpreter(tfliteModel, tfliteOptions);
 
     // Loads labels out from the label file.
-    labels = FileUtil.loadLabels(activity, getLabelPath());
+    labels = FileUtil.loadLabels(context, getLabelPath());
 
     // Reads type and shape of input and output tensors, respectively.
     int imageTensorIndex = 0;

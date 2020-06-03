@@ -36,6 +36,10 @@ android {
         }
     }
 
+    aaptOptions {
+        noCompress "tflite"
+    }
+
     kapt {
         arguments {
             arg("room.schemaLocation", "$projectDir/schemas".toString())

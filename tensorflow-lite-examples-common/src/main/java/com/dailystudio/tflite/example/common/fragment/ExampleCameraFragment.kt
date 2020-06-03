@@ -25,7 +25,7 @@ abstract class ExampleCameraFragment : CameraFragment() {
             .setTargetRotation(rotation)
             .build()
             .also {
-                it.setAnalyzer(analyzerExecutor, createAnalyzer())
+                it.setAnalyzer(analyzerExecutor, createAnalyzer(screenAspectRatio, rotation))
             }
 
         cases.add(imageAnalyzer)
@@ -33,6 +33,6 @@ abstract class ExampleCameraFragment : CameraFragment() {
         return cases
     }
 
-    abstract fun createAnalyzer(): ImageAnalysis.Analyzer
+    abstract fun createAnalyzer(screenAspectRatio: Int, rotation: Int): ImageAnalysis.Analyzer
 
 }
