@@ -36,9 +36,9 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<Li
     }
 }
 
-class ImageClassificationFragment : AbsExampleFragment() {
+class ImageClassificationFragment : AbsExampleFragment<List<Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int): ImageAnalysis.Analyzer {
+    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int): AbsExampleAnalyzer<List<Recognition>> {
         return ImageClassificationAnalyzer(rotation)
     }
 

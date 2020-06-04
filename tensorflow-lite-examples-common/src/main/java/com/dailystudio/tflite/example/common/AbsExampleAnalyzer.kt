@@ -9,7 +9,15 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
 
-abstract class AbsExampleAnalyzer<Result> (private val rotation: Int): ImageAnalysis.Analyzer {
+interface AnalysisResultsCallback<Results> {
+
+    fun onResult(results: Results)
+
+}
+
+abstract class AbsExampleAnalyzer<Results> (private val rotation: Int): ImageAnalysis.Analyzer {
+
+    private val callbacks: MutableList<AnalysisResultsCallback<Results>> = mutableListOf()
 
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
@@ -17,7 +25,7 @@ abstract class AbsExampleAnalyzer<Result> (private val rotation: Int): ImageAnal
         Logger.debug("image rotation: ${image.imageInfo.rotationDegrees}")
         Logger.debug("screen rotation: $rotation")
 
-        var result: Result? = null
+        var result: Results? = null
 
         val start = System.currentTimeMillis()
         image.image?.let {
@@ -37,6 +45,16 @@ abstract class AbsExampleAnalyzer<Result> (private val rotation: Int): ImageAnal
         Logger.debug("analysis [in ${end - start} ms]: result = $result")
 
         image.close()
+
+        result?.let {
+            for (c in callbacks) {
+                c.onResult(it)
+            }
+        }
+    }
+
+    fun addCallback(callback: AnalysisResultsCallback<Results>) {
+        callbacks.add(callback)
     }
 
     protected open fun getDesiredImageResolution(): Size? {
@@ -44,6 +62,6 @@ abstract class AbsExampleAnalyzer<Result> (private val rotation: Int): ImageAnal
     }
 
     abstract fun analyzeFrame(frameBitmap: Bitmap,
-                              rotation: Int): Result?
+                              rotation: Int): Results?
 
 }
