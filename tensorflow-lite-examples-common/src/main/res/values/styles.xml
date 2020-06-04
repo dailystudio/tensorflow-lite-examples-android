@@ -6,4 +6,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ExampleTitleText" parent="DefaultLabel">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textSize">@dimen/bottom_sheet_title_font_size</item>
+        <item name="android:textStyle">bold|italic</item>
+    </style>
+
 </resources>
