@@ -13,4 +13,25 @@
         <item name="android:textStyle">bold|italic</item>
     </style>
 
+    <style name="ResultItem">
+        <item name="android:paddingStart">@dimen/result_item_padding_h</item>
+        <item name="android:paddingEnd">@dimen/result_item_padding_h</item>
+        <item name="android:paddingTop">@dimen/result_item_padding_v</item>
+        <item name="android:paddingBottom">@dimen/result_item_padding_v</item>
+    </style>
+
+    <style name="ResultItemTitle" parent="ResultItem">
+        <item name="android:textSize">@dimen/result_item_title_font_size</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">start|center_vertical</item>
+    </style>
+
+    <style name="ResultItemValue" parent="ResultItem">
+        <item name="android:textSize">@dimen/result_item_value_font_size</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:gravity">end|center_vertical</item>
+    </style>
+
 </resources>

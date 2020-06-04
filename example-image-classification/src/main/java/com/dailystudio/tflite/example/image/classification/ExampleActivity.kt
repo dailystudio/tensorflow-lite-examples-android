@@ -57,7 +57,7 @@ class ExampleActivity : AbsExampleActivity<List<Classifier.Recognition>>() {
 
         for (i in 0 until itemCount) {
             detectItemViews[i]?.text = result[i].title
-            detectItemValueViews[i]?.text = result[i].confidence.toString()
+            detectItemValueViews[i]?.text = "%.1f%%".format(result[i].confidence * 100)
         }
     }
 

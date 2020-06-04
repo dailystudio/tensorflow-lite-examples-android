@@ -12,16 +12,18 @@
 
         <TextView
             android:id="@+id/detected_item1"
-            style="@style/DefaultLabel"
+            style="@style/ResultItemTitle"
             android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/detected_item1_value"
-            style="@style/DefaultText"
+            style="@style/ResultItemValue"
             android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
@@ -33,16 +35,18 @@
 
         <TextView
             android:id="@+id/detected_item2"
-            style="@style/DefaultLabel"
+            style="@style/ResultItemTitle"
             android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/detected_item2_value"
-            style="@style/DefaultText"
+            style="@style/ResultItemValue"
             android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
@@ -54,16 +58,18 @@
 
         <TextView
             android:id="@+id/detected_item3"
-            style="@style/DefaultLabel"
+            style="@style/ResultItemTitle"
             android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/detected_item3_value"
-            style="@style/DefaultText"
+            style="@style/ResultItemValue"
             android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>

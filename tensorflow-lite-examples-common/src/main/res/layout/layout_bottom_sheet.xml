@@ -17,10 +17,10 @@
 
     <LinearLayout
         android:id="@+id/visible_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="10dp">
+        android:paddingBottom="@dimen/default_content_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/bottom_sheet_title"
