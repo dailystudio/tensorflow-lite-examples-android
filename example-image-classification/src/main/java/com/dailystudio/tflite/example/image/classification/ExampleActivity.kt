@@ -6,11 +6,12 @@ import android.widget.TextView
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.AbsExampleFragment
+import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationFragment
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import kotlin.math.min
 
-class ExampleActivity : AbsExampleActivity<List<Classifier.Recognition>>() {
+class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recognition>>() {
 
     companion object {
         const val REPRESENTED_ITEMS_COUNT = 3
@@ -21,7 +22,7 @@ class ExampleActivity : AbsExampleActivity<List<Classifier.Recognition>>() {
     private var detectItemValueViews: Array<TextView?> =
         Array(REPRESENTED_ITEMS_COUNT) {null}
 
-    override fun createExampleFragment(): AbsExampleFragment<List<Classifier.Recognition>> {
+    override fun createExampleFragment(): AbsExampleFragment<InferenceInfo, List<Classifier.Recognition>> {
         return ImageClassificationFragment()
     }
 
@@ -52,13 +53,20 @@ class ExampleActivity : AbsExampleActivity<List<Classifier.Recognition>>() {
         }
     }
 
-    override fun onResultsUpdated(resultView: View, result: List<Classifier.Recognition>) {
+    override fun createHiddenView(): View? {
+        return null
+    }
+
+    override fun onResultsUpdated(result: List<Classifier.Recognition>) {
         val itemCount = min(result.size, REPRESENTED_ITEMS_COUNT)
 
         for (i in 0 until itemCount) {
             detectItemViews[i]?.text = result[i].title
             detectItemValueViews[i]?.text = "%.1f%%".format(result[i].confidence * 100)
         }
+    }
+
+    override fun onInferenceINfoUpdated(info: InferenceInfo) {
     }
 
 }

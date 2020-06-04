@@ -8,8 +8,6 @@
     android:background="@drawable/bottom_sheet_bg"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="@dimen/default_padding"
-    android:paddingBottom="@dimen/default_padding"
     android:paddingStart="@dimen/default_content_padding"
     android:paddingEnd="@dimen/default_content_padding"
     app:behavior_hideable="true"
@@ -18,7 +16,6 @@
     <LinearLayout
         android:id="@+id/visible_layout"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/default_content_padding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -29,34 +26,26 @@
             android:layout_height="wrap_content"/>
 
         <View
+            android:id="@+id/bottom_sheet_divider"
             android:background="@drawable/list_divider"
             android:layout_width="match_parent"
             android:layout_height="2px"/>
 
         <FrameLayout
             android:id="@+id/bottom_sheet_result"
+            android:paddingTop="@dimen/default_padding"
+            android:paddingBottom="@dimen/default_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/hidden_layout"
+        android:background="@color/tomato_red"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
-
-        <FrameLayout
-            android:background="@color/royal_blue"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"/>
-
-        <FrameLayout
-            android:background="@color/see_green"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"/>
-    </LinearLayout>
+        android:paddingBottom="@dimen/default_content_padding"/>
 
 </LinearLayout>

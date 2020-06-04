@@ -1,19 +1,19 @@
 package com.dailystudio.tflite.example.image.classification.fragment
 
 import android.graphics.Bitmap
-import androidx.camera.core.ImageAnalysis
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
 import com.dailystudio.tflite.example.common.AbsExampleFragment
+import com.dailystudio.tflite.example.common.InferenceInfo
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
 
-private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<List<Recognition>>(rotation) {
+private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, List<Recognition>>(rotation) {
 
     private var classifier: Classifier? = null
 
-    override fun analyzeFrame(frameBitmap: Bitmap, rotation: Int): List<Recognition>? {
+    override fun analyzeFrame(frameBitmap: Bitmap, info: InferenceInfo): List<Recognition>? {
         var results: List<Recognition>? = null
 
         if (classifier == null) {
@@ -29,16 +29,21 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<Li
         }
 
         classifier?.let { classifier ->
-            results = classifier.recognizeImage(frameBitmap, rotation)
+            results = classifier.recognizeImage(frameBitmap, info.imageRotation)
         }
 
         return results
     }
+
+    override fun createInferenceInfo(): InferenceInfo {
+       return InferenceInfo()
+    }
+
 }
 
-class ImageClassificationFragment : AbsExampleFragment<List<Recognition>>() {
+class ImageClassificationFragment : AbsExampleFragment<InferenceInfo, List<Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int): AbsExampleAnalyzer<List<Recognition>> {
+    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int): AbsExampleAnalyzer<InferenceInfo, List<Recognition>> {
         return ImageClassificationAnalyzer(rotation)
     }
 
