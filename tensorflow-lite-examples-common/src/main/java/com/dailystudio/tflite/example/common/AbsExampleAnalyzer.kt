@@ -46,10 +46,6 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
 
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
-        Logger.debug("image dimen: ${image.width} x ${image.height}")
-        Logger.debug("image rotation: ${image.imageInfo.rotationDegrees}")
-        Logger.debug("screen rotation: $rotation")
-
         var result: Results? = null
         var info: Info = createInferenceInfo().apply {
             imageSize = Size(image.width, image.height)

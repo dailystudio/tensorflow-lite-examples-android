@@ -46,10 +46,6 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
             detectItemValueViews[i] = resultsView.findViewById(
                 resources.getIdentifier("detected_item${i + 1}_value", "id", packageName)
             )
-
-            Logger.debug("detectItemViews[${i + 1}] = ${detectItemViews[i]}")
-            Logger.debug("detectItemValueViews[${i + 1}] = ${detectItemValueViews[i]}")
-
         }
     }
 
