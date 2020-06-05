@@ -6,7 +6,6 @@ import android.util.Size
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
 
 interface ResultsCallback<Results> {
@@ -58,14 +57,9 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
         val start = System.currentTimeMillis()
         image.image?.let {
             var frameBitmap: Bitmap? = it.toBitmap()
-            val desiredSize = getDesiredImageResolution()
+            var inferenceBitmap: Bitmap? = preProcessImage(frameBitmap)
 
-            if (desiredSize != null) {
-                frameBitmap = ImageUtils.scaleBitmapRatioLocked(frameBitmap,
-                    desiredSize.width, desiredSize.height)
-            }
-
-            frameBitmap?.let { bitmap ->
+            inferenceBitmap?.let { bitmap ->
                 info.inferenceImageSize = Size(bitmap.width, bitmap.height)
 
                 result = analyzeFrame(bitmap, info)
@@ -101,8 +95,8 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
         inferenceCallbacks.add(callback)
     }
 
-    protected open fun getDesiredImageResolution(): Size? {
-        return null
+    protected open fun preProcessImage(frameBitmap: Bitmap?): Bitmap? {
+        return frameBitmap
     }
 
     abstract fun createInferenceInfo(): Info

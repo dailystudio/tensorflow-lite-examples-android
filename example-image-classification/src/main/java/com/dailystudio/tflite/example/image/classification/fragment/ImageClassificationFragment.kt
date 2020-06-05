@@ -1,12 +1,13 @@
 package com.dailystudio.tflite.example.image.classification.fragment
 
 import android.graphics.Bitmap
-import android.util.Size
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
 import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.utils.scaleBitmapWithRatio
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
 
@@ -22,7 +23,7 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
             context?.let {
                 classifier = Classifier.create(it,
                     Classifier.Model.QUANTIZED_EFFICIENTNET,
-                    Classifier.Device.NNAPI,
+                    Classifier.Device.CPU,
                     1)
             }
 
@@ -44,8 +45,13 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
        return InferenceInfo()
     }
 
-    override fun getDesiredImageResolution(): Size? {
-        return Size(640, 360)
+    override fun preProcessImage(frameBitmap: Bitmap?): Bitmap? {
+        if (frameBitmap == null) {
+            return frameBitmap
+        }
+
+        return ImageUtils.scaleBitmapWithRatio(frameBitmap,
+            640, 480, false)
     }
 
 }
