@@ -25,6 +25,7 @@ open class InferenceInfo(var imageSize: Size = Size(0, 0),
                          var imageRotation: Int = 0,
                          var screenRotation: Int = 0,
                          var inferenceImageSize: Size = Size(0, 0),
+                         var analysisTime: Long = 0,
                          var inferenceTime: Long = 0) {
 
     override fun toString(): String {
@@ -33,6 +34,7 @@ open class InferenceInfo(var imageSize: Size = Size(0, 0),
             append("image rotation: $imageRotation,")
             append("screen rotation: $screenRotation,")
             append("inference size: $inferenceImageSize,")
+            append("analysis time: $analysisTime,")
             append("inference time: $inferenceTime")
         }
     }
@@ -57,6 +59,7 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
         image.image?.let {
             var frameBitmap: Bitmap? = it.toBitmap()
             val desiredSize = getDesiredImageResolution()
+
             if (desiredSize != null) {
                 frameBitmap = ImageUtils.scaleBitmapRatioLocked(frameBitmap,
                     desiredSize.width, desiredSize.height)
@@ -70,8 +73,12 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
         }
         val end = System.currentTimeMillis()
 
-        info.inferenceTime = (end - start)
-        Logger.debug("analysis [in ${info.inferenceTime} ms]: result = $result")
+        info.analysisTime = (end - start)
+        if (info.inferenceTime == 0L) {
+            info.inferenceTime = info.analysisTime
+        }
+
+        Logger.debug("analysis [in ${info.analysisTime} ms (inference: ${info.inferenceTime} ms)]: result = $result")
 
         for (c in inferenceCallbacks) {
             c.onInference(info)

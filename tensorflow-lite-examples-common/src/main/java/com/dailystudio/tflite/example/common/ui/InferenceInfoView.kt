@@ -161,10 +161,12 @@ class InferenceInfoView: FrameLayout {
                 }
             }
 
-            lastRowGroupView?.let {
-                val blankSpaces = columns - items.size % columns
-                for (i in 0 until blankSpaces) {
-                    it.addView(InferenceInfoItemView(context), layoutParams)
+            if (items.size % columns != 0) {
+                lastRowGroupView?.let {
+                    val blankSpaces = columns - items.size % columns
+                    for (i in 0 until blankSpaces) {
+                        it.addView(InferenceInfoItemView(context), layoutParams)
+                    }
                 }
             }
         }
@@ -200,7 +202,12 @@ class InferenceInfoView: FrameLayout {
             resources.getString(R.string.label_info_inference_image_size), info.inferenceImageSize.toString())
         items.add(itemInferenceImageSize)
 
-        val itemInferenceTime = InferenceInfoItem(5, R.drawable.ic_info_inference_time,
+        val itemAnalysisTime = InferenceInfoItem(5, R.drawable.ic_info_analysis_time,
+            resources.getString(R.string.label_info_analysis_time),
+            "%d ms".format(info.analysisTime))
+        items.add(itemAnalysisTime)
+
+        val itemInferenceTime = InferenceInfoItem(6, R.drawable.ic_info_inference_time,
             resources.getString(R.string.label_info_inference_time),
             "%d ms".format(info.inferenceTime))
         items.add(itemInferenceTime)

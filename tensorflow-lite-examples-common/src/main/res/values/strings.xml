@@ -4,6 +4,7 @@
     <string name="label_info_image_rotation">Image rotation</string>
     <string name="label_info_screen_rotation">Screen rotation</string>
     <string name="label_info_inference_image_size">Inference size</string>
+    <string name="label_info_analysis_time">Analysis time</string>
     <string name="label_info_inference_time">Inference time</string>
 
     <string name="label_performance">Performance</string>

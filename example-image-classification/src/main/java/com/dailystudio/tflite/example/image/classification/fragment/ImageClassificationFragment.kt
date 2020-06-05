@@ -30,7 +30,11 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
         }
 
         classifier?.let { classifier ->
+            val start = System.currentTimeMillis()
             results = classifier.recognizeImage(frameBitmap, info.imageRotation)
+            val end = System.currentTimeMillis()
+
+            info.inferenceTime = (end - start)
         }
 
         return results
