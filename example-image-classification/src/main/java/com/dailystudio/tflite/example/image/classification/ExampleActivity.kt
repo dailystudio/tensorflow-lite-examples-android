@@ -7,6 +7,7 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationFragment
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import kotlin.math.min
@@ -21,6 +22,8 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         Array(REPRESENTED_ITEMS_COUNT) {null}
     private var detectItemValueViews: Array<TextView?> =
         Array(REPRESENTED_ITEMS_COUNT) {null}
+
+    private var inferenceInfoView: InferenceInfoView? = null
 
     override fun createExampleFragment(): AbsExampleFragment<InferenceInfo, List<Classifier.Recognition>> {
         return ImageClassificationFragment()
@@ -50,7 +53,9 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
     }
 
     override fun createHiddenView(): View? {
-        return null
+        inferenceInfoView = InferenceInfoView(this)
+
+        return inferenceInfoView
     }
 
     override fun onResultsUpdated(result: List<Classifier.Recognition>) {
@@ -62,7 +67,8 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         }
     }
 
-    override fun onInferenceINfoUpdated(info: InferenceInfo) {
+    override fun onInferenceInfoUpdated(info: InferenceInfo) {
+        inferenceInfoView?.setInferenceInfo(info)
     }
 
 }

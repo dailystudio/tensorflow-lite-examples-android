@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/default_padding"
+    android:paddingBottom="@dimen/default_padding"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/info_item_label"
+        style="@style/InferenceItemLabel"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/info_item_icon"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="@dimen/inference_item_icon_size"
+        android:layout_height="@dimen/inference_item_icon_size"/>
+
+    <TextView
+        android:id="@+id/info_item_value"
+        style="@style/InferenceItemValue"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

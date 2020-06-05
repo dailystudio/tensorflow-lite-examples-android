@@ -13,6 +13,10 @@
         <item name="android:textStyle">bold|italic</item>
     </style>
 
+    <style name="BottomSheetTitle" parent="DefaultLabel">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
     <style name="ResultItem">
         <item name="android:paddingStart">@dimen/result_item_padding_h</item>
         <item name="android:paddingEnd">@dimen/result_item_padding_h</item>
@@ -32,6 +36,20 @@
         <item name="android:textColor">@color/colorAccent</item>
         <item name="android:textStyle">normal</item>
         <item name="android:gravity">end|center_vertical</item>
+    </style>
+
+    <style name="InferenceItemText">
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="InferenceItemLabel" parent="InferenceItemText">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/inference_item_label_font_size</item>
+    </style>
+
+    <style name="InferenceItemValue" parent="InferenceItemText">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/inference_item_value_font_size</item>
     </style>
 
 </resources>

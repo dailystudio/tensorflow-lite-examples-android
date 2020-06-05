@@ -8,6 +8,10 @@
     <dimen name="result_item_title_font_size">16dp</dimen>
     <dimen name="result_item_value_font_size">@dimen/result_item_title_font_size</dimen>
     <dimen name="result_item_padding_h">@dimen/default_label_padding</dimen>
-    <dimen name="result_item_padding_v">6px</dimen>
+    <dimen name="result_item_padding_v">3dp</dimen>
+
+    <dimen name="inference_item_label_font_size">14dp</dimen>
+    <dimen name="inference_item_value_font_size">14dp</dimen>
+    <dimen name="inference_item_icon_size">36dp</dimen>
 
 </resources>

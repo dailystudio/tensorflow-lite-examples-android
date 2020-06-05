@@ -114,7 +114,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
     abstract fun createResultsView(): View?
     abstract fun createHiddenView(): View?
     abstract fun onResultsUpdated(result: Results)
-    abstract fun onInferenceINfoUpdated(info: Info)
+    abstract fun onInferenceInfoUpdated(info: Info)
 
     private val analysisCallback = object: ResultsCallback<Results>, InferenceCallback<Info> {
 
@@ -127,7 +127,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         override fun onInference(info: Info) {
             Logger.debug("latest info: $info")
 
-            onInferenceINfoUpdated(info)
+            onInferenceInfoUpdated(info)
         }
 
     }

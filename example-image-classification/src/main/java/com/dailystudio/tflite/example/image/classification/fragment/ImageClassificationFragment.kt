@@ -1,6 +1,7 @@
 package com.dailystudio.tflite.example.image.classification.fragment
 
 import android.graphics.Bitmap
+import android.util.Size
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
@@ -37,6 +38,10 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
 
     override fun createInferenceInfo(): InferenceInfo {
        return InferenceInfo()
+    }
+
+    override fun getDesiredImageResolution(): Size? {
+        return Size(640, 360)
     }
 
 }

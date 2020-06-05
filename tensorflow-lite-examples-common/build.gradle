@@ -48,6 +48,7 @@ dependencies {
 
     api "com.dailystudio:devbricksx:${project.ext.devbricksxVersion}"
     api "com.dailystudio:devbricksx-camera:${project.ext.devbricksxVersion}"
+    kapt "com.dailystudio:devbricksx-kotlin-compiler:${project.ext.devbricksxVersion}"
 
     // Build off of nightly TensorFlow Lite
     api("org.tensorflow:tensorflow-lite:${project.ext.tfliteVersion}") { changing = true }
