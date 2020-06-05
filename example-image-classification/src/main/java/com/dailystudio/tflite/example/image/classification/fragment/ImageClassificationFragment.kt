@@ -21,8 +21,8 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
             val context = GlobalContextWrapper.context
             context?.let {
                 classifier = Classifier.create(it,
-                    Classifier.Model.QUANTIZED_MOBILENET,
-                    Classifier.Device.CPU,
+                    Classifier.Model.QUANTIZED_EFFICIENTNET,
+                    Classifier.Device.NNAPI,
                     1)
             }
 
