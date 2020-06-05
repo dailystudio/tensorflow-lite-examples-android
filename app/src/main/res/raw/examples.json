@@ -9,6 +9,7 @@
   {
     "id": 1,
     "title": "Object detection",
+    "package": "com.dailystudio.tflite.example.image.detection",
     "description": "Explore an app using a pre-trained model that draws and labels bounding boxes around 1000 different recognizable objects from input frames on a mobile camera.",
     "image": "assets://model_icons/tile_model_shapes.png"
   },

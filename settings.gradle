@@ -1,3 +1,4 @@
 include ':app'
-include ':example-image-classification'
 include ':tensorflow-lite-examples-common'
+include ':example-image-classification'
+include ':example-object-detection'
