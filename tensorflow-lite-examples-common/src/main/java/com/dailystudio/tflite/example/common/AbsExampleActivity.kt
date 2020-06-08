@@ -24,7 +24,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_example)
+        setContentView(getLayoutResId())
 
         setupViews()
     }
@@ -108,6 +108,10 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
                 View.VISIBLE
             }
         }
+    }
+
+    protected open fun getLayoutResId(): Int {
+        return R.layout.activity_example
     }
 
     abstract fun createExampleFragment(): AbsExampleFragment<Info, Results>

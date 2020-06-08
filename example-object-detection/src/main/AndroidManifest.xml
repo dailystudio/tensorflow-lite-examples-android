@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dailystudio.tflite.example.image.detection">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
         android:name="com.dailystudio.tflite.example.common.ExampleApplication"
         android:allowBackup="true"

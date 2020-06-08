@@ -48,7 +48,7 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
         var result: Results? = null
-        var info: Info = createInferenceInfo().apply {
+        val info: Info = createInferenceInfo().apply {
             imageSize = Size(image.width, image.height)
             imageRotation = image.imageInfo.rotationDegrees
             screenRotation = rotation
@@ -56,8 +56,8 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
 
         val start = System.currentTimeMillis()
         image.image?.let {
-            var frameBitmap: Bitmap? = it.toBitmap()
-            var inferenceBitmap: Bitmap? = preProcessImage(frameBitmap)
+            val frameBitmap: Bitmap? = it.toBitmap()
+            val inferenceBitmap: Bitmap? = preProcessImage(frameBitmap, info)
 
             inferenceBitmap?.let { bitmap ->
                 info.inferenceImageSize = Size(bitmap.width, bitmap.height)
@@ -95,13 +95,14 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
         inferenceCallbacks.add(callback)
     }
 
-    protected open fun preProcessImage(frameBitmap: Bitmap?): Bitmap? {
+    protected open fun preProcessImage(frameBitmap: Bitmap?,
+                                       info: Info): Bitmap? {
         return frameBitmap
     }
 
     abstract fun createInferenceInfo(): Info
 
-    abstract fun analyzeFrame(frameBitmap: Bitmap,
+    abstract fun analyzeFrame(inferenceBitmap: Bitmap,
                               info: Info): Results?
 
 

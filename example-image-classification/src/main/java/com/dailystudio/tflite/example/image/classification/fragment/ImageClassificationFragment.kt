@@ -1,6 +1,7 @@
 package com.dailystudio.tflite.example.image.classification.fragment
 
 import android.graphics.Bitmap
+import android.util.Size
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
@@ -15,7 +16,7 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
 
     private var classifier: Classifier? = null
 
-    override fun analyzeFrame(frameBitmap: Bitmap, info: InferenceInfo): List<Recognition>? {
+    override fun analyzeFrame(inferenceBitmap: Bitmap, info: InferenceInfo): List<Recognition>? {
         var results: List<Recognition>? = null
 
         if (classifier == null) {
@@ -32,7 +33,7 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
 
         classifier?.let { classifier ->
             val start = System.currentTimeMillis()
-            results = classifier.recognizeImage(frameBitmap, info.imageRotation)
+            results = classifier.recognizeImage(inferenceBitmap, info.imageRotation)
             val end = System.currentTimeMillis()
 
             info.inferenceTime = (end - start)
@@ -45,7 +46,8 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
        return InferenceInfo()
     }
 
-    override fun preProcessImage(frameBitmap: Bitmap?): Bitmap? {
+    override fun preProcessImage(frameBitmap: Bitmap?,
+                                 info: InferenceInfo): Bitmap? {
         if (frameBitmap == null) {
             return frameBitmap
         }
