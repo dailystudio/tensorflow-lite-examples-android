@@ -8,6 +8,7 @@ import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
 import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.utils.scaleAndCenterCrop
 import com.dailystudio.tflite.example.common.utils.scaleBitmapWithRatio
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
@@ -52,8 +53,8 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
             return frameBitmap
         }
 
-        return ImageUtils.scaleBitmapWithRatio(frameBitmap,
-            640, 480, false)
+        return ImageUtils.scaleAndCenterCrop(frameBitmap,
+            640, 480)
     }
 
 }

@@ -61,6 +61,25 @@ fun ImageUtils.scaleBitmapWithRatio(bitmap: Bitmap?,
         (bitmap.height * ratio).roundToInt())
 }
 
+fun ImageUtils.scaleAndCenterCrop(bitmap: Bitmap,
+                                  dstWidth: Int, dstHeight: Int): Bitmap {
+    val srcWidth = bitmap.width
+    val srcHeight = bitmap.height
+
+    val matrix = getCropMatrix(srcWidth, srcHeight, dstWidth, dstHeight)
+
+    val scaledBitmap = if (srcWidth > srcHeight) {
+        Bitmap.createBitmap(dstWidth, dstHeight, Bitmap.Config.ARGB_8888)
+    } else {
+        Bitmap.createBitmap(dstHeight, dstWidth, Bitmap.Config.ARGB_8888)
+    }
+
+    val canvas = Canvas(scaledBitmap)
+    canvas.drawBitmap(bitmap, matrix, null)
+
+    return scaledBitmap
+}
+
 fun ImageUtils.getCropMatrix(srcWidth: Int, srcHeight: Int,
                              dstWidth: Int, dstHeight: Int): Matrix {
     Logger.debug("srcWidth = $srcWidth, dstWidth = $dstWidth")
