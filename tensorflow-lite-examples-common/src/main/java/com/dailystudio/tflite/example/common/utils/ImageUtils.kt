@@ -82,7 +82,8 @@ fun ImageUtils.scaleAndCenterCrop(bitmap: Bitmap,
 
 fun ImageUtils.getCropMatrix(srcWidth: Int, srcHeight: Int,
                              dstWidth: Int, dstHeight: Int): Matrix {
-    Logger.debug("srcWidth = $srcWidth, dstWidth = $dstWidth")
+    Logger.debug("srcWidth = $srcWidth, srcHeight = $srcHeight")
+    Logger.debug("dstWidth = $dstWidth, dstHeight = $dstHeight")
     val matrix = Matrix()
 
     val transpose = (srcHeight > srcWidth)
@@ -108,6 +109,58 @@ fun ImageUtils.getCropMatrix(srcWidth: Int, srcHeight: Int,
         matrix.postTranslate(translateX, translateY)
 
     }
+
+    return matrix
+}
+
+fun ImageUtils.getRotatedCropMatrix(srcWidth: Int, srcHeight: Int,
+                                    dstWidth: Int, dstHeight: Int,
+                                    rotation: Int): Matrix {
+    Logger.debug("srcWidth = $srcWidth, srcHeight = $srcHeight")
+    Logger.debug("dstWidth = $dstWidth, dstHeight = $dstHeight")
+    Logger.debug("rotation = $rotation")
+    val matrix = Matrix()
+
+    if (rotation != 0) {
+        if (rotation % 90 != 0) {
+            Logger.warn("Rotation of %d % 90 != 0", rotation)
+        }
+
+        // Translate so center of image is at origin.
+        matrix.postTranslate(-srcWidth / 2.0f, -srcHeight / 2.0f)
+
+        // Rotate around origin.
+        matrix.postRotate(rotation.toFloat())
+    }
+
+    val transpose = (abs(rotation) + 90) % 180 == 0
+    val inWidth = if (transpose) srcHeight else srcWidth
+    val inHeight = if (transpose) srcWidth else srcHeight
+    Logger.debug("inWidth = $inWidth, inHeight = $inHeight")
+
+    if (inWidth != dstWidth || inHeight != dstHeight) {
+        val scaleFactorX = dstWidth / inWidth.toFloat()
+        val scaleFactorY = dstHeight / inHeight.toFloat()
+        Logger.debug("scaleFactorX = $scaleFactorX, scaleFactorY = $scaleFactorY")
+
+        val scaleFactor = max(scaleFactorX, scaleFactorY)
+        matrix.postScale(scaleFactor, scaleFactor)
+
+        val scaledWidth = inWidth * scaleFactor
+        val scaledHeight = inHeight * scaleFactor
+        Logger.debug("scaleWidth = $scaledWidth, scaleHeight = $scaledHeight")
+
+        if (rotation != 0) {
+            // Translate back from origin centered reference to destination frame.
+            matrix.postTranslate(dstWidth / 2.0f, dstHeight / 2.0f)
+        }
+
+        val translateX = (dstWidth - scaledWidth) / 2.0f
+        val translateY = (dstHeight - scaledHeight) / 2.0f
+        Logger.debug("translateX = $translateX, translateY = $translateY")
+//        matrix.postTranslate(translateX, translateY)
+    }
+
 
     return matrix
 }

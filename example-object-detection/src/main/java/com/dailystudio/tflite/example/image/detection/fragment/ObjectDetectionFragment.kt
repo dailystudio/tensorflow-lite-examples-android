@@ -25,7 +25,7 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<Infere
         private const val TF_OD_API_LABELS_FILE = "file:///android_asset/labelmap.txt"
 
         private const val TF_OD_FRAME_WIDTH = 640
-        private const val TF_OD_FRAME_HEIGHT = 640
+        private const val TF_OD_FRAME_HEIGHT = 480
 
         private const val MAINTAIN_ASPECT = false
         private const val MINIMUM_CONFIDENCE_TF_OD_API = 0.5f
