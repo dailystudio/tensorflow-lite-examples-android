@@ -46,9 +46,9 @@ dependencies {
     api "com.squareup.retrofit2:retrofit:${project.ext.retrofitVersion}"
     api "com.squareup.retrofit2:converter-gson:${project.ext.retrofitVersion}"
 
-    api "com.dailystudio:devbricksx:${project.ext.devbricksxVersion}"
-    api "com.dailystudio:devbricksx-camera:${project.ext.devbricksxVersion}"
-    kapt "com.dailystudio:devbricksx-kotlin-compiler:${project.ext.devbricksxVersion}"
+    api "com.dailystudio:devbricksx:${DEVBRICKS_X_VERSION}"
+    api "com.dailystudio:devbricksx-camera:${DEVBRICKS_X_VERSION}"
+    kapt "com.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
 
     // Build off of nightly TensorFlow Lite
     api("org.tensorflow:tensorflow-lite:${project.ext.tfliteVersion}") { changing = true }

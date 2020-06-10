@@ -33,6 +33,8 @@ ext {
     BUILD_TOOLS = '29.0.3'
     VERSION_NAME = version()
     VERSION_CODE = versionCode().toInteger()
+
+    DEVBRICKS_X_VERSION = '0.8.4'
 }
 
 def String version() {

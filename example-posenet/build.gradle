@@ -8,7 +8,7 @@ android {
     buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
-        applicationId "com.dailystudio.tflite.example.image.classification"
+        applicationId "com.dailystudio.tflite.example.image.pose"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode VERSION_CODE
@@ -74,4 +74,6 @@ dependencies {
 
 // Download default models; if you wish to use your own models then
 // place them in the "assets" directory and comment out this line.
+//apply from: "download.gradle"
+
 apply from:'download.gradle'
