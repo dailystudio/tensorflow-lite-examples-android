@@ -123,7 +123,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
     abstract fun createExampleFragment(): AbsExampleFragment<Info, Results>
     abstract fun createResultsView(): View?
     abstract fun createHiddenView(): View?
-    abstract fun onResultsUpdated(result: Results)
+    abstract fun onResultsUpdated(results: Results)
     abstract fun onInferenceInfoUpdated(info: Info)
 
     private val analysisCallback = object: ResultsCallback<Results>, InferenceCallback<Info> {

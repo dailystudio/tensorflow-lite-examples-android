@@ -3,7 +3,6 @@ package com.dailystudio.tflite.example.image.classification
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
@@ -58,12 +57,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         return inferenceInfoView
     }
 
-    override fun onResultsUpdated(result: List<Classifier.Recognition>) {
-        val itemCount = min(result.size, REPRESENTED_ITEMS_COUNT)
+    override fun onResultsUpdated(results: List<Classifier.Recognition>) {
+        val itemCount = min(results.size, REPRESENTED_ITEMS_COUNT)
 
         for (i in 0 until itemCount) {
-            detectItemViews[i]?.text = result[i].title
-            detectItemValueViews[i]?.text = "%.1f%%".format(result[i].confidence * 100)
+            detectItemViews[i]?.text = results[i].title
+            detectItemValueViews[i]?.text = "%.1f%%".format(results[i].confidence * 100)
         }
     }
 

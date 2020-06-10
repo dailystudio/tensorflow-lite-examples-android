@@ -2,11 +2,15 @@ package com.dailystudio.tflite.example.common
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.os.Environment
 import android.util.Size
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
+import java.io.File
 import kotlin.math.roundToLong
 
 interface ResultsCallback<Results> {
@@ -130,6 +134,22 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
         return (1000 / 30f).roundToLong()
     }
 
+    protected fun dumpIntermediateBitmap(bitmap: Bitmap,
+                                         filename: String) {
+        if (!isDumpIntermediatesEnabled()) {
+            return
+        }
+
+        val dir = GlobalContextWrapper.context?.getExternalFilesDir(
+            Environment.DIRECTORY_PICTURES
+        )
+
+        ImageUtils.saveBitmap(bitmap, File(dir, filename))
+    }
+
+    protected open fun isDumpIntermediatesEnabled(): Boolean {
+        return false
+    }
 
     abstract fun createInferenceInfo(): Info
 

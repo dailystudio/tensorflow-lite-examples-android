@@ -30,7 +30,6 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<Infere
         private const val MAINTAIN_ASPECT = false
         private const val MINIMUM_CONFIDENCE_TF_OD_API = 0.5f
 
-        private const val DEBUG_FRAMES = false
         private const val PRE_SCALED_IMAGE_FILE = "pre-scaled.png"
         private const val CROPPED_IMAGE_FILE = "cropped.png"
     }
@@ -132,13 +131,7 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<Infere
             val canvas = Canvas(croppedBitmap)
             canvas.drawBitmap(it, matrix, null)
 
-            if (DEBUG_FRAMES) {
-                val dir = GlobalContextWrapper.context?.getExternalFilesDir(
-                    Environment.DIRECTORY_PICTURES
-                )
-
-                ImageUtils.saveBitmap(croppedBitmap, File(dir, CROPPED_IMAGE_FILE))
-            }
+            dumpIntermediateBitmap(croppedBitmap,  CROPPED_IMAGE_FILE)
         }
 
         return croppedBitmap
@@ -168,13 +161,7 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<Infere
         val canvas = Canvas(scaledBitmap)
         canvas.drawBitmap(frameBitmap, matrix, null)
 
-        if (DEBUG_FRAMES) {
-            val dir = GlobalContextWrapper.context?.getExternalFilesDir(
-                Environment.DIRECTORY_PICTURES)
-
-            ImageUtils.saveBitmap(scaledBitmap, File(dir,
-                PRE_SCALED_IMAGE_FILE))
-        }
+        dumpIntermediateBitmap(scaledBitmap,  PRE_SCALED_IMAGE_FILE)
 
         return scaledBitmap
     }

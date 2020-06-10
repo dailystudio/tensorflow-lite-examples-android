@@ -47,8 +47,8 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         return inferenceInfoView
     }
 
-    override fun onResultsUpdated(result: List<Classifier.Recognition>) {
-        tracker.trackResults(result, System.currentTimeMillis())
+    override fun onResultsUpdated(results: List<Classifier.Recognition>) {
+        tracker.trackResults(results, System.currentTimeMillis())
         trackingOverlay?.postInvalidate()
     }
 
