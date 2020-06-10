@@ -37,7 +37,7 @@ abstract class AbsExampleFragment<Info: InferenceInfo, Results> : CameraFragment
             .also {
                 analyzer = createAnalyzer(screenAspectRatio, rotation).also { analyzer ->
                     analyzer.addInferenceCallback(callbackWrapper)
-                    analyzer.addResultCallback(callbackWrapper)
+                    analyzer.addResultsCallback(callbackWrapper)
                 }
 
                 it.setAnalyzer(analyzerExecutor, analyzer)

@@ -7,6 +7,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
+import kotlin.math.roundToLong
 
 interface ResultsCallback<Results> {
 
@@ -45,9 +46,11 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
     private val resultsCallbacks: MutableList<ResultsCallback<Results>> = mutableListOf()
     private val inferenceCallbacks: MutableList<InferenceCallback<Info>> = mutableListOf()
 
+    private var lastDelivered: Long = -1
+
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
-        var result: Results? = null
+        var results: Results? = null
         val info: Info = createInferenceInfo().apply {
             imageSize = Size(image.width, image.height)
             imageRotation = image.imageInfo.rotationDegrees
@@ -62,7 +65,7 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
             inferenceBitmap?.let { bitmap ->
                 info.inferenceImageSize = Size(bitmap.width, bitmap.height)
 
-                result = analyzeFrame(bitmap, info)
+                results = analyzeFrame(bitmap, info)
             }
         }
         val end = System.currentTimeMillis()
@@ -72,7 +75,7 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
             info.inferenceTime = info.analysisTime
         }
 
-        Logger.debug("analysis [in ${info.analysisTime} ms (inference: ${info.inferenceTime} ms)]: result = $result")
+        Logger.debug("analysis [in ${info.analysisTime} ms (inference: ${info.inferenceTime} ms)]: result = ${results.toString().replace("%", "%%")}")
 
         for (c in inferenceCallbacks) {
             c.onInference(info)
@@ -80,14 +83,37 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
 
         image.close()
 
-        result?.let {
-            for (c in resultsCallbacks) {
-                c.onResult(it)
+        results?.let {
+            deliveryResults(it)
+        }
+    }
+
+    private fun deliveryResults(results: Results) {
+        val interval = getResultsUpdateInterval()
+        Logger.debug("interval = $interval")
+
+        if (interval <= 0L || lastDelivered == -1L) {
+            triggerResultsCallbacks(results)
+        } else {
+            val now = System.currentTimeMillis()
+            if (now - lastDelivered > interval) {
+                triggerResultsCallbacks(results)
+            } else {
+                Logger.warn("skip results, since interval[${now - lastDelivered}] is less than $interval")
             }
         }
     }
 
-    fun addResultCallback(callback: ResultsCallback<Results>) {
+    private fun triggerResultsCallbacks(results: Results) {
+        for (c in resultsCallbacks) {
+            Logger.debug("trigger callback: $c")
+            c.onResult(results)
+        }
+
+        lastDelivered = System.currentTimeMillis()
+    }
+
+    fun addResultsCallback(callback: ResultsCallback<Results>) {
         resultsCallbacks.add(callback)
     }
 
@@ -100,10 +126,14 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
         return frameBitmap
     }
 
+    protected open fun getResultsUpdateInterval(): Long {
+        return (1000 / 30f).roundToLong()
+    }
+
+
     abstract fun createInferenceInfo(): Info
 
     abstract fun analyzeFrame(inferenceBitmap: Bitmap,
                               info: Info): Results?
-
 
 }

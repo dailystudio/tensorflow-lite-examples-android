@@ -1,6 +1,8 @@
 package com.dailystudio.tflite.example.common
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -114,6 +116,10 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         return R.layout.activity_example
     }
 
+    protected open fun getResultsUpdateInterval(): Long {
+        return 0L
+    }
+
     abstract fun createExampleFragment(): AbsExampleFragment<Info, Results>
     abstract fun createResultsView(): View?
     abstract fun createHiddenView(): View?
@@ -135,5 +141,6 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         }
 
     }
+
 
 }
