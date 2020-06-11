@@ -155,12 +155,11 @@ fun ImageUtils.getRotatedCropMatrix(srcWidth: Int, srcHeight: Int,
             matrix.postTranslate(dstWidth / 2.0f, dstHeight / 2.0f)
         }
 
-        val translateX = (dstWidth - scaledWidth) / 2.0f
-        val translateY = (dstHeight - scaledHeight) / 2.0f
+        val translateX = (scaledWidth - dstWidth) / 2.0f
+        val translateY = (scaledHeight - dstHeight) / 2.0f
         Logger.debug("translateX = $translateX, translateY = $translateY")
-//        matrix.postTranslate(translateX, translateY)
+        matrix.postTranslate(translateX, translateY)
     }
-
 
     return matrix
 }

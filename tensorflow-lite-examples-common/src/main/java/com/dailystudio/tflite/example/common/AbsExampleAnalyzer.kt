@@ -140,6 +140,11 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
             return
         }
 
+        saveIntermediateBitmap(bitmap, filename)
+    }
+
+    protected fun saveIntermediateBitmap(bitmap: Bitmap,
+                                         filename: String) {
         val dir = GlobalContextWrapper.context?.getExternalFilesDir(
             Environment.DIRECTORY_PICTURES
         )

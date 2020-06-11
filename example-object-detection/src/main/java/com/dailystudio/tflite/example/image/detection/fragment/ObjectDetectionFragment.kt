@@ -3,7 +3,6 @@ package com.dailystudio.tflite.example.image.detection.fragment
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
-import android.os.Environment
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
@@ -14,7 +13,6 @@ import com.dailystudio.tflite.example.common.utils.getCropMatrix
 import com.dailystudio.tflite.example.common.utils.getTransformationMatrix
 import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel
-import java.io.File
 
 private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, List<Classifier.Recognition>>(rotation) {
 

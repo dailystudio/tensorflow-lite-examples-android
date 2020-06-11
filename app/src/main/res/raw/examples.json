@@ -16,6 +16,7 @@
   {
     "id": 2,
     "title": "Pose estimation",
+    "package": "com.dailystudio.tflite.example.image.pose",
     "description": "Explore an app that estimates poses of people in an image.",
     "image": "assets://model_icons/tile_model_pose.png"
   },
