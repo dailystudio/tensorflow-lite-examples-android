@@ -7,7 +7,7 @@ import com.dailystudio.devbricksx.app.activity.ActivityLauncher
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.Example
 
-class ExamplesFragmentExt : ExamplesFragment() {
+class ExamplesFragmentExt : ExamplesListFragment() {
 
     override fun onItemClick(
         recyclerView: RecyclerView,
