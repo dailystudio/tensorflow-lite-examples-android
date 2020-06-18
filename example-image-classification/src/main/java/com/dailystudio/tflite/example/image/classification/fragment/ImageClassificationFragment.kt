@@ -9,8 +9,6 @@ import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
 import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.utils.scaleAndCenterCrop
-import com.dailystudio.tflite.example.common.utils.scaleBitmapWithRatio
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
 

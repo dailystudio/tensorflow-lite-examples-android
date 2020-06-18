@@ -6,11 +6,10 @@ import android.graphics.Matrix
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
+import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
 import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.utils.getCropMatrix
-import com.dailystudio.tflite.example.common.utils.getTransformationMatrix
 import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel
 
@@ -113,7 +112,7 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<Infere
         scaledBitmap?.let {
             val cropSize = TF_OD_API_INPUT_SIZE
 
-            val matrix = ImageUtils.getTransformationMatrix(
+            val matrix = MatrixUtils.getTransformationMatrix(
                 it.width,
                 it.height,
                 cropSize,
@@ -140,24 +139,14 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<Infere
             return null
         }
 
-        val matrix = ImageUtils.getCropMatrix(
+        val matrix = MatrixUtils.getTransformationMatrix(
             frameBitmap.width, frameBitmap.height,
-            TF_OD_FRAME_WIDTH, TF_OD_FRAME_HEIGHT)
+            TF_OD_FRAME_WIDTH, TF_OD_FRAME_HEIGHT, 0, true)
 
-        preScaleTransform = matrix
         preScaleRevertTransform = Matrix()
         matrix.invert(preScaleRevertTransform)
 
-       val scaledBitmap = if (frameBitmap.width > frameBitmap.height) {
-            Bitmap.createBitmap(TF_OD_FRAME_WIDTH, TF_OD_FRAME_HEIGHT,
-                Bitmap.Config.ARGB_8888)
-        } else {
-            Bitmap.createBitmap(TF_OD_FRAME_HEIGHT, TF_OD_FRAME_WIDTH,
-                Bitmap.Config.ARGB_8888)
-        }
-
-        val canvas = Canvas(scaledBitmap)
-        canvas.drawBitmap(frameBitmap, matrix, null)
+       val scaledBitmap = ImageUtils.createTransformedBitmap(frameBitmap, matrix)
 
         dumpIntermediateBitmap(scaledBitmap,  PRE_SCALED_IMAGE_FILE)
 

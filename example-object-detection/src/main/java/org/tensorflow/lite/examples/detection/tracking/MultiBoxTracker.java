@@ -20,19 +20,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Paint.Cap;
-import android.graphics.Paint.Join;
 import android.graphics.Paint.Style;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.TypedValue;
 
 import com.dailystudio.devbricksx.development.Logger;
-import com.dailystudio.devbricksx.utils.ImageUtils;
-import com.dailystudio.tflite.example.common.utils.ImageUtilsKt;
+import com.dailystudio.devbricksx.utils.MatrixUtils;
 
 import org.tensorflow.lite.examples.detection.env.BorderedText;
 import org.tensorflow.lite.examples.detection.tflite.Classifier.Recognition;
@@ -123,8 +119,8 @@ public class MultiBoxTracker {
 
     canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
-    frameToCanvasMatrix = ImageUtilsKt.getRotatedCropMatrix(ImageUtils.INSTANCE,
-            frameWidth, frameHeight, canvasWidth, canvasHeight, sensorOrientation);
+    frameToCanvasMatrix = MatrixUtils.INSTANCE.getTransformationMatrix(
+            frameWidth, frameHeight, canvasWidth, canvasHeight, sensorOrientation, true);
 
     for (final TrackedRecognition recognition : trackedObjects) {
       final RectF trackedPos = new RectF(recognition.location);

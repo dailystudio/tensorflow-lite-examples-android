@@ -10,10 +10,9 @@ import android.util.AttributeSet
 import android.view.View
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
-import com.dailystudio.tflite.example.common.utils.getRotatedCropMatrix
+import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.image.pose.fragment.PoseAnalyzer
 import com.dailystudio.tflite.example.image.pose.utils.mapPosition
-import org.tensorflow.lite.examples.posenet.lib.BodyPart
 import org.tensorflow.lite.examples.posenet.lib.Person
 
 class PoseOverlayView: View {
@@ -59,12 +58,13 @@ class PoseOverlayView: View {
         val canvasWidth = canvas.width
         val canvasHeight = canvas.width
 
-        val frameToCanvasMatrix = ImageUtils.getRotatedCropMatrix(
+        val frameToCanvasMatrix = MatrixUtils.getTransformationMatrix(
             frameWidth,
             frameHeight,
             canvasWidth,
             canvasHeight,
-            sensorOrientation
+            sensorOrientation,
+            true
         )
 
         person?.let {
