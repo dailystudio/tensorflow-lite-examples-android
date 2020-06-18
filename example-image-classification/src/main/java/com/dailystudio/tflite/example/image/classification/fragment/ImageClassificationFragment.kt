@@ -5,6 +5,7 @@ import android.util.Size
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
+import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
 import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
@@ -53,8 +54,11 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
             return frameBitmap
         }
 
-        return ImageUtils.scaleAndCenterCrop(frameBitmap,
-            640, 480)
+        val matrix = MatrixUtils.getTransformationMatrix(frameBitmap.width,
+            frameBitmap.height, 640, 480, 0, true)
+
+        return ImageUtils.createTransformedBitmap(frameBitmap,
+            matrix)
     }
 
 }
