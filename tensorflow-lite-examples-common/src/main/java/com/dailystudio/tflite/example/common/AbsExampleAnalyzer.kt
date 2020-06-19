@@ -10,6 +10,8 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
+import com.rasalexman.kdispatcher.KDispatcher
+import com.rasalexman.kdispatcher.call
 import java.io.File
 import kotlin.math.roundToLong
 
@@ -47,9 +49,6 @@ open class InferenceInfo(var imageSize: Size = Size(0, 0),
 
 abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rotation: Int): ImageAnalysis.Analyzer {
 
-    private val resultsCallbacks: MutableList<ResultsCallback<Results>> = mutableListOf()
-    private val inferenceCallbacks: MutableList<InferenceCallback<Info>> = mutableListOf()
-
     private var lastDelivered: Long = -1
 
     @SuppressLint("UnsafeExperimentalUsageError")
@@ -81,18 +80,20 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
 
         Logger.debug("analysis [in ${info.analysisTime} ms (inference: ${info.inferenceTime} ms)]: result = ${results.toString().replace("%", "%%")}")
 
-        for (c in inferenceCallbacks) {
-            c.onInference(info)
-        }
+        deliverInferenceInfo(info)
 
         image.close()
 
         results?.let {
-            deliveryResults(it)
+            deliverResults(it)
         }
     }
 
-    private fun deliveryResults(results: Results) {
+    private fun deliverInferenceInfo(info: InferenceInfo) {
+        KDispatcher.call(Constants.EVENT_INFERENCE_INFO_UPDATE, info)
+    }
+
+    private fun deliverResults(results: Results) {
         val interval = getResultsUpdateInterval()
         Logger.debug("interval = $interval")
 
@@ -109,20 +110,9 @@ abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rot
     }
 
     private fun triggerResultsCallbacks(results: Results) {
-        for (c in resultsCallbacks) {
-            Logger.debug("trigger callback: $c")
-            c.onResult(results)
-        }
+        KDispatcher.call(Constants.EVENT_RESULTS_UPDATE, results)
 
         lastDelivered = System.currentTimeMillis()
-    }
-
-    fun addResultsCallback(callback: ResultsCallback<Results>) {
-        resultsCallbacks.add(callback)
-    }
-
-    fun addInferenceCallback(callback: InferenceCallback<Info>) {
-        inferenceCallbacks.add(callback)
     }
 
     protected open fun preProcessImage(frameBitmap: Bitmap?,

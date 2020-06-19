@@ -2,15 +2,21 @@ package com.dailystudio.tflite.example.common
 
 import android.os.Bundle
 import android.os.Handler
-import android.os.Message
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.rasalexman.kdispatcher.KDispatcher
+import com.rasalexman.kdispatcher.Notification
+import com.rasalexman.kdispatcher.subscribe
+import com.rasalexman.kdispatcher.unsubscribe
 
 abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActivity() {
 
@@ -21,7 +27,10 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
     private var sheetBehavior: BottomSheetBehavior<ViewGroup>? = null
 
     private var resultsView: View? = null
-    private var hiddenView: View? = null
+    private var inferenceInfoView: InferenceInfoView? = null
+    private var settingsView: View? = null
+
+    private lateinit var uiThread: Thread
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,13 +38,13 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         setContentView(getLayoutResId())
 
         setupViews()
+
+        uiThread = Thread.currentThread()
     }
 
     private fun setupViews() {
         supportFragmentManager.beginTransaction().also {
-            val exampleFragment = createExampleFragment().also { fragment ->
-                fragment.setAnalysisCallback(analysisCallback, analysisCallback)
-            }
+            val exampleFragment = createExampleFragment()
 
             it.add(R.id.fragment_stub, exampleFragment, "example-fragment")
             it.show(exampleFragment)
@@ -74,12 +83,12 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
 
         divider = findViewById(R.id.bottom_sheet_divider)
 
-        sheetBehavior?.isHideable = false;
+        sheetBehavior?.isHideable = false
 
-        val titleView: TextView = findViewById(R.id.bottom_sheet_title)
+        val titleView: TextView? = findViewById(R.id.bottom_sheet_title)
         titleView?.text = title
 
-        val resultContainer: ViewGroup = findViewById(R.id.bottom_sheet_result)
+        val resultContainer: ViewGroup? = findViewById(R.id.bottom_sheet_result)
         resultContainer?.let {
             resultsView = createResultsView()
 
@@ -93,18 +102,27 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
 
         hiddenLayout = findViewById(R.id.hidden_layout)
         hiddenLayout?.let {
-            hiddenView = createHiddenView()
+            inferenceInfoView = createInferenceInfoView()
+            if (inferenceInfoView != null) {
+                it.addView(inferenceInfoView)
+            }
 
-            if (hiddenView == null) {
+            settingsView = createSettingsView()
+            if (settingsView != null) {
+                it.addView(settingsView)
+            }
+
+            if (inferenceInfoView == null && settingsView == null) {
                 it.visibility = View.GONE
             } else {
                 it.visibility = View.VISIBLE
-                it.addView(hiddenView)
             }
         }
 
         divider?.let {
-            it.visibility = if (resultsView == null && hiddenView == null) {
+            it.visibility = if (resultsView == null
+                && inferenceInfoView == null
+                && settingsView == null) {
                 View.GONE
             } else {
                 View.VISIBLE
@@ -112,35 +130,81 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        KDispatcher.subscribe(Constants.EVENT_INFERENCE_INFO_UPDATE,
+            1, ::eventInferenceInfoUpdateHandler)
+
+        KDispatcher.subscribe(Constants.EVENT_RESULTS_UPDATE,
+            1, ::eventResultsUpdateHandler)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        KDispatcher.unsubscribe(Constants.EVENT_INFERENCE_INFO_UPDATE,
+            ::eventInferenceInfoUpdateHandler)
+
+        KDispatcher.unsubscribe(Constants.EVENT_RESULTS_UPDATE,
+            ::eventResultsUpdateHandler)
+    }
+
     protected open fun getLayoutResId(): Int {
         return R.layout.activity_example
     }
 
-    protected open fun getResultsUpdateInterval(): Long {
-        return 0L
+    protected open fun onInferenceInfoUpdated(info: Info) {
+        inferenceInfoView?.setInferenceInfo(info)
     }
 
-    abstract fun createExampleFragment(): AbsExampleFragment<Info, Results>
+    abstract fun createExampleFragment(): Fragment
     abstract fun createResultsView(): View?
-    abstract fun createHiddenView(): View?
+    abstract fun createInferenceInfoView(): InferenceInfoView?
+    abstract fun createSettingsView(): View?
     abstract fun onResultsUpdated(results: Results)
-    abstract fun onInferenceInfoUpdated(info: Info)
 
-    private val analysisCallback = object: ResultsCallback<Results>, InferenceCallback<Info> {
+    @Suppress("UNCHECKED_CAST")
+    private fun eventResultsUpdateHandler(notification: Notification<Any>) {
+        val data = notification.data ?: return
 
-        override fun onResult(results: Results) {
-            Logger.debug("latest result: $results")
+        val results = data as Results
+        Logger.debug("latest result: $results")
 
-            onResultsUpdated(results)
-        }
+        updateResultsOnUiThread(results)
+    }
 
-        override fun onInference(info: Info) {
-            Logger.debug("latest info: $info")
+    @Suppress("UNCHECKED_CAST")
+    private fun eventInferenceInfoUpdateHandler(notification: Notification<Any>) {
+        val data = notification.data ?: return
 
+        val info = data as Info
+        Logger.debug("latest info: $info")
+
+        updateInferenceInfoToUiThread(info)
+    }
+
+    private fun updateInferenceInfoToUiThread(info: Info) {
+        if (Thread.currentThread() !== uiThread) {
+            handler.post{
+                onInferenceInfoUpdated(info)
+            }
+        } else {
             onInferenceInfoUpdated(info)
         }
-
     }
+
+    private fun updateResultsOnUiThread(results: Results) {
+        if (Thread.currentThread() !== uiThread) {
+            handler.post{
+                onResultsUpdated(results)
+            }
+        } else {
+            onResultsUpdated(results)
+        }
+    }
+
+    private val handler = Handler(Looper.getMainLooper())
 
 
 }

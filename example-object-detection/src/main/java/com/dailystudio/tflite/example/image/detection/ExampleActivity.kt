@@ -41,7 +41,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         return null
     }
 
-    override fun createHiddenView(): View? {
+    override fun createInferenceInfoView(): View? {
         inferenceInfoView = InferenceInfoView(this)
 
         return inferenceInfoView

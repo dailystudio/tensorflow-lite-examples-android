@@ -3,6 +3,7 @@ package com.dailystudio.tflite.example.image.classification
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
@@ -22,9 +23,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
     private var detectItemValueViews: Array<TextView?> =
         Array(REPRESENTED_ITEMS_COUNT) {null}
 
-    private var inferenceInfoView: InferenceInfoView? = null
-
-    override fun createExampleFragment(): AbsExampleFragment<InferenceInfo, List<Classifier.Recognition>> {
+    override fun createExampleFragment(): Fragment {
         return ImageClassificationFragment()
     }
 
@@ -51,10 +50,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         }
     }
 
-    override fun createHiddenView(): View? {
-        inferenceInfoView = InferenceInfoView(this)
+    override fun createInferenceInfoView(): InferenceInfoView? {
+        return InferenceInfoView(this)
+    }
 
-        return inferenceInfoView
+    override fun createSettingsView(): View? {
+        return null
     }
 
     override fun onResultsUpdated(results: List<Classifier.Recognition>) {
@@ -64,10 +65,6 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
             detectItemViews[i]?.text = results[i].title
             detectItemValueViews[i]?.text = "%.1f%%".format(results[i].confidence * 100)
         }
-    }
-
-    override fun onInferenceInfoUpdated(info: InferenceInfo) {
-        inferenceInfoView?.setInferenceInfo(info)
     }
 
 }

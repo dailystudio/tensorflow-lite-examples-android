@@ -1,7 +1,6 @@
 package com.dailystudio.tflite.example.image.classification.fragment
 
 import android.graphics.Bitmap
-import android.util.Size
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils

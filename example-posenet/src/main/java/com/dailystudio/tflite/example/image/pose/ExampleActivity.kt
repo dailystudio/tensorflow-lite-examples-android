@@ -36,7 +36,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Person>() {
         return null
     }
 
-    override fun createHiddenView(): View? {
+    override fun createInferenceInfoView(): View? {
         inferenceInfoView = InferenceInfoView(this)
 
         return inferenceInfoView
