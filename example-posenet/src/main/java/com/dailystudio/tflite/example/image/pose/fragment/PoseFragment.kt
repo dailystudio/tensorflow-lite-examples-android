@@ -8,11 +8,11 @@ import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
 import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.image.pose.utils.mapKeyPoint
 import org.tensorflow.lite.examples.posenet.lib.BodyPart
 import org.tensorflow.lite.examples.posenet.lib.Device
 import org.tensorflow.lite.examples.posenet.lib.Person
 import org.tensorflow.lite.examples.posenet.lib.Posenet
-import kotlin.math.roundToInt
 
 class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(rotation) {
 
@@ -43,6 +43,8 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
 
         /** Threshold for confidence score. */
         const val MIN_CONFIDENCE = 0.5
+
+        const val DEBUG_OUTPUTS = false
     }
 
     private var preScaleTransform: Matrix? = null
@@ -73,7 +75,7 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
             val context = GlobalContextWrapper.context
 
             context?.let {
-                poseNet = Posenet(context, device = Device.GPU)
+                poseNet = Posenet(context, device = Device.CPU)
             }
 
             Logger.debug("posenet created: $poseNet")
@@ -88,7 +90,7 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
 
             Logger.debug("raw results: ${results.toString().replace("%", "%%")}")
             results?.let {
-//                debugOutputs(inferenceBitmap, it, "result.png")
+                debugOutputs(inferenceBitmap, it, "result.png")
                 mapKeyPoints(it)
             }
 
@@ -98,6 +100,10 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
     }
 
     private fun debugOutputs(bitmap: Bitmap, person: Person, filename: String) {
+        if (!DEBUG_OUTPUTS) {
+            return
+        }
+
         val output = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
 
         val canvas = Canvas(output)
@@ -133,26 +139,19 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
 
     private fun mapKeyPoints(person: Person) {
         for (keyPoint in person.keyPoints) {
-            var pts = floatArrayOf(
-                keyPoint.position.x.toFloat(),
-                keyPoint.position.y.toFloat())
-            Logger.debug("AKP: original = ${pts[0]}, ${pts[1]}")
+            cropToFrameTransform?.mapKeyPoint(keyPoint)
+        }
 
-            cropToFrameTransform?.mapPoints(pts)
-            Logger.debug("AKP: crop revert = ${pts[0]}, ${pts[1]}")
-            keyPoint.position.x = pts[0].roundToInt()
-            keyPoint.position.y = pts[1].roundToInt()
-            preScaledBitmap?.let {
-//                debugOutputs(it, person, "pre-scaled.png")
-            }
+        preScaledBitmap?.let {
+            debugOutputs(it, person, "pre-scaled.png")
+        }
 
-            preScaleRevertTransform?.mapPoints(pts)
-            Logger.debug("AKP: scale revert = ${pts[0]}, ${pts[1]}")
-            keyPoint.position.x = pts[0].roundToInt()
-            keyPoint.position.y = pts[1].roundToInt()
-            originalBitmap?.let {
-//                debugOutputs(it, person, "original.png")
-            }
+        for (keyPoint in person.keyPoints) {
+            preScaleRevertTransform?.mapKeyPoint(keyPoint)
+        }
+
+        originalBitmap?.let {
+            debugOutputs(it, person, "original.png")
         }
     }
 
@@ -170,7 +169,7 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
                 cropWidth,
                 cropHeight,
                 info.imageRotation,
-                false
+                true
             )
 
             frameToCropTransform = matrix
@@ -210,7 +209,6 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
 
         return scaledBitmap
     }
-
 
 }
 

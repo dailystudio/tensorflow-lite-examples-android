@@ -56,7 +56,7 @@ class PoseOverlayView: View {
         super.draw(canvas)
 
         val canvasWidth = canvas.width
-        val canvasHeight = canvas.width
+        val canvasHeight = canvas.height
 
         val frameToCanvasMatrix = MatrixUtils.getTransformationMatrix(
             frameWidth,
@@ -67,15 +67,16 @@ class PoseOverlayView: View {
             true
         )
 
+
         person?.let {
             val paint = Paint().apply {
                 color = Color.RED
             }
 
             for (keyPoint in it.keyPoints) {
-                Logger.debug("KP before: ${keyPoint.position}")
+//                Logger.debug("KP before: ${keyPoint.position}")
                 frameToCanvasMatrix.mapPosition(keyPoint.position)
-                Logger.debug("KP after: ${keyPoint.position}")
+//                Logger.debug("KP after: ${keyPoint.position}")
             }
 
             for (keyPoint in it.keyPoints) {
