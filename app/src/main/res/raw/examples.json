@@ -23,6 +23,7 @@
   {
     "id": 3,
     "title": "Speech recognition",
+    "package": "com.dailystudio.tflite.example.speech.recognition",
     "description": "Explore an app that uses a microphone to spot keywords and return a probability score for the words spoken.",
     "image": "assets://model_icons/tile_model_audio.png"
   },

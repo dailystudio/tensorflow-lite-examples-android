@@ -34,7 +34,7 @@ ext {
     VERSION_NAME = version()
     VERSION_CODE = versionCode().toInteger()
 
-    DEVBRICKS_X_VERSION = '0.8.8'
+    DEVBRICKS_X_VERSION = '0.8.9'
 }
 
 def String version() {
