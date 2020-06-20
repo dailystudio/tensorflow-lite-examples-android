@@ -5,8 +5,9 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
-import com.dailystudio.tflite.example.common.AbsExampleFragment
+import com.dailystudio.tflite.example.common.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
+import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.image.pose.utils.mapKeyPoint
 import org.tensorflow.lite.examples.posenet.lib.BodyPart
@@ -14,7 +15,7 @@ import org.tensorflow.lite.examples.posenet.lib.Device
 import org.tensorflow.lite.examples.posenet.lib.Person
 import org.tensorflow.lite.examples.posenet.lib.Posenet
 
-class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(rotation) {
+class PoseAnalyzer(rotation: Int) : AbsImageAnalyzer<ImageInferenceInfo, Person>(rotation) {
 
     companion object {
         const val MODEL_WIDTH = 257
@@ -64,11 +65,11 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
             MODEL_WIDTH, MODEL_HEIGHT, Bitmap.Config.ARGB_8888)
     }
 
-    override fun createInferenceInfo(): InferenceInfo {
-        return InferenceInfo()
+    override fun createInferenceInfo(): ImageInferenceInfo {
+        return ImageInferenceInfo()
     }
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: InferenceInfo): Person? {
+    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): Person? {
         var results: Person? = null
 
         if (poseNet == null) {
@@ -155,7 +156,7 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
         }
     }
 
-    override fun preProcessImage(frameBitmap: Bitmap?, info: InferenceInfo): Bitmap? {
+    override fun preProcessImage(frameBitmap: Bitmap?, info: ImageInferenceInfo): Bitmap? {
         originalBitmap = frameBitmap
         preScaledBitmap = preScaleImage(frameBitmap)
 
@@ -212,10 +213,10 @@ class PoseAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, Person>(ro
 
 }
 
-class PoseFragment : AbsExampleFragment<InferenceInfo, Person>() {
+class PoseCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, Person>() {
 
     override fun createAnalyzer(screenAspectRatio: Int,
-                                rotation: Int): AbsExampleAnalyzer<InferenceInfo, Person> {
+                                rotation: Int): AbsImageAnalyzer<ImageInferenceInfo, Person> {
         return PoseAnalyzer(rotation)
     }
 

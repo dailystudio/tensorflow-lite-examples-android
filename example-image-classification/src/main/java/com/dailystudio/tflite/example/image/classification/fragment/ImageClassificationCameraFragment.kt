@@ -5,17 +5,18 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
-import com.dailystudio.tflite.example.common.AbsExampleFragment
+import com.dailystudio.tflite.example.common.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
+import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
 
-private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, List<Recognition>>(rotation) {
+private class ImageClassificationAnalyzer(rotation: Int) : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation) {
 
     private var classifier: Classifier? = null
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: InferenceInfo): List<Recognition>? {
+    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Recognition>? {
         var results: List<Recognition>? = null
 
         if (classifier == null) {
@@ -41,12 +42,12 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
         return results
     }
 
-    override fun createInferenceInfo(): InferenceInfo {
-       return InferenceInfo()
+    override fun createInferenceInfo(): ImageInferenceInfo {
+       return ImageInferenceInfo()
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,
-                                 info: InferenceInfo): Bitmap? {
+                                 info: ImageInferenceInfo): Bitmap? {
         if (frameBitmap == null) {
             return frameBitmap
         }
@@ -60,9 +61,9 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsExampleAnalyzer<In
 
 }
 
-class ImageClassificationFragment : AbsExampleFragment<InferenceInfo, List<Recognition>>() {
+class ImageClassificationCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int): AbsExampleAnalyzer<InferenceInfo, List<Recognition>> {
+    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
         return ImageClassificationAnalyzer(rotation)
     }
 

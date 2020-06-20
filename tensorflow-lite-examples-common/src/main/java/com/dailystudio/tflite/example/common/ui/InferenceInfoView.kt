@@ -63,7 +63,7 @@ class InferenceInfoView: FrameLayout {
     }
 
     fun setInferenceInfo(info: InferenceInfo) {
-        val items: List<InferenceInfoItem> = dumpInfoItems(info)
+        val items: List<InferenceInfoItem> = info.toInfoItems(context)
 
         requestInvalidate(items)
 
@@ -153,38 +153,6 @@ class InferenceInfoView: FrameLayout {
             val itemView = infoItemViews[item.getKey()]
             itemView?.setItemInfo(item)
         }
-    }
-
-    protected open fun dumpInfoItems(info: InferenceInfo): MutableList<InferenceInfoItem> {
-        val items = mutableListOf<InferenceInfoItem>()
-
-        val itemImageSize = InferenceInfoItem(1, R.drawable.ic_info_image_size,
-            resources.getString(R.string.label_info_image_size), info.imageSize.toString())
-        items.add(itemImageSize)
-
-        val itemImageRotation = InferenceInfoItem(2, R.drawable.ic_info_image_rotation,
-            resources.getString(R.string.label_info_image_rotation), info.imageRotation.toString())
-        items.add(itemImageRotation)
-
-        val itemScreenRotation = InferenceInfoItem(3, R.drawable.ic_info_screen_rotation,
-            resources.getString(R.string.label_info_screen_rotation), info.screenRotation.toString())
-        items.add(itemScreenRotation)
-
-        val itemInferenceImageSize = InferenceInfoItem(4, R.drawable.ic_info_inference_image_size,
-            resources.getString(R.string.label_info_inference_image_size), info.inferenceImageSize.toString())
-        items.add(itemInferenceImageSize)
-
-        val itemAnalysisTime = InferenceInfoItem(5, R.drawable.ic_info_analysis_time,
-            resources.getString(R.string.label_info_analysis_time),
-            "%d ms".format(info.analysisTime))
-        items.add(itemAnalysisTime)
-
-        val itemInferenceTime = InferenceInfoItem(6, R.drawable.ic_info_inference_time,
-            resources.getString(R.string.label_info_inference_time),
-            "%d ms".format(info.inferenceTime))
-        items.add(itemInferenceTime)
-
-        return items
     }
 
 }

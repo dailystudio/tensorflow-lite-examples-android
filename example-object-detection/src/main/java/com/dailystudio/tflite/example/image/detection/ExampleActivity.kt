@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
-import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionFragment
+import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
 import org.tensorflow.lite.examples.detection.customview.OverlayView
 import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recognition>>() {
+class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Classifier.Recognition>>() {
 
     private lateinit var tracker: MultiBoxTracker
     private var trackingOverlay: OverlayView? = null
@@ -32,7 +32,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
     }
 
     override fun createBaseFragment(): Fragment {
-        return ObjectDetectionFragment()
+        return ObjectDetectionCameraFragment()
     }
 
     override fun createResultsView(): View? {
@@ -52,7 +52,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         trackingOverlay?.postInvalidate()
     }
 
-    override fun onInferenceInfoUpdated(info: InferenceInfo) {
+    override fun onInferenceInfoUpdated(info: ImageInferenceInfo) {
         super.onInferenceInfoUpdated(info)
 
         tracker.setFrameConfiguration(

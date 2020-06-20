@@ -7,13 +7,13 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.AbsExampleAnalyzer
-import com.dailystudio.tflite.example.common.AbsExampleFragment
-import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
+import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel
 
-private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<InferenceInfo, List<Classifier.Recognition>>(rotation) {
+private class ObjectDetectionAnalyzer(rotation: Int) : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>>(rotation) {
 
     companion object {
         private const val TF_OD_API_INPUT_SIZE = 300
@@ -47,7 +47,7 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<Infere
     }
 
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: InferenceInfo): List<Classifier.Recognition>? {
+    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Classifier.Recognition>? {
         var results: List<Classifier.Recognition>?
 
         if (classifier == null) {
@@ -101,12 +101,12 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<Infere
         return mappedRecognitions
     }
 
-    override fun createInferenceInfo(): InferenceInfo {
-        return InferenceInfo()
+    override fun createInferenceInfo(): ImageInferenceInfo {
+        return ImageInferenceInfo()
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,
-                                 info: InferenceInfo): Bitmap? {
+                                 info: ImageInferenceInfo): Bitmap? {
         val scaledBitmap = preScaleImage(frameBitmap)
 
         scaledBitmap?.let {
@@ -155,10 +155,10 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsExampleAnalyzer<Infere
 
 }
 
-class ObjectDetectionFragment : AbsExampleFragment<InferenceInfo, List<Classifier.Recognition>>() {
+class ObjectDetectionCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Classifier.Recognition>>() {
 
     override fun createAnalyzer(screenAspectRatio: Int, rotation: Int)
-            : AbsExampleAnalyzer<InferenceInfo, List<Classifier.Recognition>> {
+            : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>> {
         return ObjectDetectionAnalyzer(rotation)
     }
 

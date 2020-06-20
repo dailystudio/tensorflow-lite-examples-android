@@ -1,18 +1,19 @@
-package com.dailystudio.tflite.example.common
+package com.dailystudio.tflite.example.common.image
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.UseCase
 import com.dailystudio.devbricksx.camera.CameraFragment
+import com.dailystudio.tflite.example.common.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.R
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-abstract class AbsExampleFragment<Info: InferenceInfo, Results> : CameraFragment() {
+abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : CameraFragment() {
 
     private lateinit var analyzerExecutor: ExecutorService
-    private lateinit var analyzer: AbsExampleAnalyzer<Info, Results>
+    private lateinit var analyzer: AbsImageAnalyzer<Info, Results>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +44,6 @@ abstract class AbsExampleFragment<Info: InferenceInfo, Results> : CameraFragment
     }
 
     abstract fun createAnalyzer(screenAspectRatio: Int,
-                                rotation: Int): AbsExampleAnalyzer<Info, Results>
+                                rotation: Int): AbsImageAnalyzer<Info, Results>
 
 }

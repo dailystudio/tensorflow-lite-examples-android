@@ -5,13 +5,13 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
-import com.dailystudio.tflite.example.image.pose.fragment.PoseFragment
+import com.dailystudio.tflite.example.image.pose.fragment.PoseCameraFragment
 import com.dailystudio.tflite.example.image.pose.ui.PoseOverlayView
 import org.tensorflow.lite.examples.posenet.lib.Person
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, Person>() {
+class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Person>() {
 
     private var poseOverlay: PoseOverlayView? = null
 
@@ -27,7 +27,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Person>() {
     }
 
     override fun createBaseFragment(): Fragment {
-        return PoseFragment()
+        return PoseCameraFragment()
     }
 
     override fun createSettingsView(): View? {
@@ -47,7 +47,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Person>() {
         poseOverlay?.setPersonPose(results)
     }
 
-    override fun onInferenceInfoUpdated(info: InferenceInfo) {
+    override fun onInferenceInfoUpdated(info: ImageInferenceInfo) {
         super.onInferenceInfoUpdated(info)
 
         poseOverlay?.setFrameConfiguration(

@@ -5,11 +5,8 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.*
-import com.dailystudio.devbricksx.annotations.DiffUtil
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
-import com.dailystudio.devbricksx.ui.AbsViewHolder
 import com.dailystudio.tflite.example.common.R
 
 
@@ -31,21 +28,6 @@ class InferenceInfoItem(val id: Int,
                 && (iconResId == other.iconResId)
                 && (label == other.label)
                 && (value == other.value)
-    }
-
-}
-
-class InferenceInfoItemViewHolder(itemView: View) : AbsViewHolder<InferenceInfoItem>(itemView) {
-
-    override fun bind(item: InferenceInfoItem) {
-        val iconView: ImageView? = itemView.findViewById(R.id.info_item_icon)
-        iconView?.setImageResource(item.iconResId)
-
-        val labelView: TextView? = itemView.findViewById(R.id.info_item_label)
-        labelView?.text = item.label
-
-        val valueView: TextView? = itemView.findViewById(R.id.info_item_value)
-        valueView?.text = item.value
     }
 
 }

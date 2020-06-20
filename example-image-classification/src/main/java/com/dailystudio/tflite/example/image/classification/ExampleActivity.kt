@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
-import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationFragment
+import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationCameraFragment
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import kotlin.math.min
 
@@ -23,7 +23,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         Array(REPRESENTED_ITEMS_COUNT) {null}
 
     override fun createBaseFragment(): Fragment {
-        return ImageClassificationFragment()
+        return ImageClassificationCameraFragment()
     }
 
     override fun createResultsView(): View? {

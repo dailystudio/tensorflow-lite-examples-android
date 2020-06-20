@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.common
+package com.dailystudio.tflite.example.common.image
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -10,32 +10,15 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
+import com.dailystudio.tflite.example.common.Constants
+import com.dailystudio.tflite.example.common.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.InferenceInfo
 import com.rasalexman.kdispatcher.KDispatcher
 import com.rasalexman.kdispatcher.call
 import java.io.File
 import kotlin.math.roundToLong
 
-open class InferenceInfo(var imageSize: Size = Size(0, 0),
-                         var imageRotation: Int = 0,
-                         var screenRotation: Int = 0,
-                         var inferenceImageSize: Size = Size(0, 0),
-                         var analysisTime: Long = 0,
-                         var inferenceTime: Long = 0) {
-
-    override fun toString(): String {
-        return buildString {
-            append("image size: $imageSize,")
-            append("image rotation: $imageRotation,")
-            append("screen rotation: $screenRotation,")
-            append("inference size: $inferenceImageSize,")
-            append("analysis time: $analysisTime,")
-            append("inference time: $inferenceTime")
-        }
-    }
-
-}
-
-abstract class AbsExampleAnalyzer<Info: InferenceInfo, Results> (private val rotation: Int): ImageAnalysis.Analyzer {
+abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val rotation: Int): ImageAnalysis.Analyzer {
 
     private var lastDelivered: Long = -1
 
