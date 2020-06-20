@@ -2,9 +2,9 @@ package com.dailystudio.tflite.example.image.pose
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.dailystudio.tflite.example.image.pose.fragment.PoseFragment
@@ -28,18 +28,21 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Person>() {
         return R.layout.activity_example_pose
     }
 
-    override fun createExampleFragment(): AbsExampleFragment<InferenceInfo, Person> {
+    override fun createBaseFragment(): Fragment {
         return PoseFragment()
     }
+
+    override fun createSettingsView(): View? {
+        return null
+    }
+
 
     override fun createResultsView(): View? {
         return null
     }
 
-    override fun createInferenceInfoView(): View? {
-        inferenceInfoView = InferenceInfoView(this)
-
-        return inferenceInfoView
+    override fun createInferenceInfoView(): InferenceInfoView? {
+        return InferenceInfoView(this)
     }
 
     override fun onResultsUpdated(results: Person) {

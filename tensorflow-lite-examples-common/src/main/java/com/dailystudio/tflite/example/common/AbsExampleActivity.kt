@@ -44,7 +44,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
 
     private fun setupViews() {
         supportFragmentManager.beginTransaction().also {
-            val exampleFragment = createExampleFragment()
+            val exampleFragment = createBaseFragment()
 
             it.add(R.id.fragment_stub, exampleFragment, "example-fragment")
             it.show(exampleFragment)
@@ -158,7 +158,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         inferenceInfoView?.setInferenceInfo(info)
     }
 
-    abstract fun createExampleFragment(): Fragment
+    abstract fun createBaseFragment(): Fragment
     abstract fun createResultsView(): View?
     abstract fun createInferenceInfoView(): InferenceInfoView?
     abstract fun createSettingsView(): View?

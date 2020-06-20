@@ -2,8 +2,8 @@ package com.dailystudio.tflite.example.image.detection
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionFragment
@@ -12,8 +12,6 @@ import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker
 
 class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recognition>>() {
-
-    private var inferenceInfoView: InferenceInfoView? = null
 
     private lateinit var tracker: MultiBoxTracker
     private var trackingOverlay: OverlayView? = null
@@ -33,7 +31,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         return R.layout.activity_example_object_detection
     }
 
-    override fun createExampleFragment(): AbsExampleFragment<InferenceInfo, List<Classifier.Recognition>> {
+    override fun createBaseFragment(): Fragment {
         return ObjectDetectionFragment()
     }
 
@@ -41,10 +39,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         return null
     }
 
-    override fun createInferenceInfoView(): View? {
-        inferenceInfoView = InferenceInfoView(this)
+    override fun createInferenceInfoView(): InferenceInfoView? {
+        return InferenceInfoView(this)
+    }
 
-        return inferenceInfoView
+    override fun createSettingsView(): View? {
+        return null
     }
 
     override fun onResultsUpdated(results: List<Classifier.Recognition>) {
@@ -53,7 +53,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
     }
 
     override fun onInferenceInfoUpdated(info: InferenceInfo) {
-        inferenceInfoView?.setInferenceInfo(info)
+        super.onInferenceInfoUpdated(info)
 
         tracker.setFrameConfiguration(
             info.imageSize.width, info.imageSize.height,

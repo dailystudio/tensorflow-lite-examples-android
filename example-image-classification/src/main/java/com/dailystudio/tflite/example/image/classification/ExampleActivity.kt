@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.AbsExampleFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationFragment
@@ -23,7 +22,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
     private var detectItemValueViews: Array<TextView?> =
         Array(REPRESENTED_ITEMS_COUNT) {null}
 
-    override fun createExampleFragment(): Fragment {
+    override fun createBaseFragment(): Fragment {
         return ImageClassificationFragment()
     }
 
