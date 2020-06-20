@@ -49,10 +49,6 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         }
     }
 
-    override fun createInferenceInfoView(): InferenceInfoView? {
-        return InferenceInfoView(this)
-    }
-
     override fun createSettingsView(): View? {
         return null
     }

@@ -154,13 +154,16 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         return R.layout.activity_example
     }
 
+    protected open fun createInferenceInfoView(): InferenceInfoView? {
+        return InferenceInfoView(this)
+    }
+
     protected open fun onInferenceInfoUpdated(info: Info) {
         inferenceInfoView?.setInferenceInfo(info)
     }
 
     abstract fun createBaseFragment(): Fragment
     abstract fun createResultsView(): View?
-    abstract fun createInferenceInfoView(): InferenceInfoView?
     abstract fun createSettingsView(): View?
     abstract fun onResultsUpdated(results: Results)
 

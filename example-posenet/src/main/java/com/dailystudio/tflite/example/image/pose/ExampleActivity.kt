@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.dailystudio.tflite.example.image.pose.fragment.PoseCameraFragment
 import com.dailystudio.tflite.example.image.pose.ui.PoseOverlayView
 import org.tensorflow.lite.examples.posenet.lib.Person
@@ -36,10 +35,6 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Person>() {
 
     override fun createResultsView(): View? {
         return null
-    }
-
-    override fun createInferenceInfoView(): InferenceInfoView? {
-        return InferenceInfoView(this)
     }
 
     override fun onResultsUpdated(results: Person) {

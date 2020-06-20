@@ -1,12 +1,26 @@
 package com.dailystudio.tflite.example.speech.recognition
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import androidx.fragment.app.Fragment
+import com.dailystudio.tflite.example.common.AbsExampleActivity
+import com.dailystudio.tflite.example.common.InferenceInfo
 
-class ExampleActivity : AppCompatActivity() {
+class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    override fun createBaseFragment(): Fragment {
+        return Fragment()
+    }
+
+    override fun createResultsView(): View? {
+        return null
+    }
+
+    override fun createSettingsView(): View? {
+        return null
+    }
+
+    override fun onResultsUpdated(results: Void) {
+        TODO("Not yet implemented")
     }
 }
