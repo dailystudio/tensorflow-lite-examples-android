@@ -13,7 +13,6 @@ import com.dailystudio.devbricksx.ui.AbsViewHolder
 import com.dailystudio.tflite.example.common.R
 
 
-@DiffUtil
 class InferenceInfoItem(val id: Int,
                         val iconResId: Int,
                         val label: CharSequence,

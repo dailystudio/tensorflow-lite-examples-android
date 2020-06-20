@@ -13,8 +13,6 @@ import org.tensorflow.lite.examples.posenet.lib.Person
 
 class ExampleActivity : AbsExampleActivity<InferenceInfo, Person>() {
 
-    private var inferenceInfoView: InferenceInfoView? = null
-
     private var poseOverlay: PoseOverlayView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +34,6 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Person>() {
         return null
     }
 
-
     override fun createResultsView(): View? {
         return null
     }
@@ -51,7 +48,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Person>() {
     }
 
     override fun onInferenceInfoUpdated(info: InferenceInfo) {
-        inferenceInfoView?.setInferenceInfo(info)
+        super.onInferenceInfoUpdated(info)
 
         poseOverlay?.setFrameConfiguration(
             info.imageSize.width, info.imageSize.height,

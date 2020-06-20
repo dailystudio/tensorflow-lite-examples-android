@@ -5,39 +5,11 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.R
-
-class InferenceInfoAdapter: ListAdapter<InferenceInfoItem, InferenceInfoItemViewHolder>(
-    DIFF_CALLBACK) {
-
-    companion object {
-        val DIFF_CALLBACK: DiffUtil.ItemCallback<InferenceInfoItem> = InferenceInfoItemDiffUtil()
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InferenceInfoItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.layout_inference_info_item, null)
-
-        return InferenceInfoItemViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: InferenceInfoItemViewHolder, position: Int) {
-        val item = getItem(position) ?: return
-
-        holder.bind(item)
-    }
-
-}
 
 class InferenceInfoView: FrameLayout {
 

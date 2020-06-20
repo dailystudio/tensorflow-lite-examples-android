@@ -15,18 +15,6 @@ import com.rasalexman.kdispatcher.call
 import java.io.File
 import kotlin.math.roundToLong
 
-interface ResultsCallback<Results> {
-
-    fun onResult(results: Results)
-
-}
-
-interface InferenceCallback<Info: InferenceInfo> {
-
-    fun onInference(info: Info)
-
-}
-
 open class InferenceInfo(var imageSize: Size = Size(0, 0),
                          var imageRotation: Int = 0,
                          var screenRotation: Int = 0,
