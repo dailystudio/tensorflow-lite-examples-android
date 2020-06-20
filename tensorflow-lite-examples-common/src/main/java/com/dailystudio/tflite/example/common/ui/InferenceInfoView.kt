@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.InferenceInfoItem
 import com.dailystudio.tflite.example.common.R
 
 class InferenceInfoView: FrameLayout {

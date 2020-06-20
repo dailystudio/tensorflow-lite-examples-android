@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
 import org.tensorflow.lite.examples.detection.customview.OverlayView

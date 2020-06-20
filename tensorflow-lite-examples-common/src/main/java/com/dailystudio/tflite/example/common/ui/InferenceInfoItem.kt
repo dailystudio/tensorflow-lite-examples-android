@@ -6,31 +6,9 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.*
-import com.dailystudio.devbricksx.inmemory.InMemoryObject
+import com.dailystudio.tflite.example.common.InferenceInfoItem
 import com.dailystudio.tflite.example.common.R
 
-
-class InferenceInfoItem(val id: Int,
-                        val iconResId: Int,
-                        val label: CharSequence,
-                        val value: CharSequence) : InMemoryObject<Int> {
-
-    override fun getKey(): Int {
-        return id
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other !is InferenceInfoItem) {
-            return false
-        }
-
-        return (id == other.id)
-                && (iconResId == other.iconResId)
-                && (label == other.label)
-                && (value == other.value)
-    }
-
-}
 
 class InferenceInfoItemView: FrameLayout {
 

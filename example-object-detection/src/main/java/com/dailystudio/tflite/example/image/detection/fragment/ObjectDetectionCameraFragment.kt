@@ -7,9 +7,9 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
+import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel
 

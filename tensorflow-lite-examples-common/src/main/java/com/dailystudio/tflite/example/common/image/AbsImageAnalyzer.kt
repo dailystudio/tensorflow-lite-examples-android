@@ -11,7 +11,6 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
 import com.dailystudio.tflite.example.common.Constants
-import com.dailystudio.tflite.example.common.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.rasalexman.kdispatcher.KDispatcher
 import com.rasalexman.kdispatcher.call

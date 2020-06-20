@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.UseCase
 import com.dailystudio.devbricksx.camera.CameraFragment
-import com.dailystudio.tflite.example.common.ImageInferenceInfo
-import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.R
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
