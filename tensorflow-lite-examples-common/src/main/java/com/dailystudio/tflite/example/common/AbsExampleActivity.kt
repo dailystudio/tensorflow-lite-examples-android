@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.rasalexman.kdispatcher.KDispatcher
 import com.rasalexman.kdispatcher.Notification
 import com.rasalexman.kdispatcher.subscribe
@@ -25,6 +27,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
     private var divider: View? = null
     private var hiddenLayout: ViewGroup? = null
     private var sheetBehavior: BottomSheetBehavior<ViewGroup>? = null
+    private var expandIndicator: ImageView? = null
 
     private var resultsView: View? = null
     private var inferenceInfoView: InferenceInfoView? = null
@@ -58,6 +61,24 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         bottomSheetLayout = findViewById(R.id.bottom_sheet_layout)
         bottomSheetLayout?.let {
             sheetBehavior = BottomSheetBehavior.from(it)
+            sheetBehavior?.addBottomSheetCallback(object : BottomSheetCallback() {
+
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN, BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_HALF_EXPANDED -> {
+                        }
+                        BottomSheetBehavior.STATE_EXPANDED -> {
+                            expandIndicator?.setImageResource(R.drawable.ic_arrow_down)
+                        }
+                        BottomSheetBehavior.STATE_COLLAPSED, BottomSheetBehavior.STATE_SETTLING -> {
+                            expandIndicator?.setImageResource(R.drawable.ic_arrow_up)
+                        }
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                }
+            })
         }
 
         visibleLayout = findViewById(R.id.visible_layout)
@@ -126,6 +147,15 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
                 View.GONE
             } else {
                 View.VISIBLE
+            }
+        }
+
+        expandIndicator = findViewById(R.id.bottom_sheet_expand_indicator)
+        expandIndicator?.let {
+            if (inferenceInfoView == null && settingsView == null) {
+                it.visibility = View.GONE
+            } else {
+                it.visibility = View.VISIBLE
             }
         }
     }
