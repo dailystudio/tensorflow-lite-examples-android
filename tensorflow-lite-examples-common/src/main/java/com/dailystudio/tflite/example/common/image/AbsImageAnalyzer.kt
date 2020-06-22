@@ -11,6 +11,7 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
 import com.dailystudio.tflite.example.common.Constants
+import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.rasalexman.kdispatcher.KDispatcher
 import com.rasalexman.kdispatcher.call
@@ -19,7 +20,8 @@ import kotlin.math.roundToLong
 
 abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val rotation: Int): ImageAnalysis.Analyzer {
 
-    private var lastDelivered: Long = -1
+    private var inferenceAgent: InferenceAgent<Info, Results> =
+        InferenceAgent()
 
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
@@ -50,39 +52,13 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
 
         Logger.debug("analysis [in ${info.analysisTime} ms (inference: ${info.inferenceTime} ms)]: result = ${results.toString().replace("%", "%%")}")
 
-        deliverInferenceInfo(info)
+        inferenceAgent.deliverInferenceInfo(info)
 
         image.close()
 
         results?.let {
-            deliverResults(it)
+            inferenceAgent.deliverResults(it)
         }
-    }
-
-    private fun deliverInferenceInfo(info: InferenceInfo) {
-        KDispatcher.call(Constants.EVENT_INFERENCE_INFO_UPDATE, info)
-    }
-
-    private fun deliverResults(results: Results) {
-        val interval = getResultsUpdateInterval()
-        Logger.debug("interval = $interval")
-
-        if (interval <= 0L || lastDelivered == -1L) {
-            triggerResultsCallbacks(results)
-        } else {
-            val now = System.currentTimeMillis()
-            if (now - lastDelivered > interval) {
-                triggerResultsCallbacks(results)
-            } else {
-                Logger.warn("skip results, since interval[${now - lastDelivered}] is less than $interval")
-            }
-        }
-    }
-
-    private fun triggerResultsCallbacks(results: Results) {
-        KDispatcher.call(Constants.EVENT_RESULTS_UPDATE, results)
-
-        lastDelivered = System.currentTimeMillis()
     }
 
     protected open fun preProcessImage(frameBitmap: Bitmap?,
@@ -90,8 +66,8 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
         return frameBitmap
     }
 
-    protected open fun getResultsUpdateInterval(): Long {
-        return (1000 / 30f).roundToLong()
+    protected open fun setResultsUpdateInterval(interval: Long) {
+        inferenceAgent.resultsUpdateInterval = interval
     }
 
     protected fun dumpIntermediateBitmap(bitmap: Bitmap,

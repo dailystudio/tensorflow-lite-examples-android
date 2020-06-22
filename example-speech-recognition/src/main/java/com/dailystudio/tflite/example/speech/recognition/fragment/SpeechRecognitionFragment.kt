@@ -311,6 +311,5 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
                 }
             }
         }
-
     }
 }
