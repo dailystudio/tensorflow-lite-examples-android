@@ -16,7 +16,7 @@ open class InferenceAgent<Info: InferenceInfo, Results>(
 
     fun deliverResults(results: Results) {
         val interval = resultsUpdateInterval
-        Logger.debug("interval = $interval")
+//        Logger.debug("interval = $interval")
 
         if (interval <= 0L || lastDelivered == -1L) {
             triggerResultsCallbacks(results)
@@ -25,7 +25,7 @@ open class InferenceAgent<Info: InferenceInfo, Results>(
             if (now - lastDelivered > interval) {
                 triggerResultsCallbacks(results)
             } else {
-                Logger.warn("skip results, since interval[${now - lastDelivered}] is less than $interval")
+//                Logger.warn("skip results, since interval[${now - lastDelivered}] is less than $interval")
             }
         }
     }

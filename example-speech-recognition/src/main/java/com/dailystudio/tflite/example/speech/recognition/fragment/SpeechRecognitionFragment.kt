@@ -1,6 +1,8 @@
 package com.dailystudio.tflite.example.speech.recognition.fragment
 
 import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -10,11 +12,19 @@ import android.os.Process
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.AbsPermissionsFragment
+import com.dailystudio.tflite.example.common.InferenceAgent
+import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.R
 import com.dailystudio.tflite.example.speech.recognition.async.ManagedThread
+import kotlinx.android.synthetic.main.fragment_speech_recognition.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.examples.speech.RecognizeCommands
 import org.tensorflow.lite.examples.speech.RecognizeCommands.RecognitionResult
@@ -22,17 +32,20 @@ import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStreamReader
+import java.nio.ByteBuffer
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 class SpeechRecognitionFragment : AbsPermissionsFragment() {
 
     companion object {
         val PERMISSIONS_REQUIRED = arrayOf(
-            Manifest.permission.RECORD_AUDIO)
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.MODIFY_AUDIO_SETTINGS)
 
         // you are running your own model.
         private const val SAMPLE_RATE = 16000
@@ -61,6 +74,9 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
         Interpreter.Options()
     private var lastProcessingTimeMs: Long = 0
 
+    private var inferenceAgent: InferenceAgent<InferenceInfo, RecognitionResult> =
+        InferenceAgent()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -68,7 +84,6 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
     }
 
     private fun initTflite() {
-
         // Load the labels for the model, but only display those that don't start
         // with an underscore.
         val actualLabelFilename: String = LABEL_FILENAME
@@ -82,13 +97,15 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
             br = BufferedReader(reader)
             Logger.debug("br: $br")
 
-            var line: String?
-            while (br.readLine().also { line = it } != null) {
-                Logger.debug("line: $line")
-                line?.let {
-                    labels.add(it)
-                    if (it[0] != '_') {
-                        displayedLabels.add(it.substring(0, 1).toUpperCase() + it.substring(1))
+            synchronized(labels) {
+                var line: String?
+                while (br.readLine().also { line = it } != null) {
+                    Logger.debug("line: $line")
+                    line?.let {
+                        labels.add(it)
+                        if (it[0] != '_') {
+                            displayedLabels.add(it.substring(0, 1).toUpperCase() + it.substring(1))
+                        }
                     }
                 }
             }
@@ -142,12 +159,22 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
     }
 
     override fun onPermissionsGranted(newlyGranted: Boolean) {
+        lifecycleScope.launchWhenResumed {
+            startRecording()
+            startRecognizing()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.cancel()
         startRecording()
         startRecognizing()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
+        lifecycleScope.cancel()
 
         stopRecording()
         stopRecognizing()
@@ -185,7 +212,6 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
         )
     }
 
-
     private var recordingThread: ManagedThread = object : ManagedThread() {
 
         override fun runInBackground() {
@@ -201,12 +227,14 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
             }
 
             val audioBuffer = ShortArray(bufferSize / 2)
+
             val record = AudioRecord(
                 MediaRecorder.AudioSource.DEFAULT,
                 SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                bufferSize)
+                bufferSize
+            )
 
             if (record.state != AudioRecord.STATE_INITIALIZED) {
                 Logger.error("audio record initialization failed: state = ${record.state}")
@@ -214,11 +242,11 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
             }
 
             record.startRecording()
-            Logger.info("start recording: record = $record")
 
             // Loop, gathering audio data and copying it to a round-robin buffer.
             while (isRunning) {
-                val numberRead = record.read(audioBuffer, 0, audioBuffer.size)
+                val numberRead = record.read(audioBuffer, 0, audioBuffer.size) ?: 0
+
                 val maxLength: Int = recordingBuffer.size
                 val newRecordingOffset: Int = recordingOffset + numberRead
                 val secondCopyLength = max(0, newRecordingOffset - maxLength)
@@ -242,8 +270,8 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
 
             Logger.info("stop recording: record = $record")
 
-            record.stop()
-            record.release()
+            record?.stop()
+            record?.release()
         }
 
     }
@@ -251,6 +279,8 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
     private var recognitionThread: ManagedThread = object : ManagedThread() {
 
         override fun runInBackground() {
+            val inferenceInfo = InferenceInfo()
+
             val inputBuffer = ShortArray(RECORDING_LENGTH)
             val floatInputBuffer = Array(RECORDING_LENGTH) { FloatArray(1) }
             val sampleRateList = intArrayOf(SAMPLE_RATE)
@@ -284,9 +314,11 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
 
                 val inputArray = arrayOf<Any>(floatInputBuffer, sampleRateList)
                 val outputMap: MutableMap<Int, Any> = HashMap()
-                Logger.debug("labels = $labels")
-                val outputScores =
-                    Array(1) { FloatArray(labels.size) }
+                var outputScores: Array<FloatArray>
+                synchronized(labels) {
+//                    Logger.debug("labels = $labels")
+                    outputScores = Array(1) { kotlin.FloatArray(labels.size) }
+                }
                 outputMap[0] = outputScores
 
                 // Run the model.
@@ -300,8 +332,16 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
                 val currentTime = System.currentTimeMillis()
                 val result: RecognitionResult? =
                     recognizeCommands?.processLatestResults(outputScores[0], currentTime)
-                Logger.debug("result: $result")
+//                Logger.debug("result: $result")
                 lastProcessingTimeMs = Date().time - startTime
+
+                inferenceInfo.inferenceTime = lastProcessingTimeMs
+                inferenceInfo.analysisTime = lastProcessingTimeMs
+                inferenceAgent.deliverInferenceInfo(inferenceInfo)
+
+                result?.let {
+                    inferenceAgent.deliverResults(result)
+                }
 
                 try {
                     // We don't need to run too frequently, so snooze for a bit.
