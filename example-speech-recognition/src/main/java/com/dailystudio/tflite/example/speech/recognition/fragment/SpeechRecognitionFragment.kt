@@ -18,6 +18,7 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.AbsPermissionsFragment
 import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.speech.recognition.AudioInferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.R
 import com.dailystudio.tflite.example.speech.recognition.async.ManagedThread
 import kotlinx.android.synthetic.main.fragment_speech_recognition.*
@@ -270,8 +271,8 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
 
             Logger.info("stop recording: record = $record")
 
-            record?.stop()
-            record?.release()
+            record.stop()
+            record.release()
         }
 
     }
@@ -279,7 +280,7 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
     private var recognitionThread: ManagedThread = object : ManagedThread() {
 
         override fun runInBackground() {
-            val inferenceInfo = InferenceInfo()
+            val inferenceInfo = AudioInferenceInfo()
 
             val inputBuffer = ShortArray(RECORDING_LENGTH)
             val floatInputBuffer = Array(RECORDING_LENGTH) { FloatArray(1) }
@@ -321,6 +322,7 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
                 }
                 outputMap[0] = outputScores
 
+                val inferenceStartTime = Date().time
                 // Run the model.
                 try {
                     tfLite?.runForMultipleInputsOutputs(inputArray, outputMap)
@@ -333,9 +335,14 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
                 val result: RecognitionResult? =
                     recognizeCommands?.processLatestResults(outputScores[0], currentTime)
 //                Logger.debug("result: $result")
-                lastProcessingTimeMs = Date().time - startTime
 
-                inferenceInfo.inferenceTime = lastProcessingTimeMs
+                val endTime = Date().time
+
+                lastProcessingTimeMs = endTime - startTime
+
+                inferenceInfo.sampleRate = SAMPLE_RATE
+                inferenceInfo.bufferSize = inputBuffer.size
+                inferenceInfo.inferenceTime = endTime - inferenceStartTime
                 inferenceInfo.analysisTime = lastProcessingTimeMs
                 inferenceAgent.deliverInferenceInfo(inferenceInfo)
 

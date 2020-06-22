@@ -1,6 +1,7 @@
 package com.dailystudio.tflite.example.speech.recognition
 
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -11,16 +12,19 @@ import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.fragment.SpeechRecognitionFragment
 import com.dailystudio.tflite.example.speech.recognition.model.CommandViewModel
+import kotlinx.android.synthetic.main.fragment_commands_list.*
 import org.tensorflow.lite.examples.speech.RecognizeCommands
 import org.tensorflow.lite.support.common.FileUtil
 import java.io.StringReader
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, RecognizeCommands.RecognitionResult>() {
+class ExampleActivity : AbsExampleActivity<AudioInferenceInfo, RecognizeCommands.RecognitionResult>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         generateCommands()
+
+        list.setOnTouchListener { v, event -> true }
     }
 
     private fun generateCommands() {

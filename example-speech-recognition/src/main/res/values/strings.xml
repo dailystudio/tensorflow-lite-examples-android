@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Speech Recognition</string>
+
+    <string name="label_info_sample_rate">Sample rate</string>
+    <string name="label_info_buffer_size">Buffer size</string>
+
 </resources>

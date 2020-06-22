@@ -11,12 +11,12 @@ open class InferenceInfo(var analysisTime: Long = 0,
 
         val resources = context.resources
 
-        val itemAnalysisTime = InferenceInfoItem(5, R.drawable.ic_info_analysis_time,
+        val itemAnalysisTime = InferenceInfoItem(1, R.drawable.ic_info_analysis_time,
             resources.getString(R.string.label_info_analysis_time),
             "%d ms".format(analysisTime))
         items.add(itemAnalysisTime)
 
-        val itemInferenceTime = InferenceInfoItem(6, R.drawable.ic_info_inference_time,
+        val itemInferenceTime = InferenceInfoItem(2, R.drawable.ic_info_inference_time,
             resources.getString(R.string.label_info_inference_time),
             "%d ms".format(inferenceTime))
         items.add(itemInferenceTime)
