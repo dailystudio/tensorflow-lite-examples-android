@@ -1,8 +1,6 @@
 package com.dailystudio.tflite.example.speech.recognition.fragment
 
 import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -12,20 +10,15 @@ import android.os.Process
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.dailystudio.devbricksx.async.ManagedThread
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.AbsPermissionsFragment
 import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.AudioInferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.R
-import com.dailystudio.tflite.example.speech.recognition.async.ManagedThread
-import kotlinx.android.synthetic.main.fragment_speech_recognition.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.examples.speech.RecognizeCommands
 import org.tensorflow.lite.examples.speech.RecognizeCommands.RecognitionResult
@@ -33,13 +26,11 @@ import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStreamReader
-import java.nio.ByteBuffer
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.math.max
-import kotlin.math.roundToInt
 
 class SpeechRecognitionFragment : AbsPermissionsFragment() {
 
@@ -213,7 +204,7 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
         )
     }
 
-    private var recordingThread: ManagedThread = object : ManagedThread() {
+    private var recordingThread = object : ManagedThread() {
 
         override fun runInBackground() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO)
@@ -245,7 +236,7 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
             record.startRecording()
 
             // Loop, gathering audio data and copying it to a round-robin buffer.
-            while (isRunning) {
+            while (isRunning()) {
                 val numberRead = record.read(audioBuffer, 0, audioBuffer.size) ?: 0
 
                 val maxLength: Int = recordingBuffer.size
@@ -274,10 +265,9 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
             record.stop()
             record.release()
         }
-
     }
 
-    private var recognitionThread: ManagedThread = object : ManagedThread() {
+    private var recognitionThread = object : ManagedThread() {
 
         override fun runInBackground() {
             val inferenceInfo = AudioInferenceInfo()
@@ -289,7 +279,7 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
             // Loop, grabbing recorded data and running the recognition model on it.
 
             // Loop, grabbing recorded data and running the recognition model on it.
-            while (isRunning) {
+            while (isRunning()) {
                 val startTime = Date().time
                 // The recording thread places data in this round-robin buffer, so lock to
                 // make sure there's no writing happening and then copy it to our own

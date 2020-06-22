@@ -5,13 +5,16 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.FileUtils
 import com.dailystudio.devbricksx.utils.StringUtils
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.speech.recognition.fragment.CommandsListFragment
 import com.dailystudio.tflite.example.speech.recognition.fragment.SpeechRecognitionFragment
 import com.dailystudio.tflite.example.speech.recognition.model.CommandViewModel
+import kotlinx.android.synthetic.main.activity_example_speech_recognition.*
 import kotlinx.android.synthetic.main.fragment_commands_list.*
 import org.tensorflow.lite.examples.speech.RecognizeCommands
 import org.tensorflow.lite.support.common.FileUtil
@@ -24,7 +27,7 @@ class ExampleActivity : AbsExampleActivity<AudioInferenceInfo, RecognizeCommands
 
         generateCommands()
 
-        list.setOnTouchListener { v, event -> true }
+        (fragment_commands as CommandsListFragment).setRecyclerViewTouchEnabled(false)
     }
 
     private fun generateCommands() {
