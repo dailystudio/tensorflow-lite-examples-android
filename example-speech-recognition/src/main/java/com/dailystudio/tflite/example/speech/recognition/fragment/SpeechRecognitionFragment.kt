@@ -12,12 +12,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.async.ManagedThread
+import com.dailystudio.devbricksx.audio.AudioConfig
+import com.dailystudio.devbricksx.audio.AudioProcessFragment
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.AbsPermissionsFragment
 import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.AudioInferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.R
+import kotlinx.android.synthetic.main.fragment_speech_recognition.*
 import kotlinx.coroutines.cancel
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.examples.speech.RecognizeCommands
@@ -32,13 +35,9 @@ import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.math.max
 
-class SpeechRecognitionFragment : AbsPermissionsFragment() {
+class SpeechRecognitionFragment : AudioProcessFragment() {
 
     companion object {
-        val PERMISSIONS_REQUIRED = arrayOf(
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.MODIFY_AUDIO_SETTINGS)
-
         // you are running your own model.
         private const val SAMPLE_RATE = 16000
         private const val SAMPLE_DURATION_MS = 1000
@@ -51,12 +50,7 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
 
         private const val LABEL_FILENAME = "conv_actions_labels.txt"
         private const val MODEL_FILENAME = "conv_actions_frozen.tflite"
-
     }
-
-    private var recordingBuffer = ShortArray(RECORDING_LENGTH)
-    private var recordingOffset = 0
-    private val recordingBufferLock = ReentrantLock()
 
     private val labels: MutableList<String> = mutableListOf()
     private val displayedLabels: MutableList<String> = mutableListOf()
@@ -139,53 +133,55 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
                               savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_speech_recognition, container, false)
 
-    override fun getPermissionsPromptViewId(): Int {
-        return R.id.permission_prompt
-    }
+    override fun onProcessAudioData(audioConfig: AudioConfig, audioData: ShortArray) {
+        val inferenceInfo = AudioInferenceInfo()
+        val floatInputBuffer = Array(RECORDING_LENGTH) { FloatArray(1) }
+        val sampleRateList = intArrayOf(SAMPLE_RATE)
 
-    override fun getRequiredPermissions(): Array<String> {
-        return PERMISSIONS_REQUIRED
-    }
+        val startTime = Date().time
 
-    override fun onPermissionsDenied() {
-    }
-
-    override fun onPermissionsGranted(newlyGranted: Boolean) {
-        lifecycleScope.launchWhenResumed {
-            startRecording()
-            startRecognizing()
+        // We need to feed in float values between -1.0f and 1.0f, so divide the
+        // signed 16-bit inputs.
+        for (i in 0 until RECORDING_LENGTH) {
+            floatInputBuffer[i][0] = audioData[i] / 32767.0f
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
-        lifecycleScope.cancel()
-        startRecording()
-        startRecognizing()
-    }
+        val inputArray = arrayOf<Any>(floatInputBuffer, sampleRateList)
+        val outputMap: MutableMap<Int, Any> = HashMap()
+        var outputScores: Array<FloatArray>
+        synchronized(labels) {
+//                    Logger.debug("labels = $labels")
+            outputScores = Array(1) { kotlin.FloatArray(labels.size) }
+        }
+        outputMap[0] = outputScores
 
-    override fun onPause() {
-        super.onPause()
-        lifecycleScope.cancel()
+        val inferenceStartTime = Date().time
+        // Run the model.
+        try {
+            tfLite?.runForMultipleInputsOutputs(inputArray, outputMap)
+        } catch (e: Exception) {
+            Logger.error("inference failed: $e")
+        }
 
-        stopRecording()
-        stopRecognizing()
-    }
+        // Use the smoother to figure out if we've had a real recognition event.
+        val currentTime = System.currentTimeMillis()
+        val result: RecognitionResult? =
+            recognizeCommands?.processLatestResults(outputScores[0], currentTime)
+//                Logger.debug("result: $result")
 
-    private fun startRecording() {
-        recordingThread.start()
-    }
+        val endTime = Date().time
 
-    private fun stopRecording() {
-        recordingThread.stop()
-    }
+        lastProcessingTimeMs = endTime - startTime
 
-    private fun startRecognizing() {
-        recognitionThread.start()
-    }
+        inferenceInfo.sampleRate = SAMPLE_RATE
+        inferenceInfo.bufferSize = audioData.size
+        inferenceInfo.inferenceTime = endTime - inferenceStartTime
+        inferenceInfo.analysisTime = lastProcessingTimeMs
+        inferenceAgent.deliverInferenceInfo(inferenceInfo)
 
-    private fun stopRecognizing() {
-        recognitionThread.stop()
+        result?.let {
+            inferenceAgent.deliverResults(result)
+        }
     }
 
     @Throws(IOException::class)
@@ -204,149 +200,4 @@ class SpeechRecognitionFragment : AbsPermissionsFragment() {
         )
     }
 
-    private var recordingThread = object : ManagedThread() {
-
-        override fun runInBackground() {
-            Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO)
-
-            // Estimate the buffer size we'll need for this device.
-            var bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT)
-
-            if (bufferSize == AudioRecord.ERROR || bufferSize == AudioRecord.ERROR_BAD_VALUE) {
-                bufferSize = SAMPLE_RATE * 2
-            }
-
-            val audioBuffer = ShortArray(bufferSize / 2)
-
-            val record = AudioRecord(
-                MediaRecorder.AudioSource.DEFAULT,
-                SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                bufferSize
-            )
-
-            if (record.state != AudioRecord.STATE_INITIALIZED) {
-                Logger.error("audio record initialization failed: state = ${record.state}")
-                return
-            }
-
-            record.startRecording()
-
-            // Loop, gathering audio data and copying it to a round-robin buffer.
-            while (isRunning()) {
-                val numberRead = record.read(audioBuffer, 0, audioBuffer.size) ?: 0
-
-                val maxLength: Int = recordingBuffer.size
-                val newRecordingOffset: Int = recordingOffset + numberRead
-                val secondCopyLength = max(0, newRecordingOffset - maxLength)
-                val firstCopyLength = numberRead - secondCopyLength
-
-                // We store off all the data for the recognition thread to access. The ML
-                // thread will copy out of this buffer into its own, while holding the
-                // lock, so this should be thread safe.
-                recordingBufferLock.lock()
-                try {
-                    System.arraycopy(audioBuffer, 0,
-                        recordingBuffer, recordingOffset, firstCopyLength)
-                    System.arraycopy(audioBuffer, firstCopyLength,
-                        recordingBuffer, 0, secondCopyLength)
-
-                    recordingOffset = newRecordingOffset % maxLength
-                } finally {
-                    recordingBufferLock.unlock()
-                }
-            }
-
-            Logger.info("stop recording: record = $record")
-
-            record.stop()
-            record.release()
-        }
-    }
-
-    private var recognitionThread = object : ManagedThread() {
-
-        override fun runInBackground() {
-            val inferenceInfo = AudioInferenceInfo()
-
-            val inputBuffer = ShortArray(RECORDING_LENGTH)
-            val floatInputBuffer = Array(RECORDING_LENGTH) { FloatArray(1) }
-            val sampleRateList = intArrayOf(SAMPLE_RATE)
-
-            // Loop, grabbing recorded data and running the recognition model on it.
-
-            // Loop, grabbing recorded data and running the recognition model on it.
-            while (isRunning()) {
-                val startTime = Date().time
-                // The recording thread places data in this round-robin buffer, so lock to
-                // make sure there's no writing happening and then copy it to our own
-                // local version.
-                recordingBufferLock.lock()
-                try {
-                    val maxLength = recordingBuffer.size
-                    val firstCopyLength = maxLength - recordingOffset
-                    val secondCopyLength = recordingOffset
-                    System.arraycopy(recordingBuffer, recordingOffset,
-                        inputBuffer, 0, firstCopyLength)
-                    System.arraycopy(recordingBuffer, 0,
-                        inputBuffer, firstCopyLength, secondCopyLength)
-                } finally {
-                    recordingBufferLock.unlock()
-                }
-
-                // We need to feed in float values between -1.0f and 1.0f, so divide the
-                // signed 16-bit inputs.
-                for (i in 0 until RECORDING_LENGTH) {
-                    floatInputBuffer[i][0] = inputBuffer[i] / 32767.0f
-                }
-
-                val inputArray = arrayOf<Any>(floatInputBuffer, sampleRateList)
-                val outputMap: MutableMap<Int, Any> = HashMap()
-                var outputScores: Array<FloatArray>
-                synchronized(labels) {
-//                    Logger.debug("labels = $labels")
-                    outputScores = Array(1) { kotlin.FloatArray(labels.size) }
-                }
-                outputMap[0] = outputScores
-
-                val inferenceStartTime = Date().time
-                // Run the model.
-                try {
-                    tfLite?.runForMultipleInputsOutputs(inputArray, outputMap)
-                } catch (e: Exception) {
-                    Logger.error("inference failed: $e")
-                }
-
-                // Use the smoother to figure out if we've had a real recognition event.
-                val currentTime = System.currentTimeMillis()
-                val result: RecognitionResult? =
-                    recognizeCommands?.processLatestResults(outputScores[0], currentTime)
-//                Logger.debug("result: $result")
-
-                val endTime = Date().time
-
-                lastProcessingTimeMs = endTime - startTime
-
-                inferenceInfo.sampleRate = SAMPLE_RATE
-                inferenceInfo.bufferSize = inputBuffer.size
-                inferenceInfo.inferenceTime = endTime - inferenceStartTime
-                inferenceInfo.analysisTime = lastProcessingTimeMs
-                inferenceAgent.deliverInferenceInfo(inferenceInfo)
-
-                result?.let {
-                    inferenceAgent.deliverResults(result)
-                }
-
-                try {
-                    // We don't need to run too frequently, so snooze for a bit.
-                    Thread.sleep(MINIMUM_TIME_BETWEEN_SAMPLES_MS)
-                } catch (e: InterruptedException) {
-                    // Ignore
-                }
-            }
-        }
-    }
 }

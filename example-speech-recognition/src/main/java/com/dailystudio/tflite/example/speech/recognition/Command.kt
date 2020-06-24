@@ -1,10 +1,16 @@
 package com.dailystudio.tflite.example.speech.recognition
 
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.view.Gravity
 import android.view.View
+import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.widget.TextViewCompat
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsSingleLineViewHolder
+import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 
 
 @Adapter(
@@ -37,6 +43,20 @@ class CommandViewHolder(itemView: View): AbsSingleLineViewHolder<Command>(itemVi
 
     override fun getIcon(item: Command): Drawable? {
         return null
+    }
+
+    override fun bindText(item: Command, titleView: TextView?) {
+        super.bindText(item, titleView)
+
+        titleView?.let {
+            TextViewCompat.setTextAppearance(it, if (item.prop > 0f) {
+                R.style.CommandLabelActive
+            } else {
+                R.style.CommandLabelInActive
+            })
+
+            it.gravity = Gravity.CENTER
+        }
     }
 
     override fun getText(item: Command): CharSequence? {

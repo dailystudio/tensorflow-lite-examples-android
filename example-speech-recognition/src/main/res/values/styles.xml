@@ -7,4 +7,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="CommandLabel" parent="DefaultListItemText1stLine">
+        <item name="android:gravity">end</item>
+    </style>
+
+    <style name="CommandLabelActive" parent="CommandLabel">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="CommandLabelInActive" parent="CommandLabel">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
 </resources>
