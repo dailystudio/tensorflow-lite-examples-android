@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="commands_layout_bottom_margin">70dp</dimen>
+    <dimen name="commands_layout_top_margin">240dp</dimen>
     <dimen name="commands_label_padding">5dp</dimen>
     <dimen name="visualizer_height">200dp</dimen>
 
-    <dimen name="lv_item_icon_size">48dp</dimen>
+    <dimen name="lv_item_icon_size">42dp</dimen>
+    <dimen name="lv_item_font_size">18dp</dimen>
 </resources>

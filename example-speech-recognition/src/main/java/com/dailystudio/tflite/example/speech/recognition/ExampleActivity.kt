@@ -35,13 +35,15 @@ class ExampleActivity : AbsExampleActivity<AudioInferenceInfo, RecognizeCommands
             CommandViewModel::class.java)
 
         val labels = StringUtils.linesFromAsset(this, "conv_actions_labels.txt")
+
+        var id = 0
         for (label in labels) {
             Logger.debug("label: $label")
             if (label.startsWith("_")) {
                 continue
             }
 
-            val command = Command(label)
+            val command = Command(id++, label)
 
             viewModel.insertCommand(command)
         }

@@ -10,6 +10,7 @@ import androidx.core.widget.TextViewCompat
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsSingleLineViewHolder
+import com.dailystudio.devbricksx.utils.ColorUtils
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 
 
@@ -20,20 +21,21 @@ import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 @ListFragment(gridLayout = true, columns = 2, layout = R.layout.fragment_commands_list)
 @DiffUtil
 @ViewModel
-@InMemoryRepository(key = String::class)
-@InMemoryManager(key = String::class)
-data class Command(val label: String,
-                   var prop: Float = 0f): InMemoryObject<String> {
+@InMemoryRepository(key = Int::class)
+@InMemoryManager(key = Int::class)
+data class Command(val id: Int,
+                   val label: String,
+                   var prop: Float = 0f): InMemoryObject<Int> {
 
-    override fun getKey(): String {
-        return label
+    override fun getKey(): Int {
+        return id
     }
 
     override fun equals(other: Any?): Boolean {
         return if (other !is Command) {
             false
         } else {
-            (label == other.label && prop == other.prop)
+            (id == other.id && label == other.label && prop == other.prop)
         }
     }
 
@@ -42,7 +44,22 @@ data class Command(val label: String,
 class CommandViewHolder(itemView: View): AbsSingleLineViewHolder<Command>(itemView) {
 
     override fun getIcon(item: Command): Drawable? {
-        return null
+        val context = itemView.context
+
+        var resId = context.resources.getIdentifier("" +
+                "ic_command_${item.label}", "drawable", context.packageName)
+        if (resId <= 0) {
+            resId = R.drawable.ic_command_on
+        }
+
+        val drawable = ResourcesCompatUtils.getDrawable(context, resId) ?: return null
+        val tintColor = ResourcesCompatUtils.getColor(context, if (item.prop > 0) {
+            R.color.colorPrimary
+        } else {
+            R.color.colorAccent
+        })
+
+        return ColorUtils.tintDrawable(drawable, tintColor)
     }
 
     override fun bindText(item: Command, titleView: TextView?) {
@@ -55,7 +72,7 @@ class CommandViewHolder(itemView: View): AbsSingleLineViewHolder<Command>(itemVi
                 R.style.CommandLabelInActive
             })
 
-            it.gravity = Gravity.CENTER
+//            it.gravity = Gravity.CENTER
         }
     }
 
@@ -63,7 +80,7 @@ class CommandViewHolder(itemView: View): AbsSingleLineViewHolder<Command>(itemVi
         return if (item.prop > 0f) {
             buildString {
                 append("${item.label.capitalize()}")
-                append("(")
+                append(" (")
                 append("%2.1f%%".format(item.prop * 100))
                 append(")")
             }
