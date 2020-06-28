@@ -1,6 +1,5 @@
 package com.dailystudio.tflite.example.fragment
 
-import android.app.Activity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.dailystudio.devbricksx.app.activity.ActivityLauncher

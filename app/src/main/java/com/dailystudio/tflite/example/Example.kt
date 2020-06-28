@@ -2,14 +2,21 @@ package com.dailystudio.tflite.example
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.annotation.ColorInt
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsInformativeCardViewHolder
+import com.dailystudio.devbricksx.utils.ImageUtils
+import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 import com.dailystudio.tflite.example.common.Constants
+import com.dailystudio.tflite.example.common.Constants.DEFAULT_IMAGE_LOADER_OPTIONS_BUILDER
 import com.nostra13.universalimageloader.core.ImageLoader
+
 
 @ViewModel
 @Adapter(viewHolder = ExampleViewHolder::class,
@@ -25,6 +32,8 @@ class Example(val id: Int,
               val description: String,
               val image: String) : InMemoryObject<Int> {
 
+    var installed: Boolean = false
+
     override fun getKey(): Int {
         return id
     }
@@ -36,6 +45,20 @@ class Example(val id: Int,
             append("title: $title, ")
             append("description: $description, ")
             append("image: $image")
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (!(other is Example)) {
+            return false
+        } else {
+            return id == other.id
+                    && `package` == other.`package`
+                    && title == other.title
+                    && description == other.description
+                    && image == other.image
+                    && installed == other.installed
+
         }
     }
 
@@ -60,8 +83,33 @@ class Example(val id: Int,
 class ExampleViewHolder(itemView: View): AbsInformativeCardViewHolder<Example>(itemView) {
 
     override fun bindMedia(item: Example, iconView: ImageView?) {
+        val builder = DEFAULT_IMAGE_LOADER_OPTIONS_BUILDER
+        val context = itemView.context
+
+        if (!item.installed) {
+            builder.postProcessor { bitmap ->
+                ImageUtils.tintImage(bitmap,
+                    ResourcesCompatUtils.getColor(context, R.color.light_gray)
+                )
+            }
+        } else {
+            builder.postProcessor(null)
+        }
+
         ImageLoader.getInstance().displayImage(
-            item.image, iconView, Constants.DEFAULT_IMAGE_LOADER_OPTIONS)
+            item.image, iconView, builder.build())
+    }
+
+    override fun bindTitle(item: Example, titleView: TextView?) {
+        super.bindTitle(item, titleView)
+
+        adaptTextColor(item, titleView)
+    }
+
+    override fun bindSupportingText(item: Example, supportingTextView: TextView?) {
+        super.bindSupportingText(item, supportingTextView)
+
+        adaptTextColor(item, supportingTextView)
     }
 
     override fun getMedia(item: Example): Drawable? {
@@ -78,6 +126,34 @@ class ExampleViewHolder(itemView: View): AbsInformativeCardViewHolder<Example>(i
 
     override fun shouldDisplayDivider(): Boolean {
         return true
+    }
+
+    private fun adaptTextColor(item: Example, textView: TextView?) {
+
+        val context = itemView.context
+
+        val titleColor = if (item.installed) {
+            ResourcesCompatUtils.getColor(context, R.color.colorAccent)
+        } else {
+            ResourcesCompatUtils.getColor(context, R.color.light_gray)
+        }
+
+        textView?.setTextColor(titleColor)
+    }
+
+    fun ImageUtils.tintImage(bitmap: Bitmap,
+                             @ColorInt color: Int): Bitmap {
+        val paint = Paint().apply {
+            colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
+        }
+
+        val tintedBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height,
+            Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(tintedBitmap)
+        canvas.drawBitmap(bitmap, 0f, 0f, paint)
+
+        return tintedBitmap
     }
 
 }
