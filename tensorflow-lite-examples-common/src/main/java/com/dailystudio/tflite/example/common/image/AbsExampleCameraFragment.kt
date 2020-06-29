@@ -27,7 +27,7 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
             .setTargetRotation(rotation)
             .build()
             .also {
-                analyzer = createAnalyzer(screenAspectRatio, rotation)
+                analyzer = createAnalyzer(screenAspectRatio, rotation, lensFacing)
 
                 it.setAnalyzer(analyzerExecutor, analyzer)
             }
@@ -42,6 +42,7 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
     }
 
     abstract fun createAnalyzer(screenAspectRatio: Int,
-                                rotation: Int): AbsImageAnalyzer<Info, Results>
+                                rotation: Int,
+                                lensFacing: Int): AbsImageAnalyzer<Info, Results>
 
 }

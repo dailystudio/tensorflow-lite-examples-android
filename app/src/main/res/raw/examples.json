@@ -30,6 +30,7 @@
   {
     "id": 4,
     "title": "Gesture recognition",
+    "package": "com.dailystudio.tflite.example.image.gesture",
     "description": "Train a neural network to recognize gestures caught on your webcam using TensorFlow.js, then use TensorFlow Lite to convert the model to run inference on your device.",
     "image": "assets://model_icons/tile_model_pose.png"
   },

@@ -202,7 +202,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         val data = notification.data ?: return
 
         val results = data as Results
-        Logger.debug("latest result: $results")
+        Logger.debug("latest result: ${results.toString().replace("%", "%%")}")
 
         updateResultsOnUiThread(results)
     }

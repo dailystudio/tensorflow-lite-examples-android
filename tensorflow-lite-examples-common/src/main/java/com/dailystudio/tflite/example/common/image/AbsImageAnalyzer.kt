@@ -18,7 +18,8 @@ import com.rasalexman.kdispatcher.call
 import java.io.File
 import kotlin.math.roundToLong
 
-abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val rotation: Int): ImageAnalysis.Analyzer {
+abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val rotation: Int,
+                                                                    private val lensFacing: Int): ImageAnalysis.Analyzer {
 
     private var inferenceAgent: InferenceAgent<Info, Results> =
         InferenceAgent()

@@ -88,7 +88,7 @@ class ExampleViewHolder(itemView: View): AbsInformativeCardViewHolder<Example>(i
 
         if (!item.installed) {
             builder.postProcessor { bitmap ->
-                ImageUtils.tintImage(bitmap,
+                ImageUtils.tintBitmap(bitmap,
                     ResourcesCompatUtils.getColor(context, R.color.light_gray)
                 )
             }
@@ -139,21 +139,6 @@ class ExampleViewHolder(itemView: View): AbsInformativeCardViewHolder<Example>(i
         }
 
         textView?.setTextColor(titleColor)
-    }
-
-    fun ImageUtils.tintImage(bitmap: Bitmap,
-                             @ColorInt color: Int): Bitmap {
-        val paint = Paint().apply {
-            colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
-        }
-
-        val tintedBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height,
-            Bitmap.Config.ARGB_8888)
-
-        val canvas = Canvas(tintedBitmap)
-        canvas.drawBitmap(bitmap, 0f, 0f, paint)
-
-        return tintedBitmap
     }
 
 }
