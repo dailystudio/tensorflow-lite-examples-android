@@ -14,7 +14,7 @@ import org.tensorflow.lite.examples.posenet.lib.Device
 import org.tensorflow.lite.examples.posenet.lib.Person
 import org.tensorflow.lite.examples.posenet.lib.Posenet
 
-class PoseAnalyzer(rotation: Int) : AbsImageAnalyzer<ImageInferenceInfo, Person>(rotation) {
+class PoseAnalyzer(rotation: Int, lensFacing: Int) : AbsImageAnalyzer<ImageInferenceInfo, Person>(rotation, lensFacing) {
 
     companion object {
         const val MODEL_WIDTH = 257
@@ -215,8 +215,9 @@ class PoseAnalyzer(rotation: Int) : AbsImageAnalyzer<ImageInferenceInfo, Person>
 class PoseCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, Person>() {
 
     override fun createAnalyzer(screenAspectRatio: Int,
-                                rotation: Int): AbsImageAnalyzer<ImageInferenceInfo, Person> {
-        return PoseAnalyzer(rotation)
+                                rotation: Int,
+                                lensFacing: Int): AbsImageAnalyzer<ImageInferenceInfo, Person> {
+        return PoseAnalyzer(rotation, lensFacing)
     }
 
 }

@@ -12,12 +12,10 @@ import com.dailystudio.devbricksx.utils.StringUtils
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
-import org.tensorflow.lite.examples.gesture.ImageClassifier
-import org.tensorflow.lite.examples.gesture.ImageClassifierFloatInception
-import java.lang.NumberFormatException
+import org.tensorflow.lite.examples.gesture.Classifier
 
 private class GestureAnalyzer(rotation: Int, lensFacing: Int)
-    : AbsImageAnalyzer<ImageInferenceInfo, List<ImageClassifier.Recognition>>(rotation, lensFacing) {
+    : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>>(rotation, lensFacing) {
 
     companion object {
         private const val PRE_SCALE_WIDTH = 640
@@ -29,15 +27,19 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
         private const val CROPPED_IMAGE_FILE = "cropped.png"
     }
 
-    private var classifier: ImageClassifier? = null
+    private var classifier: Classifier? = null
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<ImageClassifier.Recognition>? {
-        var results: List<ImageClassifier.Recognition>? = null
+    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Classifier.Recognition>? {
+        var results: List<Classifier.Recognition>? = null
 
         if (classifier == null) {
             val context = GlobalContextWrapper.context
             context?.let {
-                classifier = ImageClassifierFloatInception(context)
+                classifier = Classifier.create(context,
+                    Classifier.Model.FLOAT_INCEPTION,
+                    Classifier.Device.GPU,
+                    1
+                )
             }
 
             Logger.debug("classifier created: $classifier")
@@ -48,51 +50,14 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
 
             dumpIntermediateBitmap(inferenceBitmap, CROPPED_IMAGE_FILE)
 
-            val intermediates = SpannableStringBuilder()
-            classifier.classifyFrame(inferenceBitmap, intermediates)
+            results = classifier.recognizeImage(inferenceBitmap, 0)
             val inferenceEnd = System.currentTimeMillis()
 
-            results = generateResults(intermediates.toString())
             Logger.debug("results: ${results.toString().replace("%", "%%")}")
             val end = System.currentTimeMillis()
 
             info.inferenceTime = (inferenceEnd - start)
             info.analysisTime = (end - start)
-        }
-
-        return results
-    }
-
-    private fun generateResults(intermediates: String): List<ImageClassifier.Recognition>? {
-        if (intermediates.isBlank()) {
-            return null
-        }
-
-        val lines = StringUtils.linesFromString(intermediates)
-        if (lines.isEmpty()) {
-            return null
-        }
-
-        var results: MutableList<ImageClassifier.Recognition>? = null
-        for (line in lines) {
-            val parts = line.split(":")
-            if (parts.size != 2) {
-                continue
-            }
-            if (results == null) {
-                results = mutableListOf()
-            }
-
-            val label = parts[0]
-            val prob = try {
-                parts[1].toFloat()
-            } catch (e: NumberFormatException) {
-                Logger.warn("parse prob from [${parts[1]}] failed: $e")
-                continue
-            }
-
-            val recognition = ImageClassifier.Recognition(label, label, prob, null)
-            results.add(recognition)
         }
 
         return results
@@ -107,13 +72,10 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
         val scaledBitmap = preScaleImage(frameBitmap, info)
 
         return scaledBitmap?.let {
-            val thumb = ThumbnailUtils.extractThumbnail(it, INFERENCE_SIZE, INFERENCE_SIZE)
-
-            Logger.debug("info.lensFacing = ${info.cameraLensFacing}")
             if (info.cameraLensFacing == CameraSelector.LENS_FACING_FRONT) {
-                ImageUtils.flipBitmap(thumb)
+                ImageUtils.flipBitmap(it)
             } else {
-                thumb
+                it
             }
         }
     }
@@ -138,15 +100,15 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
     }
 
     override fun isDumpIntermediatesEnabled(): Boolean {
-        return true
+        return false
     }
 
 }
 
-class GestureCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<ImageClassifier.Recognition>>() {
+class GestureCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Classifier.Recognition>>() {
 
     override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
-            : AbsImageAnalyzer<ImageInferenceInfo, List<ImageClassifier.Recognition>> {
+            : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>> {
         return GestureAnalyzer(rotation, lensFacing)
     }
 

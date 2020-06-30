@@ -13,7 +13,8 @@ import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel
 
-private class ObjectDetectionAnalyzer(rotation: Int) : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>>(rotation) {
+private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
+    : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>>(rotation, lensFacing) {
 
     companion object {
         private const val TF_OD_API_INPUT_SIZE = 300
@@ -157,9 +158,9 @@ private class ObjectDetectionAnalyzer(rotation: Int) : AbsImageAnalyzer<ImageInf
 
 class ObjectDetectionCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Classifier.Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int)
+    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
             : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>> {
-        return ObjectDetectionAnalyzer(rotation)
+        return ObjectDetectionAnalyzer(rotation, lensFacing)
     }
 
 }

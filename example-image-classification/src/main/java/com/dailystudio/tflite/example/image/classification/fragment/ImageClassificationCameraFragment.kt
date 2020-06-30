@@ -11,7 +11,8 @@ import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
 
-private class ImageClassificationAnalyzer(rotation: Int) : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation) {
+private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
+    : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing) {
 
     private var classifier: Classifier? = null
 
@@ -62,8 +63,8 @@ private class ImageClassificationAnalyzer(rotation: Int) : AbsImageAnalyzer<Imag
 
 class ImageClassificationCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
-        return ImageClassificationAnalyzer(rotation)
+    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
+        return ImageClassificationAnalyzer(rotation, lensFacing)
     }
 
 }
