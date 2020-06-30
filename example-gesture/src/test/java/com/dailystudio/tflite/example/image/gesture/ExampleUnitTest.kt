@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.example.image.gesture
+package com.dailystudio.tflite.example.image.gesture
 
 import org.junit.Test
 

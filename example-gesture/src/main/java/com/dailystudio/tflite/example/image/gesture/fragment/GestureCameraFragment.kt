@@ -1,14 +1,11 @@
-package com.dailystudio.tflite.example.example.image.gesture.fragment
+package com.dailystudio.tflite.example.image.gesture.fragment
 
 import android.graphics.Bitmap
-import android.media.ThumbnailUtils
-import android.text.SpannableStringBuilder
 import androidx.camera.core.CameraSelector
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.devbricksx.utils.StringUtils
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
@@ -48,7 +45,9 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
         classifier?.let { classifier ->
             val start = System.currentTimeMillis()
 
-            dumpIntermediateBitmap(inferenceBitmap, CROPPED_IMAGE_FILE)
+            dumpIntermediateBitmap(inferenceBitmap,
+                CROPPED_IMAGE_FILE
+            )
 
             results = classifier.recognizeImage(inferenceBitmap, 0)
             val inferenceEnd = System.currentTimeMillis()
@@ -89,12 +88,15 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
 
         val matrix = MatrixUtils.getTransformationMatrix(
             frameBitmap.width, frameBitmap.height,
-            PRE_SCALE_WIDTH, PRE_SCALE_HEIGHT, info.imageRotation,
+            PRE_SCALE_WIDTH,
+            PRE_SCALE_HEIGHT, info.imageRotation,
             true)
 
         val preScaledImage = ImageUtils.createTransformedBitmap(frameBitmap, matrix)
 
-        dumpIntermediateBitmap(preScaledImage, PRE_SCALED_IMAGE_FILE)
+        dumpIntermediateBitmap(preScaledImage,
+            PRE_SCALED_IMAGE_FILE
+        )
 
         return preScaledImage
     }
@@ -109,7 +111,10 @@ class GestureCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<
 
     override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
             : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>> {
-        return GestureAnalyzer(rotation, lensFacing)
+        return GestureAnalyzer(
+            rotation,
+            lensFacing
+        )
     }
 
     override fun getDefaultCameraLens(): Int {
