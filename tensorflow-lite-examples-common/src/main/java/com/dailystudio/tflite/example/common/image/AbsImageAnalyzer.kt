@@ -10,13 +10,8 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
-import com.dailystudio.tflite.example.common.Constants
 import com.dailystudio.tflite.example.common.InferenceAgent
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.rasalexman.kdispatcher.KDispatcher
-import com.rasalexman.kdispatcher.call
 import java.io.File
-import kotlin.math.roundToLong
 
 abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val rotation: Int,
                                                                     private val lensFacing: Int): ImageAnalysis.Analyzer {
@@ -30,6 +25,7 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
         val info: Info = createInferenceInfo().apply {
             imageSize = Size(image.width, image.height)
             imageRotation = image.imageInfo.rotationDegrees
+            cameraLensFacing = lensFacing
             screenRotation = rotation
         }
 

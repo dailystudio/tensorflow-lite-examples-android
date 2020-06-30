@@ -9,7 +9,6 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.devbricksx.utils.StringUtils
-import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
@@ -81,7 +80,7 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
                 continue
             }
             if (results == null) {
-                results = mutableListOf<ImageClassifier.Recognition>()
+                results = mutableListOf()
             }
 
             val label = parts[0]
@@ -110,7 +109,8 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
         return scaledBitmap?.let {
             val thumb = ThumbnailUtils.extractThumbnail(it, INFERENCE_SIZE, INFERENCE_SIZE)
 
-            if (info.lensFacing == CameraSelector.LENS_FACING_FRONT) {
+            Logger.debug("info.lensFacing = ${info.cameraLensFacing}")
+            if (info.cameraLensFacing == CameraSelector.LENS_FACING_FRONT) {
                 ImageUtils.flipBitmap(thumb)
             } else {
                 thumb

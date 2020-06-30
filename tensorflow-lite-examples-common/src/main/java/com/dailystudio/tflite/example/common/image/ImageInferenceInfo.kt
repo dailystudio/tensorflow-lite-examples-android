@@ -10,7 +10,7 @@ import com.dailystudio.tflite.example.common.R
 open class ImageInferenceInfo(var imageSize: Size = Size(0, 0),
                               var imageRotation: Int = 0,
                               var screenRotation: Int = 0,
-                              var lensFacing: Int = CameraSelector.LENS_FACING_BACK,
+                              var cameraLensFacing: Int = CameraSelector.LENS_FACING_BACK,
                               var inferenceImageSize: Size = Size(0, 0),
                               analysisTime: Long = 0,
                               inferenceTime: Long = 0): InferenceInfo(analysisTime, inferenceTime) {
@@ -46,7 +46,7 @@ open class ImageInferenceInfo(var imageSize: Size = Size(0, 0),
             append("image size: $imageSize,")
             append("image rotation: $imageRotation,")
             append("screen rotation: $screenRotation,")
-            append("lens facing: $lensFacing,")
+            append("lens facing: $cameraLensFacing,")
             append("inference size: $inferenceImageSize,")
             append(super.toString())
         }
