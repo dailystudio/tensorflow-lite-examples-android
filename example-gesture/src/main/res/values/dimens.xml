@@ -3,5 +3,6 @@
 
     <dimen name="gesture_label_padding">5dp</dimen>
     <dimen name="gesture_label_corner_radius">5dp</dimen>
+    <dimen name="gesture_label_font_size">12dp</dimen>
 
 </resources>

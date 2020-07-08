@@ -89,8 +89,8 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         val viewModel = ViewModelProvider(this).get(GestureLabelViewModel::class.java)
 
         val labels = StringUtils.linesFromAsset(this,"labels.txt")
-        for (label in labels) {
-            viewModel.insertGestureLabel(GestureLabel(label))
+        for ((i, label) in labels.withIndex()) {
+            viewModel.insertGestureLabel(GestureLabel(i, label))
         }
     }
 

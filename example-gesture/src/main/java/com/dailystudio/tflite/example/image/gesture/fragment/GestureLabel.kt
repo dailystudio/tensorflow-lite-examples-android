@@ -3,7 +3,6 @@ package com.dailystudio.tflite.example.image.gesture.fragment
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.TextView
-import com.dailystudio.devbricksx.GlobalContextWrapper.context
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsSingleLineViewHolder
@@ -18,15 +17,16 @@ import com.dailystudio.tflite.example.image.gesture.R
     layout = R.layout.layout_gesture_label
 )
 @ViewModel
-@InMemoryRepository(key = String::class)
-@InMemoryManager(key = String::class)
+@InMemoryRepository(key = Int::class)
+@InMemoryManager(key = Int::class)
 @DiffUtil
-data class GestureLabel(val label: String,
+data class GestureLabel(val id: Int,
+                        val label: String,
                         val prop: Float = 0f,
-                        var selected:  Boolean = false): InMemoryObject<String> {
+                        var selected:  Boolean = false): InMemoryObject<Int> {
 
-    override fun getKey(): String {
-        return label
+    override fun getKey(): Int {
+        return id
     }
 
 }
