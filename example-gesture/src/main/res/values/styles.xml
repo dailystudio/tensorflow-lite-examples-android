@@ -7,4 +7,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="GestureLabel" parent="DefaultListItemText1stLine">
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/gesture_label_padding</item>
+    </style>
+
 </resources>

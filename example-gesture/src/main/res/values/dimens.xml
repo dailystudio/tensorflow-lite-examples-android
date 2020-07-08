@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="gesture_label_padding">5dp</dimen>
+    <dimen name="gesture_label_corner_radius">5dp</dimen>
+
+</resources>

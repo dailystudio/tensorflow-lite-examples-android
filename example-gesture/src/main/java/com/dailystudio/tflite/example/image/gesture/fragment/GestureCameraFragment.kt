@@ -34,7 +34,8 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
             context?.let {
                 classifier = Classifier.create(context,
                     Classifier.Model.FLOAT_INCEPTION,
-                    Classifier.Device.GPU,
+                    Classifier.Device.CPU,
+//                    Classifier.Device.GPU,
                     1
                 )
             }
