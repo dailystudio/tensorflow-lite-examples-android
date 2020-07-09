@@ -1,3 +1,4 @@
+include ':example-smart-reply'
 include ':example-gesture'
 include ':app'
 include ':tensorflow-lite-examples-common'

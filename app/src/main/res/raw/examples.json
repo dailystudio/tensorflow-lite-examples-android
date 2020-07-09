@@ -37,6 +37,7 @@
   {
     "id": 5,
     "title": "Smart reply",
+    "package": "com.dailystudio.tflite.example.text.smartreply",
     "description": "Generate reply suggestions to input conversational chat messages.",
     "image": "assets://model_icons/tile_model_smart.png"
   },
