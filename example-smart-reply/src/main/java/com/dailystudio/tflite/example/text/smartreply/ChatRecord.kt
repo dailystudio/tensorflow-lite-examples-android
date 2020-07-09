@@ -3,10 +3,12 @@ package com.dailystudio.tflite.example.text.smartreply
 import android.view.Gravity
 import android.view.View
 import android.widget.*
+import androidx.core.content.res.ResourcesCompat
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.annotations.Adapter
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsViewHolder
+import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 
 enum class Direction {
     Send,
@@ -36,6 +38,9 @@ data class ChatRecord(
 class ChatRecordViewHolder(itemView: View): AbsViewHolder<ChatRecord>(itemView) {
 
     override fun bind(item: ChatRecord) {
+        val context = itemView.context
+        val res = context.resources
+
         val textPanel: View = itemView.findViewById(R.id.text_panel)
         val textView: TextView = itemView.findViewById(R.id.chat_text)
         val textViewLp = textPanel?.layoutParams
@@ -52,6 +57,8 @@ class ChatRecordViewHolder(itemView: View): AbsViewHolder<ChatRecord>(itemView) 
                 }
 
                 textPanel?.setBackgroundResource(R.drawable.chat_right)
+                textView?.setTextColor(ResourcesCompatUtils.getColor(context,
+                    R.color.colorPrimary))
             }
 
             Direction.Receive -> {
@@ -63,6 +70,8 @@ class ChatRecordViewHolder(itemView: View): AbsViewHolder<ChatRecord>(itemView) 
                 }
 
                 textPanel?.setBackgroundResource(R.drawable.chat_left)
+                textView?.setTextColor(ResourcesCompatUtils.getColor(context,
+                    R.color.colorAccent))
             }
         }
 

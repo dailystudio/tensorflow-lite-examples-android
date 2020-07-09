@@ -9,7 +9,8 @@
 
     <ImageView
         android:id="@+id/portrait_receive"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/ic_robot"
+        android:tint="@color/colorAccent"
         android:layout_alignParentStart="true"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/default_padding"
@@ -18,7 +19,8 @@
 
     <ImageView
         android:id="@+id/portrait_send"
-        android:src="@mipmap/ic_human_being"
+        android:src="@drawable/ic_human"
+        android:tint="@color/colorPrimary"
         android:layout_alignParentEnd="true"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/default_padding"
@@ -34,6 +36,7 @@
 
         <FrameLayout
             android:id="@+id/text_panel"
+            android:backgroundTint="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
