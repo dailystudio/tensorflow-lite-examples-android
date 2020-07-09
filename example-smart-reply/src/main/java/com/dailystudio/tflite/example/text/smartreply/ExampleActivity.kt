@@ -32,9 +32,10 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
         for (i in 0 until 20) {
             val record = ChatRecord(System.currentTimeMillis(),
                 if (direction == Direction.Send) {
-                    "Hi there, I am [$i]"
+//                    "Hi there, my name is HumanBeingNo.[$i]. Nice to meet you!"
+                    "Hi there, Nice to meet you!"
                 } else {
-                    "Hi [${i - 1}], How are you?"
+                    "Hi HumanBeingNo.[${i - 1}]. I am RobotNo.[${i - 1}]. Nice to meet you too."
                 },
                 direction
             )

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="chat_background">#ededed</color>
+    <dimen name="chat_text_padding">20dp</dimen>
 
 </resources>
