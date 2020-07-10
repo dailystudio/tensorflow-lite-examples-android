@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
+import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.text.smartreply.fragment.ChatRecordListFragmentExt
 import com.dailystudio.tflite.example.text.smartreply.model.ChatRecordViewModel
@@ -29,6 +30,10 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
     private var userInput: EditText? = null
     private var sendButton: Button? = null
     private lateinit var client: SmartReplyClient
+
+    private var inferenceAgent: InferenceAgent<InferenceInfo, Void> =
+        InferenceAgent()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +59,6 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
             val text = editable.toString()
 
             lifecycleScope.launch(Dispatchers.IO) {
-
                 sendMessage(text)
                 receiveReply(text)
             }
@@ -64,11 +68,10 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
 
         lifecycleScope.launchWhenStarted {
             client.loadModel()
-        }
-
-        lifecycleScope.launchWhenResumed {
             insertLeadingLoopRecords()
-//            randomlyGenerateRecords()
+
+            val info = InferenceInfo()
+            inferenceAgent.deliverInferenceInfo(info)
         }
     }
 
@@ -93,6 +96,11 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
 
     private suspend fun insertLeadingLoopRecords() {
         val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
+
+        val records = viewModel.getChatRecords()
+        if (records.isNotEmpty()) {
+            return
+        }
 
         for (i in 0 until NOOP_RECORDS_COUNT) {
             val record = ChatRecord(System.currentTimeMillis(),
@@ -143,7 +151,17 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
     }
 
     private suspend fun receiveReply(text: String) {
+        val info = InferenceInfo()
+
+        val start = System.currentTimeMillis()
         val ans = client.predict(arrayOf(text))
+        val end = System.currentTimeMillis()
+
+        info.inferenceTime = end - start
+        info.analysisTime = info.inferenceTime
+
+        inferenceAgent.deliverInferenceInfo(info)
+
         for (reply in ans) {
             Logger.debug("Reply: ${reply.text}")
         }
