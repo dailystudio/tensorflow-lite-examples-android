@@ -45,7 +45,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         uiThread = Thread.currentThread()
     }
 
-    private fun setupViews() {
+    internal fun setupViews() {
         supportFragmentManager.beginTransaction().also {
             val exampleFragment = createBaseFragment()
 

@@ -3,14 +3,14 @@ package com.dailystudio.tflite.example.text.smartreply
 import android.view.Gravity
 import android.view.View
 import android.widget.*
-import androidx.core.content.res.ResourcesCompat
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.annotations.Adapter
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsViewHolder
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 
-enum class Direction {
+enum class MessageType {
+    Noop,
     Send,
     Receive
 }
@@ -27,7 +27,7 @@ enum class Direction {
 data class ChatRecord(
     val timestamp: Long,
     val text: String,
-    val direction: Direction = Direction.Send) : InMemoryObject<Long> {
+    val messageType: MessageType = MessageType.Send) : InMemoryObject<Long> {
 
     override fun getKey(): Long {
         return timestamp
@@ -47,10 +47,17 @@ class ChatRecordViewHolder(itemView: View): AbsViewHolder<ChatRecord>(itemView) 
         val pRecv: View = itemView.findViewById(R.id.portrait_receive)
         val pSend: View = itemView.findViewById(R.id.portrait_send)
 
-        when (item.direction) {
-            Direction.Send -> {
+        when (item.messageType) {
+            MessageType.Noop -> {
+                pRecv?.visibility = View.INVISIBLE
+                pSend?.visibility = View.INVISIBLE
+                textPanel?.visibility = View.INVISIBLE
+            }
+
+            MessageType.Send -> {
                 pRecv?.visibility = View.INVISIBLE
                 pSend?.visibility = View.VISIBLE
+                textPanel?.visibility = View.VISIBLE
 
                 if (textViewLp is FrameLayout.LayoutParams) {
                     textViewLp?.gravity = Gravity.END
@@ -61,9 +68,10 @@ class ChatRecordViewHolder(itemView: View): AbsViewHolder<ChatRecord>(itemView) 
                     R.color.colorPrimary))
             }
 
-            Direction.Receive -> {
+            MessageType.Receive -> {
                 pRecv?.visibility = View.VISIBLE
                 pSend?.visibility = View.INVISIBLE
+                textPanel?.visibility = View.VISIBLE
 
                 if (textViewLp is FrameLayout.LayoutParams) {
                     textViewLp?.gravity = Gravity.START
