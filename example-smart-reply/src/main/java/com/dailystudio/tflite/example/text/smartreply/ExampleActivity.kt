@@ -9,6 +9,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.text.smartreply.fragment.ChatRecordListFragmentExt
@@ -16,6 +17,7 @@ import com.dailystudio.tflite.example.text.smartreply.model.ChatRecordViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.tensorflow.lite.examples.smartreply.SmartReplyClient
 
 class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
 
@@ -24,11 +26,14 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
         const val RANDOM_RECORDS_COUNT = 20
     }
 
-    var userInput: EditText? = null
-    var sendButton: Button? = null
+    private var userInput: EditText? = null
+    private var sendButton: Button? = null
+    private lateinit var client: SmartReplyClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        client = SmartReplyClient(applicationContext)
 
         userInput = findViewById(R.id.input)
         userInput?.addTextChangedListener(object: TextWatcher {
@@ -55,6 +60,10 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
             }
 
             editable.clear()
+        }
+
+        lifecycleScope.launchWhenStarted {
+            client.loadModel()
         }
 
         lifecycleScope.launchWhenResumed {
@@ -134,10 +143,19 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
     }
 
     private suspend fun receiveReply(text: String) {
+        val ans = client.predict(arrayOf(text))
+        for (reply in ans) {
+            Logger.debug("Reply: ${reply.text}")
+        }
+
+        if (ans == null || ans.isEmpty()) {
+            return
+        }
+
         val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
 
         val record = ChatRecord(System.currentTimeMillis(),
-            "Echo $text",
+            "${ans[0].text}",
             MessageType.Receive)
 
         viewModel.insertChatRecord(record).join()

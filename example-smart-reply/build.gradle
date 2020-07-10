@@ -63,6 +63,8 @@ dependencies {
 
     implementation "com.google.guava:guava:${project.ext.guavaVersion}"
 
+    implementation files("$projectDir/libs/smartreply_runtime_aar.aar")
+
     implementation project(":tensorflow-lite-examples-common")
 
     implementation "com.dailystudio:devbricksx-java-annotations:${DEVBRICKS_X_VERSION}"
@@ -70,18 +72,6 @@ dependencies {
 
     kapt "com.dailystudio:devbricksx-java-compiler:${DEVBRICKS_X_VERSION}"
     kapt "com.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
-}
-
-ext {
-    LITE_MODEL_URL = 'https://storage.googleapis.com/download.tensorflow.org/models/tflite/smartreply/smartreply.tflite'
-    LITE_MODEL_NAME = 'smartreply.tflite'
-    LITE_MODEL_DIRS = [
-            "$projectDir/src/main/assets",
-            "$projectDir/libs/cc/testdata",
-    ]
-
-    AAR_URL = 'https://storage.googleapis.com/download.tensorflow.org/models/tflite/smartreply/smartreply_runtime_aar.aar'
-    AAR_PATH = "$projectDir/libs/smartreply_runtime_aar.aar"
 }
 
 // Download prebuilt AAR and TF Lite model.
