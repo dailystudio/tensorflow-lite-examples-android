@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -43,9 +44,13 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         setupViews()
 
         uiThread = Thread.currentThread()
+
+        if (shouldKeepScreenOn()) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
-    internal fun setupViews() {
+    protected fun setupViews() {
         supportFragmentManager.beginTransaction().also {
             val exampleFragment = createBaseFragment()
 
@@ -87,7 +92,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
             vto.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
 
                 override fun onGlobalLayout() {
-                    it.viewTreeObserver.removeOnGlobalLayoutListener(this)
+//                    it.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
                     var padding = 0
                     bottomSheetLayout?.let { sheet ->
@@ -190,6 +195,10 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
 
     protected open fun onInferenceInfoUpdated(info: Info) {
         inferenceInfoView?.setInferenceInfo(info)
+    }
+
+    protected open fun shouldKeepScreenOn(): Boolean {
+        return true
     }
 
     abstract fun createBaseFragment(): Fragment
