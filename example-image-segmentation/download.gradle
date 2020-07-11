@@ -1,0 +1,12 @@
+apply from:'../buildscripts/network.gradle'
+
+def targetModelFile = "src/main/assets/deeplabv3_257_mv_gpu.tflite"
+def modelDownloadUrl = "https://tfhub.dev/tensorflow/lite-model/deeplabv3/1/default/1?lite-format=tflite"
+
+// Required to download TF Lite model for Smart Reply.
+task downloadLiteModel(type: DownloadUrlTask) {
+    sourceUrl = modelDownloadUrl
+    target = file(targetModelFile)
+}
+
+preBuild.dependsOn downloadLiteModel

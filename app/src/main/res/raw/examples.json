@@ -44,6 +44,7 @@
   {
     "id": 6,
     "title": "Image segmentation",
+    "package": "com.dailystudio.tflite.example.image.segmentation",
     "description": "Predict whether each pixel of an image is associated with a certain class. Trained with people, places, animals, and more.",
     "image": "assets://model_icons/tile_model_paw.png"
   },

@@ -1,0 +1,16 @@
+class DownloadUrlTask extends DefaultTask {
+    @Input
+    String sourceUrl
+
+    @OutputFile
+    File target
+
+    @TaskAction
+    void download() {
+        println "Downloading file [url: ${sourceUrl}]: target = ${target}"
+
+        ant.get(src: sourceUrl, dest: target)
+    }
+}
+
+ext.DownloadUrlTask = DownloadUrlTask
