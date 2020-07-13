@@ -4,11 +4,13 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import com.dailystudio.tflite.example.image.segmentation.fragment.ImageSegmentationCameraFragment
+import org.tensorflow.lite.examples.imagesegmentation.ModelExecutionResult
 
-class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Void>() {
+class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, ModelExecutionResult>() {
 
     override fun createBaseFragment(): Fragment {
-        return Fragment()
+        return ImageSegmentationCameraFragment()
     }
 
     override fun createResultsView(): View? {
@@ -19,7 +21,7 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Void>() {
         return null
     }
 
-    override fun onResultsUpdated(results: Void) {
+    override fun onResultsUpdated(results: ModelExecutionResult) {
     }
 
 }
