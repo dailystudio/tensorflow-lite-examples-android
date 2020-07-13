@@ -1,3 +1,5 @@
+apply from:'../buildscripts/network.gradle'
+
 def targetFolder = "src/main/assets"
 def modelFloatDownloadUrl = "http://download.tensorflow.org/models/mobilenet_v1_2018_02_22/mobilenet_v1_1.0_224.tgz"
 def modelQuantDownloadUrl = "http://download.tensorflow.org/models/mobilenet_v1_2018_08_02/mobilenet_v1_1.0_224_quant.tgz"
@@ -8,35 +10,22 @@ def localCacheQuant = "build/intermediates/mobilenet_v1_1.0_224_quant.tgz"
 def localCacheEfficientNetFloat = "build/intermediates/efficientnet-lite0-fp32_2020_03_03.zip"
 def localCacheEfficientNetQuant = "build/intermediates/efficientnet-lite0-int8_2020_03_03.zip"
 
-
 task downloadModelFloat(type: DownloadUrlTask) {
-    doFirst {
-        println "Downloading ${modelFloatDownloadUrl}"
-    }
     sourceUrl = "${modelFloatDownloadUrl}"
     target = file("${localCacheFloat}")
 }
 
 task downloadModelQuant(type: DownloadUrlTask) {
-    doFirst {
-        println "Downloading ${modelQuantDownloadUrl}"
-    }
     sourceUrl = "${modelQuantDownloadUrl}"
     target = file("${localCacheQuant}")
 }
 
 task downloadEfficientNetFloat(type: DownloadUrlTask) {
-    doFirst {
-        println "Downloading ${modelEfficientNetFloatDownloadUrl}"
-    }
     sourceUrl = "${modelEfficientNetFloatDownloadUrl}"
     target = file("${localCacheEfficientNetFloat}")
 }
 
 task downloadEfficientNetQuant(type: DownloadUrlTask) {
-    doFirst {
-        println "Downloading ${modelEfficientNetQuantDownloadUrl}"
-    }
     sourceUrl = "${modelEfficientNetQuantDownloadUrl}"
     target = file("${localCacheEfficientNetQuant}")
 }
@@ -80,19 +69,6 @@ task cleanUnusedFiles(type: Delete, dependsOn: ['unzipModelFloat', 'unzipModelQu
         include "*.pbtxt*"
         include "*.quant_info.*"
         include "*.meta"
-    }
-}
-
-class DownloadUrlTask extends DefaultTask {
-    @Input
-    String sourceUrl
-
-    @OutputFile
-    File target
-
-    @TaskAction
-    void download() {
-        ant.get(src: sourceUrl, dest: target)
     }
 }
 

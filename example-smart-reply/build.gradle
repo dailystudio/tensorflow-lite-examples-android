@@ -67,10 +67,6 @@ dependencies {
 
     implementation project(":tensorflow-lite-examples-common")
 
-    implementation "com.dailystudio:devbricksx-java-annotations:${DEVBRICKS_X_VERSION}"
-    implementation "com.dailystudio:devbricksx-kotlin-annotations:${DEVBRICKS_X_VERSION}"
-
-    kapt "com.dailystudio:devbricksx-java-compiler:${DEVBRICKS_X_VERSION}"
     kapt "com.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
 }
 

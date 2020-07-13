@@ -29,12 +29,13 @@ task clean(type: Delete) {
 
 ext {
     // Compile Settings
-    COMPILE_SDK = 29
-    BUILD_TOOLS = '29.0.3'
+    COMPILE_SDK = 30
+    BUILD_TOOLS = '30.0.0'
     VERSION_NAME = version()
     VERSION_CODE = versionCode().toInteger()
 
-    DEVBRICKS_X_VERSION = '0.9.6'
+    DEVBRICKS_X_VERSION = '0.9.7'
+    ROOM_VERSION = '2.2.5'
 }
 
 def String version() {
