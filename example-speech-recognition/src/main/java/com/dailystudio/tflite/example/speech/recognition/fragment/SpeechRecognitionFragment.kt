@@ -1,27 +1,17 @@
 package com.dailystudio.tflite.example.speech.recognition.fragment
 
-import android.Manifest
 import android.content.res.AssetManager
-import android.media.AudioFormat
-import android.media.AudioRecord
-import android.media.MediaRecorder
 import android.os.Bundle
-import android.os.Process
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.lifecycleScope
-import com.dailystudio.devbricksx.async.ManagedThread
 import com.dailystudio.devbricksx.audio.AudioConfig
 import com.dailystudio.devbricksx.audio.AudioProcessFragment
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.fragment.AbsPermissionsFragment
 import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.AudioInferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.R
-import kotlinx.android.synthetic.main.fragment_speech_recognition.*
-import kotlinx.coroutines.cancel
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.examples.speech.RecognizeCommands
 import org.tensorflow.lite.examples.speech.RecognizeCommands.RecognitionResult
@@ -32,8 +22,6 @@ import java.io.InputStreamReader
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.*
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.math.max
 
 class SpeechRecognitionFragment : AudioProcessFragment() {
 

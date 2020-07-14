@@ -120,7 +120,7 @@ public class MultiBoxTracker {
     canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
     frameToCanvasMatrix = MatrixUtils.INSTANCE.getTransformationMatrix(
-            frameWidth, frameHeight, canvasWidth, canvasHeight, sensorOrientation, true);
+            frameWidth, frameHeight, canvasWidth, canvasHeight, sensorOrientation, true, false);
 
     for (final TrackedRecognition recognition : trackedObjects) {
       final RectF trackedPos = new RectF(recognition.location);

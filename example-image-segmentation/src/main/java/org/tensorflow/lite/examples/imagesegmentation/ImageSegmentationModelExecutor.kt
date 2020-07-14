@@ -22,6 +22,7 @@ import android.graphics.Color
 import android.os.SystemClock
 import androidx.core.graphics.ColorUtils
 import android.util.Log
+import com.dailystudio.devbricksx.development.Logger
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -66,6 +67,89 @@ class ImageSegmentationModelExecutor(
     interpreter = getInterpreter(context, imageSegmentationModel, useGPU)
     segmentationMasks = ByteBuffer.allocateDirect(1 * imageSize * imageSize * NUM_CLASSES * 4)
     segmentationMasks.order(ByteOrder.nativeOrder())
+  }
+
+  fun fastExecute(data: Bitmap): Bitmap {
+    try {
+      fullTimeExecutionTime = SystemClock.uptimeMillis()
+
+      preprocessTime = SystemClock.uptimeMillis()
+      val scaledBitmap = data
+      val contentArray =
+        ImageUtils.bitmapToByteBuffer(
+          scaledBitmap,
+          imageSize,
+          imageSize,
+          IMAGE_MEAN,
+          IMAGE_STD
+        )
+      preprocessTime = SystemClock.uptimeMillis() - preprocessTime
+
+      imageSegmentationTime = SystemClock.uptimeMillis()
+      interpreter.run(contentArray, segmentationMasks)
+      imageSegmentationTime = SystemClock.uptimeMillis() - imageSegmentationTime
+      Log.d(TAG, "Time to run the model $imageSegmentationTime")
+
+      maskFlatteningTime = SystemClock.uptimeMillis()
+      val mask = convertByteBufferToMask(
+        segmentationMasks, imageSize, imageSize,
+        segmentColors
+      )
+      maskFlatteningTime = SystemClock.uptimeMillis() - maskFlatteningTime
+      Log.d(TAG, "Time to flatten the mask result $maskFlatteningTime")
+
+      fullTimeExecutionTime = SystemClock.uptimeMillis() - fullTimeExecutionTime
+      Log.d(TAG, "Total time execution $fullTimeExecutionTime")
+
+      return mask
+    } catch (e: Exception) {
+      val exceptionLog = "something went wrong: ${e.message}"
+      Log.d(TAG, exceptionLog)
+
+      val emptyBitmap =
+        ImageUtils.createEmptyBitmap(
+          imageSize,
+          imageSize
+        )
+      return emptyBitmap
+    }
+  }
+
+  private fun convertByteBufferToMask(buffer: ByteBuffer,
+                                      width: Int,
+                                      height: Int,
+                                      colors: IntArray): Bitmap {
+    val start = System.currentTimeMillis()
+
+    val pixels = width * height
+    val data = IntArray(pixels)
+    var fa = FloatArray(width * height * NUM_CLASSES)
+
+    buffer.rewind()
+    buffer.asFloatBuffer().get(fa)
+
+    for (y in 0 until height) {
+      for (x in 0 until width) {
+        var maxVal = 0f
+        data[y * width + x] = Color.TRANSPARENT
+
+        for (c in 0 until NUM_CLASSES) {
+          val value = fa[y * width * NUM_CLASSES + x * NUM_CLASSES + c]
+          if (c == 0 || value > maxVal) {
+            maxVal = value
+            data[y * width + x] = colors[c]
+          }
+        }
+      }
+    }
+
+    val end = System.currentTimeMillis()
+
+    Logger.debug("convert $pixels pixels' buffer in ${end - start} ms")
+
+    return com.dailystudio.devbricksx.utils.ImageUtils.intArrayToBitmap(
+      data, imageSize, imageSize
+    )
   }
 
   fun execute(data: Bitmap): ModelExecutionResult {
