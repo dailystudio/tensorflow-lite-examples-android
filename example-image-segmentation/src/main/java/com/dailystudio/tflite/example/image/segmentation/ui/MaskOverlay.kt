@@ -6,10 +6,7 @@ import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
-import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.ui.AbsSurfaceView
 import com.dailystudio.devbricksx.utils.MatrixUtils.getTransformationMatrix
-import org.tensorflow.lite.examples.imagesegmentation.ImageUtils
 
 class MaskOverlay: View {
 
@@ -37,16 +34,15 @@ class MaskOverlay: View {
         invalidate()
     }
 
-    override fun dispatchDraw(canvas: Canvas?) {
-        val canvasWidth = canvas?.width ?: 0
-        val canvasHeight = canvas?.height ?: 0
+    override fun draw(canvas: Canvas) {
+        super.draw(canvas)
 
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.RED
-            strokeWidth = 2f
-        }
+        val canvasWidth = width
+        val canvasHeight = height
 
-        canvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
         maskBitmap?.let {
             val matrix = getTransformationMatrix(
@@ -56,8 +52,8 @@ class MaskOverlay: View {
             )
 
             val transformed = com.dailystudio.devbricksx.utils.ImageUtils.createTransformedBitmap(
-                it, matrix!!)
-            canvas?.drawBitmap(transformed, 0f, 0f, paint)
+                it, matrix)
+            canvas.drawBitmap(transformed, 0f, 0f, paint)
         }
     }
 

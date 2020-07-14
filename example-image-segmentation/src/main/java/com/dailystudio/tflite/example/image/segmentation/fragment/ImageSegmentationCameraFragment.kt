@@ -1,5 +1,6 @@
 package com.dailystudio.tflite.example.image.segmentation.fragment
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
@@ -8,13 +9,35 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
+import com.dailystudio.tflite.example.common.InferenceInfoItem
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import com.dailystudio.tflite.example.image.segmentation.R
 import org.tensorflow.lite.examples.imagesegmentation.ImageSegmentationModelExecutor
 import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
 
-class ImageSegmentationInferenceInfo(var frameSize: Size = Size(0, 0)) : ImageInferenceInfo() {
+class ImageSegmentationInferenceInfo(var frameSize: Size = Size(0, 0),
+                                     var preProcessTime: Long = 0,
+                                     var flattenTime: Long = 0) : ImageInferenceInfo() {
+
+    override fun toInfoItems(context: Context): MutableList<InferenceInfoItem> {
+        val items = super.toInfoItems(context)
+
+        val idStart = items.size
+
+        val resources = context.resources
+
+        val itemFlattenTime = InferenceInfoItem(idStart+ 1, R.drawable.ic_info_flatten,
+            resources.getString(R.string.label_info_flatten_time), "%d ms".format(flattenTime))
+        items.add(itemFlattenTime)
+
+        val itemPreProcessTime = InferenceInfoItem(idStart+ 2, R.drawable.ic_info_preprocess,
+            resources.getString(R.string.label_info_pre_process_time), "%d ms".format(preProcessTime))
+        items.add(itemPreProcessTime)
+
+        return items
+    }
 
 }
 
@@ -48,18 +71,13 @@ private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
         }
 
         segmentationModel?.let { model ->
-            val start = System.currentTimeMillis()
-            val mask = trimBitmap(model.fastExecute(inferenceBitmap), info.frameSize)
+            val mask = trimBitmap(model.fastExecute(inferenceBitmap, info), info.frameSize)
             val extracted = ImageUtils.maskBitmap(
                 trimBitmap(inferenceBitmap, info.frameSize), mask)
             results = SegmentationResult(mask,
                 preScaleRevertTransform)
             dumpIntermediateBitmap(mask, MASK_IMAGE_FILE)
             dumpIntermediateBitmap(extracted, EXTRACTED_IMAGE_FILE)
-
-            val end = System.currentTimeMillis()
-
-            info.inferenceTime = (end - start)
         }
 
         return results
@@ -113,7 +131,7 @@ private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
     }
 
     override fun isDumpIntermediatesEnabled(): Boolean {
-        return true
+        return false
     }
 
 }

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Image Segmentation</string>
+    <string name="label_info_flatten_time">Flatten time</string>
+    <string name="label_info_pre_process_time">Pre-process time</string>
 </resources>

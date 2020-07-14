@@ -23,6 +23,7 @@ import android.os.SystemClock
 import androidx.core.graphics.ColorUtils
 import android.util.Log
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.tflite.example.image.segmentation.fragment.ImageSegmentationInferenceInfo
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -69,7 +70,8 @@ class ImageSegmentationModelExecutor(
     segmentationMasks.order(ByteOrder.nativeOrder())
   }
 
-  fun fastExecute(data: Bitmap): Bitmap {
+  fun fastExecute(data: Bitmap,
+                  info: ImageSegmentationInferenceInfo): Bitmap {
     try {
       fullTimeExecutionTime = SystemClock.uptimeMillis()
 
@@ -84,11 +86,13 @@ class ImageSegmentationModelExecutor(
           IMAGE_STD
         )
       preprocessTime = SystemClock.uptimeMillis() - preprocessTime
+      info.preProcessTime = preprocessTime
 
       imageSegmentationTime = SystemClock.uptimeMillis()
       interpreter.run(contentArray, segmentationMasks)
       imageSegmentationTime = SystemClock.uptimeMillis() - imageSegmentationTime
       Log.d(TAG, "Time to run the model $imageSegmentationTime")
+      info.inferenceTime = imageSegmentationTime
 
       maskFlatteningTime = SystemClock.uptimeMillis()
       val mask = convertByteBufferToMask(
@@ -97,6 +101,7 @@ class ImageSegmentationModelExecutor(
       )
       maskFlatteningTime = SystemClock.uptimeMillis() - maskFlatteningTime
       Log.d(TAG, "Time to flatten the mask result $maskFlatteningTime")
+      info.flattenTime = maskFlatteningTime
 
       fullTimeExecutionTime = SystemClock.uptimeMillis() - fullTimeExecutionTime
       Log.d(TAG, "Total time execution $fullTimeExecutionTime")
