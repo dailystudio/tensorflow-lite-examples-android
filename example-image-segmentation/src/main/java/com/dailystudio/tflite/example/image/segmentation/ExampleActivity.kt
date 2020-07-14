@@ -30,14 +30,6 @@ class ExampleActivity : AbsExampleActivity<ImageSegmentationInferenceInfo, Segme
         return null
     }
 
-    override fun onInferenceInfoUpdated(info: ImageSegmentationInferenceInfo) {
-        super.onInferenceInfoUpdated(info)
-
-        mask_overlay?.setFrameConfiguration(
-            info.imageSize.width, info.imageSize.height,
-            info.imageRotation)
-    }
-
     override fun onResultsUpdated(results: SegmentationResult) {
         mask_overlay?.setMask(results.maskBitmap)
     }

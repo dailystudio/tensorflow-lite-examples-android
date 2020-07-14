@@ -5,12 +5,13 @@ import android.content.Context
 import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
+import android.view.View
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.ui.AbsSurfaceView
 import com.dailystudio.devbricksx.utils.MatrixUtils.getTransformationMatrix
 import org.tensorflow.lite.examples.imagesegmentation.ImageUtils
 
-class MaskOverlay: AbsSurfaceView {
+class MaskOverlay: View {
 
     @JvmOverloads
     constructor(
@@ -29,36 +30,23 @@ class MaskOverlay: AbsSurfaceView {
 
     private var maskBitmap: Bitmap? = null
 
-    private var frameToCanvasMatrix: Matrix? = null
-    private var frameWidth = 0
-    private var frameHeight = 0
-    private var sensorOrientation = 0
-
     fun setMask(mask: Bitmap?) {
         this.maskBitmap = mask
 
-//        requestLayout()
+        requestLayout()
+        invalidate()
     }
 
-    @Synchronized
-    fun setFrameConfiguration(
-        width: Int, height: Int, sensorOrientation: Int
-    ) {
-        this.frameWidth = width
-        this.frameHeight = height
-        this.sensorOrientation = sensorOrientation
-    }
-
-    override fun drawingCanvas(canvas: Canvas) {
-        val canvasWidth = canvas.width
-        val canvasHeight = canvas.height
+    override fun dispatchDraw(canvas: Canvas?) {
+        val canvasWidth = canvas?.width ?: 0
+        val canvasHeight = canvas?.height ?: 0
 
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.RED
             strokeWidth = 2f
         }
 
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        canvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
         maskBitmap?.let {
             val matrix = getTransformationMatrix(
@@ -69,24 +57,8 @@ class MaskOverlay: AbsSurfaceView {
 
             val transformed = com.dailystudio.devbricksx.utils.ImageUtils.createTransformedBitmap(
                 it, matrix!!)
-            canvas.drawBitmap(transformed, 0f, 0f, paint)
+            canvas?.drawBitmap(transformed, 0f, 0f, paint)
         }
-    }
-
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-        Logger.debug("onlayout: $left, $top, $right, $bottom")
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        if (maskBitmap == null) {
-            return super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        }
-
-        val wSpec = MeasureSpec.makeMeasureSpec(maskBitmap!!.width, MeasureSpec.EXACTLY)
-        val hSpec = MeasureSpec.makeMeasureSpec(maskBitmap!!.height, MeasureSpec.EXACTLY)
-
-        super.onMeasure(wSpec, hSpec)
     }
 
 
