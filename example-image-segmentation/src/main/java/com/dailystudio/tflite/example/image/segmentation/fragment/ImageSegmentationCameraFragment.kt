@@ -2,7 +2,6 @@ package com.dailystudio.tflite.example.image.segmentation.fragment
 
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Matrix
 import android.util.Size
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
@@ -27,8 +26,6 @@ private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
     }
 
     private var segmentationModel: ImageSegmentationModelExecutor? = null
-
-    private var preScaleRevertTransform: Matrix? = null
 
     override fun analyzeFrame(inferenceBitmap: Bitmap, info: AdvanceInferenceInfo): SegmentationResult? {
         var results: SegmentationResult? = null
@@ -91,9 +88,6 @@ private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
         val matrix = MatrixUtils.getTransformationMatrix(frameBitmap.width,
             frameBitmap.height, MODEL_IMAGE_SIZE, MODEL_IMAGE_SIZE,
             info.imageRotation, true, fitIn = true)
-
-        preScaleRevertTransform = Matrix()
-        matrix.invert(preScaleRevertTransform)
 
         val preScaledBitmap =  ImageUtils.createTransformedBitmap(frameBitmap,
             matrix, paddingColor = Color.BLACK)
