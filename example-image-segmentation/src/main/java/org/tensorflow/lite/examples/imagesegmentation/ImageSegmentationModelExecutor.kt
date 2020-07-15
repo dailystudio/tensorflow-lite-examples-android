@@ -23,7 +23,8 @@ import android.os.SystemClock
 import androidx.core.graphics.ColorUtils
 import android.util.Log
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.image.segmentation.fragment.ImageSegmentationInferenceInfo
+import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
+import com.dailystudio.tflite.example.common.image.TFLiteImageHelper
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -71,15 +72,14 @@ class ImageSegmentationModelExecutor(
   }
 
   fun fastExecute(data: Bitmap,
-                  info: ImageSegmentationInferenceInfo): Pair<Bitmap, Set<String>> {
+                  info: AdvanceInferenceInfo): Pair<Bitmap, Set<String>> {
     try {
       fullTimeExecutionTime = SystemClock.uptimeMillis()
 
       preprocessTime = SystemClock.uptimeMillis()
-      val scaledBitmap = data
       val contentArray =
-        ImageUtils.bitmapToByteBuffer(
-          scaledBitmap,
+        TFLiteImageHelper.bitmapToByteBuffer(
+          data,
           imageSize,
           imageSize,
           IMAGE_MEAN,

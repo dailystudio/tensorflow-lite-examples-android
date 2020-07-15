@@ -1,0 +1,28 @@
+apply from:'../buildscripts/network.gradle'
+
+def ASSET_DIR = projectDir.toString() + '/src/main/assets'
+
+task downloadPredictInt8ModelFile(type: DownloadUrlTask) {
+    sourceUrl = 'https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/int8/prediction/1?lite-format=tflite'
+    target = file(ASSET_DIR + '/style_predict_quantized_256.tflite')
+}
+
+task downloadTransformInt8ModelFile(type: DownloadUrlTask) {
+    sourceUrl = 'https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/int8/transfer/1?lite-format=tflite'
+    target = file(ASSET_DIR + '/style_transfer_quantized_384.tflite')
+}
+
+task downloadPredictFloat16ModelFile(type: DownloadUrlTask) {
+    sourceUrl = 'https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1?lite-format=tflite'
+    target = file(ASSET_DIR + '/style_predict_f16_256.tflite')
+}
+
+task downloadTransformFloat16ModelFile(type: DownloadUrlTask) {
+    sourceUrl = 'https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/transfer/1?lite-format=tflite'
+    target = file(ASSET_DIR + '/style_transfer_f16_384.tflite')
+}
+
+preBuild.dependsOn downloadPredictInt8ModelFile
+preBuild.dependsOn downloadTransformInt8ModelFile
+preBuild.dependsOn downloadPredictFloat16ModelFile
+preBuild.dependsOn downloadTransformFloat16ModelFile

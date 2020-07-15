@@ -5,20 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
 import com.dailystudio.tflite.example.image.segmentation.fragment.ImageSegmentationCameraFragment
-import com.dailystudio.tflite.example.image.segmentation.fragment.ImageSegmentationInferenceInfo
 import com.dailystudio.tflite.example.image.segmentation.fragment.ItemLabelsListFragment
 import com.dailystudio.tflite.example.image.segmentation.model.ItemLabelViewModel
 import com.dailystudio.tflite.example.image.segmentation.ui.MaskOverlay
-import kotlinx.android.synthetic.main.activity_example_image_segmentation.*
-import org.tensorflow.lite.examples.imagesegmentation.ImageUtils
-import org.tensorflow.lite.examples.imagesegmentation.ModelExecutionResult
 import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
 
-class ExampleActivity : AbsExampleActivity<ImageSegmentationInferenceInfo, SegmentationResult>() {
+class ExampleActivity : AbsExampleActivity<AdvanceInferenceInfo, SegmentationResult>() {
 
     companion object {
         const val FRAGMENT_TAG_RESULTS = "results-fragment"

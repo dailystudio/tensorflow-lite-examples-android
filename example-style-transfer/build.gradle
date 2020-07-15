@@ -68,4 +68,4 @@ dependencies {
 
 // Download default models; if you wish to use your own models then
 // place them in the "assets" directory and comment out this line.
-//apply from:'download.gradle'
+apply from:'download.gradle'

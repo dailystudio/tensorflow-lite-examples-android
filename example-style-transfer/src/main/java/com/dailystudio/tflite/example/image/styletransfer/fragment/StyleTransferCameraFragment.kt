@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.image.segmentation.fragment
+package com.dailystudio.tflite.example.image.styletransfer.fragment
 
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -11,44 +11,45 @@ import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
-import org.tensorflow.lite.examples.imagesegmentation.ImageSegmentationModelExecutor
-import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
+import org.tensorflow.lite.examples.styletransfer.StyleTransferModelExecutor
+import org.tensorflow.lite.examples.styletransfer.StyleTransferResult
 
-private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
-    : AbsImageAnalyzer<AdvanceInferenceInfo, SegmentationResult>(rotation, lensFacing) {
+private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
+    : AbsImageAnalyzer<AdvanceInferenceInfo, StyleTransferResult>(rotation, lensFacing) {
 
     companion object {
 
-        const val MODEL_IMAGE_SIZE = 257
+        const val STYLE_IMAGE_SIZE = 384
 
         private const val PRE_SCALED_IMAGE_FILE = "pre-scaled.png"
         private const val MASK_IMAGE_FILE = "mask.png"
         private const val EXTRACTED_IMAGE_FILE = "extracted.png"
     }
 
-    private var segmentationModel: ImageSegmentationModelExecutor? = null
+    private var styleTransferModelExecutor: StyleTransferModelExecutor? = null
 
     private var preScaleRevertTransform: Matrix? = null
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: AdvanceInferenceInfo): SegmentationResult? {
-        var results: SegmentationResult? = null
+    override fun analyzeFrame(inferenceBitmap: Bitmap, info: AdvanceInferenceInfo): StyleTransferResult? {
+        var results: StyleTransferResult? = null
 
-        if (segmentationModel == null) {
+        if (styleTransferModelExecutor == null) {
             val context = GlobalContextWrapper.context
             context?.let {
-                segmentationModel =
-                    ImageSegmentationModelExecutor(context, false)
+                styleTransferModelExecutor =
+                    StyleTransferModelExecutor(context, false)
             }
 
-            Logger.debug("segmentation model created: $segmentationModel")
+            Logger.debug("segmentation model created: $styleTransferModelExecutor")
         }
 
-        segmentationModel?.let { model ->
-            val inferenceResult = model.fastExecute(inferenceBitmap, info)
+        styleTransferModelExecutor?.let { model ->
+//            val inferenceResult = model.execute(inferenceBitmap, info)
+            val inferenceResult = Pair<Bitmap, Set<String>>(inferenceBitmap, setOf())
             val mask = trimBitmap(inferenceResult.first, info.frameSize)
             val extracted = ImageUtils.maskBitmap(
                 trimBitmap(inferenceBitmap, info.frameSize), mask)
-            results = SegmentationResult(mask, inferenceResult.second)
+            results = StyleTransferResult(mask, inferenceResult.second)
             dumpIntermediateBitmap(mask, MASK_IMAGE_FILE)
             dumpIntermediateBitmap(extracted, EXTRACTED_IMAGE_FILE)
         }
@@ -89,7 +90,7 @@ private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
         }
 
         val matrix = MatrixUtils.getTransformationMatrix(frameBitmap.width,
-            frameBitmap.height, MODEL_IMAGE_SIZE, MODEL_IMAGE_SIZE,
+            frameBitmap.height, STYLE_IMAGE_SIZE, STYLE_IMAGE_SIZE,
             info.imageRotation, true, fitIn = true)
 
         preScaleRevertTransform = Matrix()
@@ -109,11 +110,11 @@ private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
 
 }
 
-class ImageSegmentationCameraFragment : AbsExampleCameraFragment<AdvanceInferenceInfo, SegmentationResult>() {
+class StyleTransferCameraFragment : AbsExampleCameraFragment<AdvanceInferenceInfo, StyleTransferResult>() {
 
     override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
-            : AbsImageAnalyzer<AdvanceInferenceInfo, SegmentationResult> {
-        return ImageSegmentationAnalyzer(rotation, lensFacing)
+            : AbsImageAnalyzer<AdvanceInferenceInfo, StyleTransferResult> {
+        return StyleTransferAnalyzer(rotation, lensFacing)
     }
 
 }
