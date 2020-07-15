@@ -51,6 +51,7 @@
   {
     "id": 7,
     "title": "Style transfer",
+    "package": "com.dailystudio.tflite.example.image.styletransfer",
     "description": "Apply any styles on an input image to create a new artistic image.",
     "image": "assets://model_icons/tile_model_style.png"
   },
