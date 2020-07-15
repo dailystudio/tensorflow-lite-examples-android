@@ -1,5 +1,6 @@
 package com.dailystudio.tflite.example.image.styletransfer
 
+import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
@@ -10,9 +11,23 @@ import org.tensorflow.lite.examples.styletransfer.StyleTransferResult
 
 class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferResult>() {
 
+    private var styledOverlay: StyledOverlay? = null
+
+    override fun setupViews() {
+        super.setupViews()
+
+        styledOverlay = findViewById(R.id.styled_overlay)
+        styledOverlay?.setOnClickListener { _ ->
+            styledOverlay?.let {
+                it.setPreviewMode(!it.isInPreviewMode())
+            }
+        }
+    }
+
     override fun getLayoutResId(): Int {
         return R.layout.activity_example_style_transfer
     }
+
     override fun createBaseFragment(): Fragment {
         return StyleTransferCameraFragment()
     }
@@ -26,8 +41,7 @@ class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferRes
     }
 
     override fun onResultsUpdated(results: StyleTransferResult) {
-        val overlay: StyledOverlay = findViewById(R.id.styled_overlay)
-        overlay?.setStyledOverlay(results.styledBitmap)
+        styledOverlay?.setStyledOverlay(results.styledBitmap)
     }
 
 }

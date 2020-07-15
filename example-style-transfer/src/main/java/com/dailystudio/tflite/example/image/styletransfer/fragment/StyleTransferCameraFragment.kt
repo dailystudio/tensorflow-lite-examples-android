@@ -42,7 +42,7 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
 
         if (styleBitmap == null) {
             context?.let {
-                styleBitmap = ImageUtils.loadAssetBitmap(it, "thumbnails/style0.jpg")
+                styleBitmap = ImageUtils.loadAssetBitmap(it, "thumbnails/style24.jpg")
             }
         }
 
@@ -95,7 +95,7 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
             frameBitmap.height, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE,
             info.imageRotation, true, fitIn = true)
 
-        val preScaledBitmap =  ImageUtils.createTransformedBitmap(frameBitmap,
+        val preScaledBitmap = ImageUtils.createTransformedBitmap(frameBitmap,
             matrix, paddingColor = Color.BLACK)
 
         dumpIntermediateBitmap(preScaledBitmap, PRE_SCALED_IMAGE_FILE)

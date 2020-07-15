@@ -50,7 +50,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActiv
         }
     }
 
-    protected fun setupViews() {
+    protected open fun setupViews() {
         supportFragmentManager.beginTransaction().also {
             val exampleFragment = createBaseFragment()
 
