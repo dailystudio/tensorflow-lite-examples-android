@@ -4,5 +4,4 @@ import android.graphics.Bitmap
 import android.graphics.Matrix
 
 data class SegmentationResult(val maskBitmap: Bitmap,
-                              val preScaledRevertTransform: Matrix? = null
-)
+                              val items: Set<String>)

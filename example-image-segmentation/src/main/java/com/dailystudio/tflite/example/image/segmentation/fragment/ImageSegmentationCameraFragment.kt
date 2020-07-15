@@ -71,11 +71,11 @@ private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
         }
 
         segmentationModel?.let { model ->
-            val mask = trimBitmap(model.fastExecute(inferenceBitmap, info), info.frameSize)
+            val inferenceResult = model.fastExecute(inferenceBitmap, info)
+            val mask = trimBitmap(inferenceResult.first, info.frameSize)
             val extracted = ImageUtils.maskBitmap(
                 trimBitmap(inferenceBitmap, info.frameSize), mask)
-            results = SegmentationResult(mask,
-                preScaleRevertTransform)
+            results = SegmentationResult(mask, inferenceResult.second)
             dumpIntermediateBitmap(mask, MASK_IMAGE_FILE)
             dumpIntermediateBitmap(extracted, EXTRACTED_IMAGE_FILE)
         }

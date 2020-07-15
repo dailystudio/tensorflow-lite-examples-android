@@ -71,7 +71,7 @@ class ImageSegmentationModelExecutor(
   }
 
   fun fastExecute(data: Bitmap,
-                  info: ImageSegmentationInferenceInfo): Bitmap {
+                  info: ImageSegmentationInferenceInfo): Pair<Bitmap, Set<String>> {
     try {
       fullTimeExecutionTime = SystemClock.uptimeMillis()
 
@@ -95,7 +95,7 @@ class ImageSegmentationModelExecutor(
       info.inferenceTime = imageSegmentationTime
 
       maskFlatteningTime = SystemClock.uptimeMillis()
-      val mask = convertByteBufferToMask(
+      val maskAndItems = extraMaskAndItemsFromByteBuffer(
         segmentationMasks, imageSize, imageSize,
         segmentColors
       )
@@ -106,7 +106,7 @@ class ImageSegmentationModelExecutor(
       fullTimeExecutionTime = SystemClock.uptimeMillis() - fullTimeExecutionTime
       Log.d(TAG, "Total time execution $fullTimeExecutionTime")
 
-      return mask
+      return maskAndItems
     } catch (e: Exception) {
       val exceptionLog = "something went wrong: ${e.message}"
       Log.d(TAG, exceptionLog)
@@ -116,35 +116,40 @@ class ImageSegmentationModelExecutor(
           imageSize,
           imageSize
         )
-      return emptyBitmap
+      return Pair(emptyBitmap, setOf())
     }
   }
 
-  private fun convertByteBufferToMask(buffer: ByteBuffer,
-                                      width: Int,
-                                      height: Int,
-                                      colors: IntArray): Bitmap {
+  private fun extraMaskAndItemsFromByteBuffer(buffer: ByteBuffer,
+                                              width: Int,
+                                              height: Int,
+                                              colors: IntArray): Pair<Bitmap, Set<String>> {
     val start = System.currentTimeMillis()
 
     val pixels = width * height
     val data = IntArray(pixels)
-    var fa = FloatArray(width * height * NUM_CLASSES)
+    val itemsFound = HashSet<String>()
+    val cacheInMemory = FloatArray(width * height * NUM_CLASSES)
 
     buffer.rewind()
-    buffer.asFloatBuffer().get(fa)
+    buffer.asFloatBuffer().get(cacheInMemory)
 
     for (y in 0 until height) {
       for (x in 0 until width) {
         var maxVal = 0f
         data[y * width + x] = Color.TRANSPARENT
 
+        var itemIndex = 0
         for (c in 0 until NUM_CLASSES) {
-          val value = fa[y * width * NUM_CLASSES + x * NUM_CLASSES + c]
+          val value = cacheInMemory[y * width * NUM_CLASSES + x * NUM_CLASSES + c]
           if (c == 0 || value > maxVal) {
             maxVal = value
             data[y * width + x] = colors[c]
+            itemIndex = c
           }
         }
+
+        itemsFound.add(labelsArrays[itemIndex])
       }
     }
 
@@ -152,9 +157,10 @@ class ImageSegmentationModelExecutor(
 
     Logger.debug("convert $pixels pixels' buffer in ${end - start} ms")
 
-    return com.dailystudio.devbricksx.utils.ImageUtils.intArrayToBitmap(
-      data, imageSize, imageSize
-    )
+    val maskBitmap = com.dailystudio.devbricksx.utils.ImageUtils.intArrayToBitmap(
+      data, imageSize, imageSize)
+
+    return Pair(maskBitmap, itemsFound)
   }
 
   fun execute(data: Bitmap): ModelExecutionResult {

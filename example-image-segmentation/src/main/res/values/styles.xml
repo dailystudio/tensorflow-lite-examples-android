@@ -7,4 +7,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ItemLabel" parent="DefaultListItemText1stLine">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/item_label_font_size</item>
+        <item name="android:padding">@dimen/item_label_padding</item>
+    </style>
+
 </resources>
