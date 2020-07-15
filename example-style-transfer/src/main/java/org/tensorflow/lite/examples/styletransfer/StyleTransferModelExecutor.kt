@@ -17,8 +17,11 @@
 package org.tensorflow.lite.examples.styletransfer
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.SystemClock
 import android.util.Log
+import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -64,6 +67,97 @@ class StyleTransferModelExecutor(
     private const val STYLE_TRANSFER_INT8_MODEL = "style_transfer_quantized_384.tflite"
     private const val STYLE_PREDICT_FLOAT16_MODEL = "style_predict_f16_256.tflite"
     private const val STYLE_TRANSFER_FLOAT16_MODEL = "style_transfer_f16_384.tflite"
+  }
+
+  fun fastExecute(contentBitmap: Bitmap,
+                  styleBitmap: Bitmap,
+                  info: AdvanceInferenceInfo
+  ): Bitmap {
+    try {
+      Log.i(TAG, "running models")
+
+      fullExecutionTime = SystemClock.uptimeMillis()
+      preProcessTime = SystemClock.uptimeMillis()
+
+      val contentArray =
+        ImageUtils.bitmapToByteBuffer(contentBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+      val input = ImageUtils.bitmapToByteBuffer(styleBitmap, STYLE_IMAGE_SIZE, STYLE_IMAGE_SIZE)
+
+      val inputsForPredict = arrayOf<Any>(input)
+      val outputsForPredict = HashMap<Int, Any>()
+      val styleBottleneck = Array(1) { Array(1) { Array(1) { FloatArray(BOTTLENECK_SIZE) } } }
+      outputsForPredict[0] = styleBottleneck
+      preProcessTime = SystemClock.uptimeMillis() - preProcessTime
+
+      stylePredictTime = SystemClock.uptimeMillis()
+      // The results of this inference could be reused given the style does not change
+      // That would be a good practice in case this was applied to a video stream.
+      interpreterPredict.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
+      stylePredictTime = SystemClock.uptimeMillis() - stylePredictTime
+      Log.d(TAG, "Style Predict Time to run: $stylePredictTime")
+      info.preProcessTime = stylePredictTime
+
+      val inputsForStyleTransfer = arrayOf(contentArray, styleBottleneck)
+      val outputsForStyleTransfer = HashMap<Int, Any>()
+      val outputImage =
+        Array(1) { Array(CONTENT_IMAGE_SIZE) { Array(CONTENT_IMAGE_SIZE) { FloatArray(3) } } }
+      outputsForStyleTransfer[0] = outputImage
+
+      styleTransferTime = SystemClock.uptimeMillis()
+      interpreterTransform.runForMultipleInputsOutputs(
+        inputsForStyleTransfer,
+        outputsForStyleTransfer
+      )
+      styleTransferTime = SystemClock.uptimeMillis() - styleTransferTime
+      Log.d(TAG, "Style apply Time to run: $styleTransferTime")
+      info.inferenceTime = styleTransferTime
+
+      postProcessTime = SystemClock.uptimeMillis()
+      val pixels = convertArrayToInt(outputImage, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+      val styledImage =
+        com.dailystudio.devbricksx.utils.ImageUtils.intArrayToBitmap(pixels,
+          CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+//      val styledImage = ImageUtils.convertArrayToBitmap(outputImage, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+      postProcessTime = SystemClock.uptimeMillis() - postProcessTime
+      info.flattenTime = postProcessTime
+
+      fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
+      Log.d(TAG, "Time to run everything: $fullExecutionTime")
+
+      return styledImage
+    } catch (e: Exception) {
+      val exceptionLog = "something went wrong: ${e.message}"
+      Log.d(TAG, exceptionLog)
+
+      val emptyBitmap =
+        ImageUtils.createEmptyBitmap(
+          CONTENT_IMAGE_SIZE,
+          CONTENT_IMAGE_SIZE
+        )
+      return emptyBitmap
+    }
+  }
+
+  private fun convertArrayToInt(imageArray: Array<Array<Array<FloatArray>>>,
+                        imageWidth: Int,
+                        imageHeight: Int
+  ): IntArray {
+    val pixels = imageWidth * imageHeight
+    val data = IntArray(pixels)
+
+    for (x in imageArray[0].indices) {
+      for (y in imageArray[0][0].indices) {
+        val color = Color.rgb(
+          (imageArray[0][x][y][2] * 255).toInt(),
+          (imageArray[0][x][y][1] * 255).toInt(),
+          (imageArray[0][x][y][0] * 255).toInt()
+        )
+
+        data[x * imageHeight + y] = color
+      }
+    }
+
+    return data
   }
 
   fun execute(
