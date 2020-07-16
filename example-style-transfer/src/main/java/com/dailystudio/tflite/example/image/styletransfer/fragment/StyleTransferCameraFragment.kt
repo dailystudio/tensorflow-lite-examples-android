@@ -51,7 +51,8 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
                 model.fastExecute(inferenceBitmap, it , info)
             } ?: inferenceBitmap
 
-            val trimmed = trimBitmap(styledBitmap, info.frameSize)
+            val trimmed = ImageUtils.trimBitmap(
+                styledBitmap, info.frameSize.width.toFloat() / info.frameSize.height)
             results = StyleTransferResult(trimmed)
             dumpIntermediateBitmap(trimmed, STYLED_IMAGE_FILE)
         }
@@ -61,22 +62,6 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
 
     override fun createInferenceInfo(): AdvanceInferenceInfo {
        return AdvanceInferenceInfo()
-    }
-
-    fun trimBitmap(maskBitmap: Bitmap,
-                   frameSize: Size): Bitmap {
-        val clipSize = if (frameSize.width > frameSize.height) {
-            Size(maskBitmap.width,
-                maskBitmap.height * frameSize.height / frameSize.width )
-        } else {
-            Size(maskBitmap.width * frameSize.width / frameSize.height, maskBitmap.height)
-        }
-
-        val xOffset = (maskBitmap.width - clipSize.width) / 2
-        val yOffset = (maskBitmap.height - clipSize.height) / 2
-
-        return ImageUtils.createClippedBitmap(maskBitmap,
-            xOffset, yOffset, clipSize.width, clipSize.height)
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,
