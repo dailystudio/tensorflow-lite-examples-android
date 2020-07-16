@@ -21,4 +21,28 @@
     <include android:id="@+id/bottom_sheet_layout"
         layout="@layout/layout_bottom_sheet"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        app:srcCompat="@drawable/ic_style_images"
+        app:backgroundTint="@color/colorPrimary"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="@dimen/style_images_button_margin_start"
+        android:layout_marginBottom="@dimen/style_images_button_margin_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <FrameLayout
+        android:visibility="gone"
+        android:background="@color/semi_black"
+        android:layout_marginTop="?actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <fragment
+            android:id="@+id/fragment_styles"
+            android:name="com.dailystudio.tflite.example.image.styletransfer.fragment.StyleImagesListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
