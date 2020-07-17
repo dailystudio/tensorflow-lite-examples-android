@@ -2,6 +2,7 @@ package com.dailystudio.tflite.example.image.styletransfer
 
 import android.os.Bundle
 import android.view.View
+import androidx.camera.core.CameraSelector
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -10,7 +11,6 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
 import com.dailystudio.tflite.example.image.styletransfer.fragment.PickStyleDialogFragment
-import com.dailystudio.tflite.example.image.styletransfer.fragment.StyleImagesListFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.StyleTransferCameraFragment
 import com.dailystudio.tflite.example.image.styletransfer.model.StyleImageViewModel
 import com.dailystudio.tflite.example.image.styletransfer.ui.StyledOverlay
@@ -27,7 +27,11 @@ class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferRes
     }
 
     private var styledOverlay: StyledOverlay? = null
-    private var fab: FloatingActionButton? = null
+    private var fabStyles: FloatingActionButton? = null
+    private var fabMode: FloatingActionButton? = null
+    private var fabCameraSelector: FloatingActionButton? = null
+
+    private var fragmentCamera: StyleTransferCameraFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,48 +45,52 @@ class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferRes
         super.setupViews()
 
         styledOverlay = findViewById(R.id.styled_overlay)
-        styledOverlay?.setOnClickListener { _ ->
-            styledOverlay?.let {
-//                it.setPreviewMode(!it.isInPreviewMode())
-            }
-        }
 
-        fab = findViewById(R.id.fab_styles)
-        fab?.setOnClickListener {
+        fabStyles = findViewById(R.id.fab_styles)
+        fabStyles?.setOnClickListener {
             val dialog = PickStyleDialogFragment()
 
             dialog.show(supportFragmentManager, "pick-styles")
         }
-    }
 
-    private fun hideFloatingActionButton(fab: FloatingActionButton) {
-        val params =
-            fab.layoutParams as CoordinatorLayout.LayoutParams
-        val behavior =
-            params.behavior as FloatingActionButton.Behavior?
-        if (behavior != null) {
-            behavior.isAutoHideEnabled = false
+        fabMode = findViewById(R.id.fab_mode)
+        fabMode?.setOnClickListener {
+            styledOverlay?.let { overlay ->
+                val previewMode = overlay.isInPreviewMode()
+                overlay.setPreviewMode(!previewMode)
+
+                fabMode?.setImageResource(if (previewMode) {
+                    R.drawable.ic_preview_mode
+                } else {
+                    R.drawable.ic_fullscreen_mode
+                })
+            }
         }
-        fab.hide()
-    }
 
-    private fun showFloatingActionButton(fab: FloatingActionButton) {
-        fab.show()
-        val params =
-            fab.layoutParams as CoordinatorLayout.LayoutParams
-        val behavior =
-            params.behavior as FloatingActionButton.Behavior?
-        if (behavior != null) {
-            behavior.isAutoHideEnabled = true
+        fabCameraSelector = findViewById(R.id.fab_camera_selector)
+        fabCameraSelector?.setOnClickListener {
+            fragmentCamera?.let {
+                val lensFacing = it.getCurrentLensFacing()
+                if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
+                    it.changeLensFacing(CameraSelector.LENS_FACING_BACK)
+                    fabCameraSelector?.setImageResource(R.drawable.ic_front_camera)
+                } else {
+                    it.changeLensFacing(CameraSelector.LENS_FACING_FRONT)
+                    fabCameraSelector?.setImageResource(R.drawable.ic_back_camera)
+                }
+            }
         }
     }
-
     override fun getLayoutResId(): Int {
         return R.layout.activity_example_style_transfer
     }
 
     override fun createBaseFragment(): Fragment {
-        return StyleTransferCameraFragment()
+        val fragment = StyleTransferCameraFragment()
+
+        fragmentCamera = fragment
+
+        return fragment
     }
 
     override fun createResultsView(): View? {

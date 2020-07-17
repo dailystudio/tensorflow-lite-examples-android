@@ -19,6 +19,10 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
     private var inferenceAgent: InferenceAgent<Info, Results> =
         InferenceAgent()
 
+    init {
+        inferenceAgent.deliverInferenceInfo(createInferenceInfo())
+    }
+
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
         var results: Results? = null

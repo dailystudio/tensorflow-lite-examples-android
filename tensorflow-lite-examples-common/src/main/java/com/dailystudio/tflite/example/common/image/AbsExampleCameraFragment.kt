@@ -45,4 +45,12 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
                                 rotation: Int,
                                 lensFacing: Int): AbsImageAnalyzer<Info, Results>
 
+    fun getCurrentLensFacing(): Int {
+        return lensFacing
+    }
+
+    fun changeLensFacing(lensFacing: Int) {
+        setCameraLens(lensFacing)
+    }
+
 }

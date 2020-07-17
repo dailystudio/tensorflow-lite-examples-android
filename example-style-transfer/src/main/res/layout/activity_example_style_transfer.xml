@@ -27,7 +27,29 @@
         app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@id/bottom_sheet_layout"
         app:layout_anchorGravity="top|end"
-        android:layout_marginEnd="@dimen/style_images_button_margin_h"
+        android:layout_marginEnd="@dimen/style_images_button_margin_h1"
+        android:layout_marginBottom="@dimen/style_images_button_margin_v"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_mode"
+        app:srcCompat="@drawable/ic_fullscreen_mode"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_anchor="@id/bottom_sheet_layout"
+        app:layout_anchorGravity="top|end"
+        android:layout_marginEnd="@dimen/style_images_button_margin_h2"
+        android:layout_marginBottom="@dimen/style_images_button_margin_v"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_camera_selector"
+        app:srcCompat="@drawable/ic_front_camera"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_anchor="@id/bottom_sheet_layout"
+        app:layout_anchorGravity="top|end"
+        android:layout_marginEnd="@dimen/style_images_button_margin_h3"
         android:layout_marginBottom="@dimen/style_images_button_margin_v"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
