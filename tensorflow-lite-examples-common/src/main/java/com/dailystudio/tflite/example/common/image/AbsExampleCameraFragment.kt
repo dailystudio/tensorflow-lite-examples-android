@@ -11,7 +11,7 @@ import java.util.concurrent.Executors
 abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : CameraFragment() {
 
     private lateinit var analyzerExecutor: ExecutorService
-    private lateinit var analyzer: AbsImageAnalyzer<Info, Results>
+    protected lateinit var analyzer: AbsImageAnalyzer<Info, Results>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

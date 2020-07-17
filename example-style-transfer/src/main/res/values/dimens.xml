@@ -2,13 +2,14 @@
 <resources>
 
     <dimen name="preview_round_corner_radius">5dp</dimen>
-    <dimen name="preview_end_margin">16dp</dimen>
-    <dimen name="preview_bottom_margin">64dp</dimen>
+    <dimen name="preview_margin_h">16dp</dimen>
+    <dimen name="preview_margin_v">64dp</dimen>
 
     <dimen name="style_images_height">150dp</dimen>
 
-    <dimen name="style_images_button_margin_start">@dimen/preview_end_margin</dimen>
-    <dimen name="style_images_button_margin_bottom">@dimen/preview_bottom_margin</dimen>
+    <dimen name="style_images_button_margin_h">12dp</dimen>
+    <dimen name="style_images_button_margin_v">@dimen/preview_margin_v</dimen>
+    <dimen name="style_images_selection_size">24dp</dimen>
 
     <dimen name="card_media_height">72dp</dimen>
 

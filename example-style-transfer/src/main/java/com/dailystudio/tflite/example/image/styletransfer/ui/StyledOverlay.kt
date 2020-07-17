@@ -97,10 +97,10 @@ class StyledOverlay: View {
             }
 
             if (inPreviewMode) {
-                val marginEnd = resources.getDimensionPixelSize(R.dimen.preview_end_margin)
-                val marginBottom = resources.getDimensionPixelSize(R.dimen.preview_bottom_margin)
+                val marginStart = resources.getDimensionPixelSize(R.dimen.preview_margin_h)
+                val marginBottom = resources.getDimensionPixelSize(R.dimen.preview_margin_v)
                 canvas.drawBitmap(displayBitmap,
-                    (canvasWidth - displayBitmap.width - marginEnd).toFloat(),
+                    marginStart.toFloat(),
                     (canvasHeight - displayBitmap.height - marginBottom).toFloat(), paint)
             } else {
                 canvas.drawBitmap(displayBitmap, 0f, 0f, paint)

@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -18,31 +19,26 @@
     <include android:id="@+id/top_bar_layout"
         layout="@layout/layout_top_bar"/>
 
-    <include android:id="@+id/bottom_sheet_layout"
-        layout="@layout/layout_bottom_sheet"/>
+    <include layout="@layout/layout_bottom_sheet"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_styles"
         app:srcCompat="@drawable/ic_style_images"
         app:backgroundTint="@color/colorPrimary"
-        android:layout_gravity="bottom|start"
-        android:layout_marginStart="@dimen/style_images_button_margin_start"
-        android:layout_marginBottom="@dimen/style_images_button_margin_bottom"
+        app:layout_anchor="@id/bottom_sheet_layout"
+        app:layout_anchorGravity="top|end"
+        android:layout_marginEnd="@dimen/style_images_button_margin_h"
+        android:layout_marginBottom="@dimen/style_images_button_margin_v"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+<!--
 
-    <FrameLayout
-        android:visibility="gone"
-        android:background="@color/semi_black"
+    <fragment
+        android:id="@+id/fragment_styles"
+        android:name="com.dailystudio.tflite.example.image.styletransfer.fragment.StyleImagesListFragment"
         android:layout_marginTop="?actionBarSize"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"/>
 
-        <fragment
-            android:id="@+id/fragment_styles"
-            android:name="com.dailystudio.tflite.example.image.styletransfer.fragment.StyleImagesListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </FrameLayout>
-
+-->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

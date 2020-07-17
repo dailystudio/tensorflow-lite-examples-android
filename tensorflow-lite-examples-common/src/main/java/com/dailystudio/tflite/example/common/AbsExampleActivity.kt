@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.dailystudio.devbricksx.app.activity.DevBricksActivity
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -21,7 +22,7 @@ import com.rasalexman.kdispatcher.Notification
 import com.rasalexman.kdispatcher.subscribe
 import com.rasalexman.kdispatcher.unsubscribe
 
-abstract class AbsExampleActivity<Info: InferenceInfo, Results> : AppCompatActivity() {
+abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActivity() {
 
     private var bottomSheetLayout: ViewGroup? = null
     private var visibleLayout: ViewGroup? = null

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:paddingStart="@dimen/lv_item_space_h"
+	android:paddingEnd="@dimen/lv_item_space_h"
+	android:paddingTop="@dimen/lv_item_space_v"
+	android:paddingBottom="@dimen/lv_item_space_v"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<androidx.cardview.widget.CardView
+		android:id="@+id/list_item_root"
+		style="@style/DefaultCardView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<FrameLayout
+			android:background="?attr/selectableItemBackground"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<ImageView
+				android:id="@+id/style_image"
+				style="@style/DefaultCardViewMedia"/>
+
+			<FrameLayout
+				android:id="@+id/style_selection"
+				android:background="@color/semi_black"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
+
+				<ImageView
+					android:src="@drawable/ic_style_selected"
+					android:layout_gravity="center"
+					android:layout_width="@dimen/style_images_selection_size"
+					android:layout_height="@dimen/style_images_selection_size"/>
+
+			</FrameLayout>
+
+		</FrameLayout>
+
+	</androidx.cardview.widget.CardView>
+
+
+</FrameLayout>
