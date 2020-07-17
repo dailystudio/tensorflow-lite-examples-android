@@ -117,12 +117,12 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
 
 class StyleTransferCameraFragment : AbsExampleCameraFragment<AdvanceInferenceInfo, StyleTransferResult>() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
 
         StyleTransferPrefs.prefsChange.observe(this, Observer<PrefsChange> {
             if (it.prefKey == StyleTransferPrefs.KEY_SELECTED_STYLE) {
-                val imageAnalyzer = analyzer
+                val imageAnalyzer: AbsImageAnalyzer<*, *>? = analyzer
 
                 if (imageAnalyzer is StyleTransferAnalyzer) {
                     imageAnalyzer.selectStyle(StyleTransferPrefs.getSelectedStyle(requireContext()))
