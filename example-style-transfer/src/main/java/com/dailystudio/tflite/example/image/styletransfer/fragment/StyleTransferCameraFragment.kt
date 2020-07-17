@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Size
+import androidx.camera.core.CameraSelector
 import androidx.lifecycle.Observer
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.app.AbsPrefs
@@ -97,9 +98,15 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
         val preScaledBitmap = ImageUtils.createTransformedBitmap(frameBitmap,
             matrix, paddingColor = Color.BLACK)
 
-        dumpIntermediateBitmap(preScaledBitmap, PRE_SCALED_IMAGE_FILE)
+        val flipped = if (info.cameraLensFacing == CameraSelector.LENS_FACING_FRONT) {
+            ImageUtils.flipBitmap(preScaledBitmap)
+        } else {
+            preScaledBitmap
+        }
 
-        return preScaledBitmap
+        dumpIntermediateBitmap(flipped, PRE_SCALED_IMAGE_FILE)
+
+        return flipped
     }
 
     override fun isDumpIntermediatesEnabled(): Boolean {
