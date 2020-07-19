@@ -9,11 +9,11 @@ object Constants {
 
     val DEFAULT_IMAGE_LOADER_OPTIONS_BUILDER: DisplayImageOptions.Builder = DisplayImageOptions.Builder()
         .cacheInMemory(true)
-        .cacheOnDisk(true)
-//        .showImageOnLoading(R.color.transparent)
+        .cacheOnDisk(false)
+        .showImageOnLoading(R.color.transparent)
         .showImageOnFail(R.color.transparent)
         .showImageForEmptyUri(R.color.transparent)
-//        .resetViewBeforeLoading(true)
+        .resetViewBeforeLoading(true)
 
     const val EVENT_INFERENCE_INFO_UPDATE = "inference-info-update"
     const val EVENT_RESULTS_UPDATE = "results-update"
