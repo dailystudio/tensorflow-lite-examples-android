@@ -1,7 +1,7 @@
 package com.dailystudio.tflite.example.image.styletransfer
 
 import android.content.Context
-import com.dailystudio.devbricksx.app.AbsPrefs
+import com.dailystudio.devbricksx.preference.AbsPrefs
 
 object StyleTransferPrefs : AbsPrefs() {
 

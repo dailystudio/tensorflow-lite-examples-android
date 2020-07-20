@@ -32,6 +32,8 @@ data class RecognizedDigit(val digitBitmap: Bitmap? = null,
 class DigitClassifierFragment : Fragment() {
 
     companion object {
+        private const val PRE_SCALE_SIZE = (28 * 3)
+
         private const val INFERENCE_IMAGE_FILE = "inference.png"
     }
 
@@ -142,7 +144,7 @@ class DigitClassifierFragment : Fragment() {
                                  info: ImageInferenceInfo): Bitmap {
         val matrix = MatrixUtils.getTransformationMatrix(
             frameBitmap.width,  frameBitmap.height,
-            480, 480,
+            PRE_SCALE_SIZE, PRE_SCALE_SIZE,
             0,
             maintainAspectRatio = true,
             fitIn = true)

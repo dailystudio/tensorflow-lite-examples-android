@@ -5,14 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.os.Bundle
 import android.util.Size
 import androidx.camera.core.CameraSelector
 import androidx.lifecycle.Observer
 import com.dailystudio.devbricksx.GlobalContextWrapper
-import com.dailystudio.devbricksx.app.AbsPrefs
-import com.dailystudio.devbricksx.app.PrefsChange
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.preference.PrefsChange
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
@@ -35,29 +33,33 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
 
     private var styleTransferModelExecutor: StyleTransferModelExecutor? = null
     private var styleBitmap: Bitmap? = null
+    private var styleName: String? = null
 
     fun selectStyle(styleName: String) {
         styleBitmap = null
+        this.styleName = styleName
     }
 
     override fun analyzeFrame(inferenceBitmap: Bitmap, info: AdvanceInferenceInfo): StyleTransferResult? {
+        val context = GlobalContextWrapper.context ?: return null
+
         var results: StyleTransferResult? = null
-        val context = GlobalContextWrapper.context
 
         if (styleTransferModelExecutor == null) {
-            context?.let {
-                styleTransferModelExecutor =
-                    StyleTransferModelExecutor(it, true)
-            }
+            styleTransferModelExecutor =
+                StyleTransferModelExecutor(context, true)
 
             Logger.debug("segmentation model created: $styleTransferModelExecutor")
         }
 
+        if (styleName == null) {
+            styleName = StyleTransferPrefs.getSelectedStyle(context)
+        }
+
         if (styleBitmap == null) {
             context?.let {
-                val styleName = StyleTransferPrefs.getSelectedStyle(context)
                 styleBitmap = ImageUtils.loadAssetBitmap(it,
-                    "thumbnails/${styleName}")
+                    "thumbnails/${this.styleName}")
             }
         }
 

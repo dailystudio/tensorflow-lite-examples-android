@@ -13,7 +13,7 @@ class PickStyleDialogFragment : DialogFragment() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
 
         builder.setView(R.layout.dialog_pick_styles)
-        builder.setNegativeButton(android.R.string.cancel) { dialog, _ ->
+        builder.setNegativeButton(R.string.label_back) { dialog, _ ->
             dialog.dismiss()
         }
 

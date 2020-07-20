@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Style Transfer</string>
+    <string name="label_back">Back</string>
 </resources>
