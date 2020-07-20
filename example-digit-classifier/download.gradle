@@ -1,0 +1,10 @@
+apply from:'../buildscripts/network.gradle'
+
+def ASSET_DIR = projectDir.toString() + '/src/main/assets'
+
+task downloadModelFile(type: DownloadUrlTask) {
+    sourceUrl = 'https://storage.googleapis.com/download.tensorflow.org/models/tflite/digit_classifier/mnist.tflite'
+    target = file(ASSET_DIR + '/mnist.tflite')
+}
+
+preBuild.dependsOn downloadModelFile

@@ -58,6 +58,7 @@
   {
     "id": 8,
     "title": "Digit classifier",
+    "package": "com.dailystudio.tflite.example.image.digitclassifier",
     "description": "Use a TensorFlow Lite model to classify your handwritten digits.",
     "image": "assets://model_icons/tile_model_digit.png"
   },

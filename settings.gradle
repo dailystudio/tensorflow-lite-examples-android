@@ -1,3 +1,4 @@
+include ':example-digit-classifier'
 include ':example-style-transfer'
 include ':example-image-segmentation'
 include ':example-smart-reply'
