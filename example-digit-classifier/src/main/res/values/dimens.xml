@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="draw_stroke_width">35dp</dimen>
+
+    <dimen name="clear_button_size">36dp</dimen>
+
+    <dimen name="results_image_size">48dp</dimen>
+    <dimen name="results_image_round_corner_radius">50dp</dimen>
+
+</resources>

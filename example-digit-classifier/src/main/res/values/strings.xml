@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Digit Classifier</string>
+    <string name="prompt_draw">Draw your digit to fill the area</string>
 </resources>

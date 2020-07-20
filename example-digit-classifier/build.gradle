@@ -63,6 +63,8 @@ dependencies {
 
     implementation project(":tensorflow-lite-examples-common")
 
+    implementation "com.github.divyanshub024:AndroidDraw:${project.ext.androidDrawVersion}"
+
     kapt "com.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
 }
 

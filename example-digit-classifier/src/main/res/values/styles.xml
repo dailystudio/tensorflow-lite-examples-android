@@ -7,4 +7,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="RecognizedDigit" parent="DefaultLabel">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:gravity">end|center_horizontal</item>
+    </style>
+
+    <style name="RecognizedProp" parent="DefaultLabel">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
 </resources>
