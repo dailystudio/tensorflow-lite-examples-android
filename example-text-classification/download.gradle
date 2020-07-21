@@ -1,0 +1,10 @@
+apply from:'../buildscripts/network.gradle'
+
+def ASSET_DIR = projectDir.toString() + '/src/main/assets'
+
+task downloadModelFile(type: DownloadUrlTask) {
+    sourceUrl = 'https://storage.googleapis.com/download.tensorflow.org/models/tflite/text_classification/text_classification.tflite'
+    target = file(ASSET_DIR + '/text_classification.tflite')
+}
+
+preBuild.dependsOn downloadModelFile

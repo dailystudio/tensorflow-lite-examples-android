@@ -65,6 +65,7 @@
   {
     "id": 9,
     "title": "Text classification",
+    "package": "com.dailystudio.tflite.example.text.classification",
     "description": "Categorize free text into predefined groups. Potential applications include abusive content moderation, tone detection and more.",
     "image": "assets://model_icons/tile_model_text.png"
   },
