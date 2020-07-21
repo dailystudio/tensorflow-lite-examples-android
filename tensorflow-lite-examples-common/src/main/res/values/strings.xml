@@ -11,4 +11,6 @@
 
     <string name="label_performance">Performance</string>
 
+    <string name="label_send">SEND</string>
+
 </resources>

@@ -13,8 +13,10 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.text.smartreply.fragment.ChatRecordListFragmentExt
-import com.dailystudio.tflite.example.text.smartreply.model.ChatRecordViewModel
+import com.dailystudio.tflite.example.common.text.ChatRecord
+import com.dailystudio.tflite.example.common.text.ChatRecordListFragmentExt
+import com.dailystudio.tflite.example.common.text.MessageType
+import com.dailystudio.tflite.example.common.text.model.ChatRecordViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

@@ -52,4 +52,11 @@
         <item name="android:textSize">@dimen/inference_item_value_font_size</item>
     </style>
 
+    <style name="ChatText">
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/default_font_size</item>
+        <item name="android:padding">@dimen/default_padding</item>
+    </style>
+
 </resources>

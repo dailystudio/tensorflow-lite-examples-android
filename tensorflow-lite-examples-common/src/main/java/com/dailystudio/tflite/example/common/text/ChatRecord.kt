@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.text.smartreply
+package com.dailystudio.tflite.example.common.text
 
 import android.view.Gravity
 import android.view.View
@@ -8,6 +8,7 @@ import com.dailystudio.devbricksx.annotations.Adapter
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsViewHolder
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
+import com.dailystudio.tflite.example.common.R
 
 enum class MessageType {
     Noop,
@@ -18,7 +19,7 @@ enum class MessageType {
 @ListFragment
 @ViewModel
 @Adapter(
-    layout = R.layout.layout_chat_record,
+    layoutByName = "layout_chat_record",
     viewType = ViewType.Customized,
     viewHolder = ChatRecordViewHolder::class)
 @InMemoryRepository(key = Long::class)
@@ -39,13 +40,12 @@ class ChatRecordViewHolder(itemView: View): AbsViewHolder<ChatRecord>(itemView) 
 
     override fun bind(item: ChatRecord) {
         val context = itemView.context
-        val res = context.resources
 
-        val textPanel: View = itemView.findViewById(R.id.text_panel)
-        val textView: TextView = itemView.findViewById(R.id.chat_text)
+        val textPanel: View? = itemView.findViewById(R.id.text_panel)
+        val textView: TextView? = itemView.findViewById(R.id.chat_text)
         val textViewLp = textPanel?.layoutParams
-        val pRecv: View = itemView.findViewById(R.id.portrait_receive)
-        val pSend: View = itemView.findViewById(R.id.portrait_send)
+        val pRecv: View? = itemView.findViewById(R.id.portrait_receive)
+        val pSend: View? = itemView.findViewById(R.id.portrait_send)
 
         when (item.messageType) {
             MessageType.Noop -> {
