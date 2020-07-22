@@ -1,8 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <dimen name="item_label_padding">5dp</dimen>
-    <dimen name="item_label_corner_radius">4dp</dimen>
-    <dimen name="item_label_font_size">12dp</dimen>
-
 </resources>

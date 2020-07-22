@@ -18,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-abstract class AbsChatActivity : AbsExampleActivity<InferenceInfo, Void>() {
+abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Results>() {
 
     companion object {
         const val NOOP_RECORDS_COUNT = 1
@@ -28,7 +28,7 @@ abstract class AbsChatActivity : AbsExampleActivity<InferenceInfo, Void>() {
     private var userInput: EditText? = null
     private var sendButton: Button? = null
 
-    private var inferenceAgent: InferenceAgent<InferenceInfo, Void> =
+    private var inferenceAgent: InferenceAgent<InferenceInfo, Results> =
         InferenceAgent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +61,7 @@ abstract class AbsChatActivity : AbsExampleActivity<InferenceInfo, Void>() {
         }
 
         lifecycleScope.launchWhenStarted {
-            insertLeadingLoopRecords()
+            insertLeadingRecords()
 
             val info = InferenceInfo()
             inferenceAgent.deliverInferenceInfo(info)
@@ -84,10 +84,10 @@ abstract class AbsChatActivity : AbsExampleActivity<InferenceInfo, Void>() {
         return null
     }
 
-    override fun onResultsUpdated(results: Void) {
+    override fun onResultsUpdated(results: Results) {
     }
 
-    private suspend fun insertLeadingLoopRecords() {
+    protected open suspend fun insertLeadingRecords() {
         val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
 
         val records = viewModel.getChatRecords()
@@ -146,9 +146,20 @@ abstract class AbsChatActivity : AbsExampleActivity<InferenceInfo, Void>() {
     private suspend fun receiveReply(text: String) {
         val info = InferenceInfo()
 
-        val replyText = generateReply(text, info)
+        val start = System.currentTimeMillis()
+        val results = generateResults(text, info)
+        val inferenceEnd = System.currentTimeMillis()
+        val replyText = convertResultsToReplyText(results, info)
+        val end = System.currentTimeMillis()
+
+        info.analysisTime = end - start
+        info.inferenceTime = inferenceEnd - start
 
         inferenceAgent.deliverInferenceInfo(info)
+
+        results?.let {
+            inferenceAgent.deliverResults(it)
+        }
 
         val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
 
@@ -159,7 +170,10 @@ abstract class AbsChatActivity : AbsExampleActivity<InferenceInfo, Void>() {
         viewModel.insertChatRecord(record).join()
     }
 
-    abstract fun generateReply(text: String,
-                               info: InferenceInfo): String
+    abstract fun generateResults(text: String,
+                                 info: InferenceInfo): Results?
+
+    abstract fun convertResultsToReplyText(results: Results?,
+                                           info: InferenceInfo): String
 
 }

@@ -5,9 +5,10 @@ import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.text.AbsChatActivity
+import org.tensorflow.lite.examples.smartreply.SmartReply
 import org.tensorflow.lite.examples.smartreply.SmartReplyClient
 
-class ExampleActivity : AbsChatActivity() {
+class ExampleActivity : AbsChatActivity<Array<SmartReply>>() {
 
     private lateinit var client: SmartReplyClient
 
@@ -21,24 +22,28 @@ class ExampleActivity : AbsChatActivity() {
         }
     }
 
-    override fun generateReply(text: String,
-                               info: InferenceInfo): String {
-        val start = System.currentTimeMillis()
+    override fun onDestroy() {
+        super.onDestroy()
+
+        client.unloadModel()
+    }
+
+    override fun generateResults(text: String, info: InferenceInfo): Array<SmartReply>? {
         val ans = client.predict(arrayOf(text))
-        val end = System.currentTimeMillis()
-
-        info.inferenceTime = end - start
-        info.analysisTime = info.inferenceTime
-
         for (reply in ans) {
             Logger.debug("Reply: ${reply.text}")
         }
 
-        if (ans == null || ans.isEmpty()) {
+        return ans
+    }
+
+    override fun convertResultsToReplyText(results: Array<SmartReply>?,
+                                           info: InferenceInfo): String {
+        if (results == null || results.isEmpty()) {
             return ""
         }
 
-        return ans[0].text
+        return results[0].text
     }
 
 }

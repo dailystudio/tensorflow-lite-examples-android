@@ -10,11 +10,11 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.app.activity.DevBricksActivity
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
+import com.dailystudio.tflite.example.common.utils.ResultsUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.rasalexman.kdispatcher.KDispatcher
@@ -212,7 +212,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
         val data = notification.data ?: return
 
         val results = data as Results
-        Logger.debug("latest result: ${results.toString().replace("%", "%%")}")
+        Logger.debug("latest result: ${ResultsUtils.safeToPrintableLog(results)}")
 
         updateResultsOnUiThread(results)
     }

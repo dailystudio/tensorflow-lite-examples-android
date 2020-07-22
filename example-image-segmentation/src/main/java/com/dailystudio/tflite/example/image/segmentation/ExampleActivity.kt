@@ -7,9 +7,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
+import com.dailystudio.tflite.example.common.ui.ItemLabel
+import com.dailystudio.tflite.example.common.ui.fragment.ItemLabelsListFragment
+import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
 import com.dailystudio.tflite.example.image.segmentation.fragment.ImageSegmentationCameraFragment
-import com.dailystudio.tflite.example.image.segmentation.fragment.ItemLabelsListFragment
-import com.dailystudio.tflite.example.image.segmentation.model.ItemLabelViewModel
 import com.dailystudio.tflite.example.image.segmentation.ui.MaskOverlay
 import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
 
@@ -78,7 +79,7 @@ class ExampleActivity : AbsExampleActivity<AdvanceInferenceInfo, SegmentationRes
         val viewModel = ViewModelProvider(this).get(ItemLabelViewModel::class.java)
 
         for (i in 0 until MAX_ITEMS) {
-            viewModel.insertItemLabel(ItemLabel(i, ""))
+            viewModel.insertItemLabel(ItemLabel(i, "", ""))
         }
     }
 
