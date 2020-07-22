@@ -119,7 +119,13 @@ class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Res
 
     override suspend fun insertLeadingRecords() {
         super.insertLeadingRecords()
+
         val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
+
+        val records = viewModel.getChatRecords()
+        if (records.size > NOOP_RECORDS_COUNT) {
+            return
+        }
 
         val record = ChatRecord(System.currentTimeMillis(),
             getString(R.string.chat_text_question),
