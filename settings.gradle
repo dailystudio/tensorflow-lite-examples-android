@@ -1,3 +1,4 @@
+include ':example-bert-qa'
 include ':example-text-classification'
 include ':example-digit-classifier'
 include ':example-style-transfer'

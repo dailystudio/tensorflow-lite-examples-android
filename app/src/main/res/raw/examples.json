@@ -72,6 +72,7 @@
   {
     "id": 10,
     "title": "Question and answer",
+    "package": "com.dailystudio.tflite.example.text.bertqa",
     "description": "Answer user queries based on information extracted from a given text archive.",
     "image": "assets://model_icons/tile_model_question.png"
   }

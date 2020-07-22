@@ -1,0 +1,22 @@
+apply from:'../buildscripts/network.gradle'
+
+def ASSET_DIR = projectDir.toString() + '/src/main/assets'
+
+task downloadVocabFile(type: DownloadUrlTask) {
+    sourceUrl = 'https://storage.googleapis.com/download.tensorflow.org/models/tflite/bert_qa/vocab.txt'
+    target = file(ASSET_DIR + '/vocab.txt')
+}
+
+task downloadQAFile(type: DownloadUrlTask) {
+    sourceUrl = 'https://storage.googleapis.com/download.tensorflow.org/models/tflite/bert_qa/contents_from_squad.json'
+    target = file(ASSET_DIR + '/contents_from_squad.json')
+}
+
+task downloadModelFile(type: DownloadUrlTask) {
+    sourceUrl = 'https://storage.googleapis.com/download.tensorflow.org/models/tflite/bert_qa/mobilebert_float_20191023.tflite'
+    target = file(ASSET_DIR + '/model.tflite')
+}
+
+preBuild.dependsOn downloadVocabFile
+preBuild.dependsOn downloadQAFile
+preBuild.dependsOn downloadModelFile
