@@ -1,25 +1,32 @@
 package com.dailystudio.tflite.example.text.bertqa
 
-import android.view.View
-import androidx.fragment.app.Fragment
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
+import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
+import com.dailystudio.devbricksx.app.activity.DevBricksActivity
+import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.utils.JSONUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
+class ExampleActivity : DevBricksActivity() {
 
-    override fun createBaseFragment(): Fragment {
-        return Fragment()
+    companion object {
+        const val CONTENTS_FILE = "contents_from_squad.json"
     }
 
-    override fun createResultsView(): View? {
-        return null
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    override fun createSettingsView(): View? {
-        return null
-    }
+        setContentView(R.layout.activity_articles)
 
-    override fun onResultsUpdated(results: Void) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val contents = JSONUtils.fromAsset(
+                this@ExampleActivity,
+                CONTENTS_FILE,
+                Contents::class.java)
+
+            Logger.debug("contents: $contents")
+        }
     }
 
 }
