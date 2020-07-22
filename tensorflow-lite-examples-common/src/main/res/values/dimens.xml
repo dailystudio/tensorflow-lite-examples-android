@@ -14,4 +14,7 @@
     <dimen name="inference_item_value_font_size">14dp</dimen>
     <dimen name="inference_item_icon_size">36dp</dimen>
 
+    <dimen name="chat_text_padding">20dp</dimen>
+    <dimen name="input_layout_margin_bottom">48dp</dimen>
+
 </resources>

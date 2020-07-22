@@ -249,5 +249,4 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
 
     private val handler = Handler(Looper.getMainLooper())
 
-
 }
