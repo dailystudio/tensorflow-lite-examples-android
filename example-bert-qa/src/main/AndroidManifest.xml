@@ -26,7 +26,7 @@
 
         </activity>
 
-        <activity android:name=".ArticleActivity"
+        <activity android:name=".ArticleQAActivity"
             android:theme="@style/ExampleActivity"/>
 
     </application>

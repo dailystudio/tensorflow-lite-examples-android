@@ -11,11 +11,12 @@ import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.text.bertqa.fragment.ArticleQAFragment
 import com.dailystudio.tflite.example.text.bertqa.model.ArticleViewModel
+import com.dailystudio.tflite.example.text.bertqa.model.QuestionViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.bertqa.ml.QaClient
 
-class ArticleActivity : AbsExampleActivity<InferenceInfo, Void>() {
+class ArticleQAActivity : AbsExampleActivity<InferenceInfo, Void>() {
 
     companion object {
 
@@ -47,6 +48,10 @@ class ArticleActivity : AbsExampleActivity<InferenceInfo, Void>() {
         setExampleTitle(article?.getDisplayTitle() ?: title)
 
         qaFragment?.setArticle(article)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            reloadQuestions()
+        }
     }
 
     override fun createBaseFragment(): Fragment {
@@ -66,6 +71,24 @@ class ArticleActivity : AbsExampleActivity<InferenceInfo, Void>() {
     }
 
     override fun onResultsUpdated(results: Void) {
+    }
+
+    override fun getLayoutResId(): Int {
+        return R.layout.activity_article_qa
+    }
+
+    private fun reloadQuestions() {
+        val viewModel = ViewModelProvider(this).get(QuestionViewModel::class.java)
+
+        QuestionManager.clear()
+
+        val questions = article?.questions ?: return
+
+        for ((i, q) in questions.withIndex()) {
+            val question = Question(i, q)
+
+            viewModel.insertQuestion(question)
+        }
     }
 
 }

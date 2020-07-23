@@ -6,7 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.dailystudio.devbricksx.app.activity.ActivityLauncher
 import com.dailystudio.tflite.example.text.bertqa.Article
-import com.dailystudio.tflite.example.text.bertqa.ArticleActivity
+import com.dailystudio.tflite.example.text.bertqa.ArticleQAActivity
 
 class ArticlesListFragmentExt : ArticlesListFragment() {
 
@@ -21,8 +21,8 @@ class ArticlesListFragmentExt : ArticlesListFragment() {
 
         val context = itemView.context
         val intent = Intent().apply {
-            component = ComponentName(context, ArticleActivity::class.java)
-            putExtra(ArticleActivity.EXTRA_ARTICLE_ID, item.id)
+            component = ComponentName(context, ArticleQAActivity::class.java)
+            putExtra(ArticleQAActivity.EXTRA_ARTICLE_ID, item.id)
         }
 
         ActivityLauncher.launchActivity(context, intent)

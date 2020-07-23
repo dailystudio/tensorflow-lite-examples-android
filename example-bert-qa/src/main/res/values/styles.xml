@@ -25,4 +25,8 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="QuestionsListView" parent="DefaultRecyclerView">
+        <item name="android:padding">0dp</item>
+    </style>
+
 </resources>

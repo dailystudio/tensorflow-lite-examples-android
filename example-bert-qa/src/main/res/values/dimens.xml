@@ -9,7 +9,10 @@
     <dimen name="article_content_padding">16dp</dimen>
     <dimen name="article_layout_margin_v">56dp</dimen>
 
+    <dimen name="question_panel_elevation">20dp</dimen>
     <dimen name="question_margin_v">0dp</dimen>
     <dimen name="question_margin_h">8dp</dimen>
+
+    <dimen name="bottom_sheet_elevation">40dp</dimen>
 
 </resources>

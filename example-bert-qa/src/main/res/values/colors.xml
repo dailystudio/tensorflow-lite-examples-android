@@ -4,4 +4,5 @@
     <color name="card_title_text_color">@color/colorAccent</color>
     <color name="card_supporting_text_color">@color/colorAccent</color>
 
+    <color name="question_panel_background_color">#f8f8f8</color>
 </resources>
