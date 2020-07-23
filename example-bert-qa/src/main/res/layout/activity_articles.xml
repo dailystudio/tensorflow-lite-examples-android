@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:layout_gravity="top"
+        android:id="@+id/title_layout"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -24,4 +25,12 @@
 
     </FrameLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <fragment
+        android:name="com.dailystudio.tflite.example.text.bertqa.fragment.ArticlesListFragmentExt"
+        android:id="@+id/fragment_articles"
+        android:layout_below="@id/title_layout"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</RelativeLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="lv_item_space_v">8dp</dimen>
+    <dimen name="lv_item_space_h">16dp</dimen>
+    <dimen name="card_supporting_text_font_size">16dp</dimen>
+
+    <dimen name="article_content_font_size">16dp</dimen>
+    <dimen name="article_content_padding">16dp</dimen>
+    <dimen name="article_layout_margin_v">56dp</dimen>
+
+    <dimen name="question_margin_v">0dp</dimen>
+    <dimen name="question_margin_h">8dp</dimen>
+
+</resources>

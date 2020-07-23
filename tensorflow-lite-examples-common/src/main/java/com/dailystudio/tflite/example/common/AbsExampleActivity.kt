@@ -30,6 +30,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
     private var hiddenLayout: ViewGroup? = null
     private var sheetBehavior: BottomSheetBehavior<ViewGroup>? = null
     private var expandIndicator: ImageView? = null
+    private var titleView: TextView? = null
 
     private var resultsView: View? = null
     private var inferenceInfoView: InferenceInfoView? = null
@@ -112,8 +113,8 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
 
         sheetBehavior?.isHideable = false
 
-        val titleView: TextView? = findViewById(R.id.bottom_sheet_title)
-        titleView?.text = title
+        titleView = findViewById(R.id.bottom_sheet_title)
+        setExampleTitle(title)
 
         val resultContainer: ViewGroup? = findViewById(R.id.bottom_sheet_result)
         resultContainer?.let {
@@ -200,6 +201,14 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
 
     protected open fun shouldKeepScreenOn(): Boolean {
         return true
+    }
+
+    protected open fun getExampleTitle(): CharSequence {
+        return titleView?.text ?: title
+    }
+
+    protected open fun setExampleTitle(title: CharSequence) {
+        titleView?.text = title
     }
 
     abstract fun createBaseFragment(): Fragment

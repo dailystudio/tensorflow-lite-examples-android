@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+  <com.google.android.material.chip.Chip
+      android:id="@+id/chip"
+      android:layout_marginStart="@dimen/question_margin_h"
+      android:layout_marginEnd="@dimen/question_margin_h"
+      android:layout_marginTop="@dimen/question_margin_v"
+      android:layout_marginBottom="@dimen/question_margin_v"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+
+</LinearLayout>

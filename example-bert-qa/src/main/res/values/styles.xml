@@ -13,4 +13,16 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="ContentText">
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/article_content_font_size</item>
+        <item name="android:padding">@dimen/article_content_padding</item>
+    </style>
+
+    <style name="QuestionsTitle" parent="DefaultLabel">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
 </resources>

@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="ExampleActivity" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ExampleActivity" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
