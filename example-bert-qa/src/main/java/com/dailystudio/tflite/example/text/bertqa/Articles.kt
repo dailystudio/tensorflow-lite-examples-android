@@ -2,12 +2,14 @@ package com.dailystudio.tflite.example.text.bertqa
 
 import android.graphics.drawable.Drawable
 import android.view.View
-import android.widget.TextView
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsInformativeCardViewHolder
 import com.dailystudio.devbricksx.ui.AbsViewHolder
+import com.dailystudio.tflite.example.text.bertqa.fragment.QuestionsListFragmentExt
 import com.google.android.material.chip.Chip
+import com.rasalexman.kdispatcher.KDispatcher
+import com.rasalexman.kdispatcher.call
 
 data class Contents(val titles: Array<Array<String>>,
                     val contents: Array<Array<String>>,
@@ -91,8 +93,11 @@ data class Question(val id: Int, val text: String) : InMemoryObject<Int> {
 class QuestionViewHolder(itemView: View): AbsViewHolder<Question>(itemView) {
 
     override fun bind(item: Question) {
-        val labelView: Chip? = itemView.findViewById(R.id.chip)
-        labelView?.text = item.text
+        val clip: Chip? = itemView.findViewById(R.id.chip)
+        clip?.text = item.text
+        clip?.setOnClickListener {
+            KDispatcher.call(QuestionsListFragmentExt.EVENT_QUESTION_SELECTED, item)
+        }
     }
 
 }

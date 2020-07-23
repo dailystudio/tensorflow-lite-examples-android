@@ -2,22 +2,24 @@ package com.dailystudio.tflite.example.text.bertqa.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.BackgroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.fragment.DevBricksFragment
+import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.text.bertqa.Article
-import com.dailystudio.tflite.example.text.bertqa.Question
-import com.dailystudio.tflite.example.text.bertqa.QuestionManager
 import com.dailystudio.tflite.example.text.bertqa.R
-import com.dailystudio.tflite.example.text.bertqa.model.QuestionViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.tensorflow.lite.examples.bertqa.ml.QaAnswer
 import org.tensorflow.lite.examples.bertqa.ml.QaClient
 
@@ -79,8 +81,12 @@ class ArticleQAFragment : DevBricksFragment() {
         syncUI()
     }
 
-    fun answerQuestion(question: String) {
+    suspend fun answerQuestion(question: String) {
         val content = article?.content ?: return
+
+        withContext(Dispatchers.Main) {
+            contentView?.text = content
+        }
 
         val info = InferenceInfo()
 
@@ -91,11 +97,41 @@ class ArticleQAFragment : DevBricksFragment() {
         info.analysisTime = info.inferenceTime
 
         answers?.let {
+            if (answers.isNotEmpty()) {
+                val topAnswer = answers[0]
+
+                withContext(Dispatchers.Main) {
+                    presentAnswer(topAnswer)
+                }
+            }
+
             inferenceAgent.deliverResults(it)
         }
 
         inferenceAgent.deliverInferenceInfo(info)
     }
+
+    private fun presentAnswer(answer: QaAnswer) {
+        val content = article?.content ?: return
+        val context = requireContext() ?: return
+
+        val highlightColor = ResourcesCompatUtils.getColor(
+            context, R.color.colorPrimary)
+
+        val spanText: Spannable = SpannableString(content)
+        val offset: Int = content.indexOf(answer.text, 0)
+        if (offset >= 0) {
+            spanText.setSpan(
+                BackgroundColorSpan(highlightColor),
+                offset,
+                offset + answer.text.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        contentView?.text = spanText
+    }
+
 
     private fun syncUI() {
         contentView?.text = article?.content ?: ""

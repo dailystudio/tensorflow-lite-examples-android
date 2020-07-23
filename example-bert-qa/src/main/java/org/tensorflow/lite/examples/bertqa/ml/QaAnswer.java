@@ -28,6 +28,13 @@ public class QaAnswer {
     this(text, new Pos(start, end, logit));
   }
 
+  @Override
+  public String toString() {
+    return String.format("%s: text = %s, pos = %s",
+            getClass().getSimpleName(),
+            text, pos);
+  }
+
   /** Position and related information from the model. */
   public static class Pos implements Comparable<Pos> {
     public int start;
@@ -44,5 +51,13 @@ public class QaAnswer {
     public int compareTo(Pos other) {
       return Float.compare(other.logit, this.logit);
     }
+
+    @Override
+    public String toString() {
+      return String.format("%s: [%d - %d], logit = %f",
+              getClass().getSimpleName(),
+              start, end, logit);
+    }
+
   }
 }
