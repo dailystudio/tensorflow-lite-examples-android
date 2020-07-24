@@ -4,7 +4,8 @@
     <dimen name="bottom_sheet_corner_radius">8dp</dimen>
     <dimen name="bottom_sheet_top_padding">8dp</dimen>
     <dimen name="bottom_sheet_title_font_size">20dp</dimen>
-    <dimen name="bottom_sheet_elevation">20dp</dimen>
+    <dimen name="bottom_sheet_elevation">0dp</dimen>
+    <dimen name="bottom_sheet_translation_z">5dp</dimen>
 
     <dimen name="result_item_title_font_size">16dp</dimen>
     <dimen name="result_item_value_font_size">@dimen/result_item_title_font_size</dimen>

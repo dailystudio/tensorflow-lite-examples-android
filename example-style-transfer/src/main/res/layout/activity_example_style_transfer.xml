@@ -19,14 +19,15 @@
     <include android:id="@+id/top_bar_layout"
         layout="@layout/layout_top_bar"/>
 
-    <include layout="@layout/layout_bottom_sheet"/>
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_styles"
         app:srcCompat="@drawable/ic_style_images"
         app:backgroundTint="@color/colorPrimary"
+        app:tint="@color/white"
         app:layout_anchor="@id/bottom_sheet_layout"
         app:layout_anchorGravity="top|end"
+        android:translationZ="@dimen/float_action_button_translation_z"
+        app:elevation="@dimen/float_action_button_elevation"
         android:layout_marginEnd="@dimen/style_images_button_margin_h1"
         android:layout_marginBottom="@dimen/style_images_button_margin_v"
         android:layout_width="wrap_content"
@@ -36,8 +37,11 @@
         android:id="@+id/fab_mode"
         app:srcCompat="@drawable/ic_fullscreen_mode"
         app:backgroundTint="@color/colorPrimary"
+        app:tint="@color/white"
         app:layout_anchor="@id/bottom_sheet_layout"
         app:layout_anchorGravity="top|end"
+        android:translationZ="@dimen/float_action_button_translation_z"
+        app:elevation="@dimen/float_action_button_elevation"
         android:layout_marginEnd="@dimen/style_images_button_margin_h2"
         android:layout_marginBottom="@dimen/style_images_button_margin_v"
         android:layout_width="wrap_content"
@@ -47,20 +51,16 @@
         android:id="@+id/fab_camera_selector"
         app:srcCompat="@drawable/ic_front_camera"
         app:backgroundTint="@color/colorPrimary"
+        app:tint="@color/white"
         app:layout_anchor="@id/bottom_sheet_layout"
         app:layout_anchorGravity="top|end"
+        android:translationZ="@dimen/float_action_button_translation_z"
+        app:elevation="@dimen/float_action_button_elevation"
         android:layout_marginEnd="@dimen/style_images_button_margin_h3"
         android:layout_marginBottom="@dimen/style_images_button_margin_v"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-<!--
 
-    <fragment
-        android:id="@+id/fragment_styles"
-        android:name="com.dailystudio.tflite.example.image.styletransfer.fragment.StyleImagesListFragment"
-        android:layout_marginTop="?actionBarSize"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <include layout="@layout/layout_bottom_sheet"/>
 
--->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

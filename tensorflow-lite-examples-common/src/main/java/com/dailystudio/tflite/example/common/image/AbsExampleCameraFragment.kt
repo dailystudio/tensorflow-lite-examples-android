@@ -11,7 +11,7 @@ import java.util.concurrent.Executors
 abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : CameraFragment() {
 
     private lateinit var analyzerExecutor: ExecutorService
-    protected lateinit var analyzer: AbsImageAnalyzer<Info, Results>
+    protected var analyzer: AbsImageAnalyzer<Info, Results>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +27,10 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
             .setTargetRotation(rotation)
             .build()
             .also {
-                analyzer = createAnalyzer(screenAspectRatio, rotation, lensFacing)
+                val analyzer = createAnalyzer(screenAspectRatio, rotation, lensFacing)
 
+                this.analyzer = analyzer
+                
                 it.setAnalyzer(analyzerExecutor, analyzer)
             }
 

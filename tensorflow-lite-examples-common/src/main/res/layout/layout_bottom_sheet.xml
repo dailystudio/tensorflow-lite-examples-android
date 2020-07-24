@@ -11,8 +11,8 @@
     android:paddingStart="@dimen/default_content_padding"
     android:paddingEnd="@dimen/default_content_padding"
     app:behavior_hideable="true"
-    android:translationZ="@dimen/bottom_sheet_elevation"
-    app:elevation="0dp"
+    android:translationZ="@dimen/bottom_sheet_translation_z"
+    app:elevation="@dimen/bottom_sheet_elevation"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <LinearLayout
