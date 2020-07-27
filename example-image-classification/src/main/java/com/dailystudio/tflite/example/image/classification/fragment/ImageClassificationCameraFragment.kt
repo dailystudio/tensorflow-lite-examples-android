@@ -10,6 +10,7 @@ import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
+import org.tensorflow.litex.Device
 
 private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
     : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing) {
@@ -24,7 +25,7 @@ private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
             context?.let {
                 classifier = Classifier.create(it,
                     Classifier.Model.QUANTIZED_EFFICIENTNET,
-                    Classifier.Device.CPU,
+                    Device.CPU,
                     1)
             }
 

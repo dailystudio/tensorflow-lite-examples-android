@@ -19,6 +19,7 @@ import android.content.Context;
 
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
+import org.tensorflow.litex.Device;
 
 import java.io.IOException;
 
@@ -45,15 +46,7 @@ public class ClassifierQuantizedEfficientNet extends Classifier {
    */
   public ClassifierQuantizedEfficientNet(Context context, Device device, int numThreads)
       throws IOException {
-    super(context, device, numThreads);
-  }
-
-  @Override
-  protected String getModelPath() {
-    // you can download this file from
-    // see build.gradle for where to obtain this file. It should be auto
-    // downloaded into assets.
-    return "efficientnet-lite0-int8.tflite";
+    super(context, "efficientnet-lite0-int8.tflite", device, numThreads);
   }
 
   @Override

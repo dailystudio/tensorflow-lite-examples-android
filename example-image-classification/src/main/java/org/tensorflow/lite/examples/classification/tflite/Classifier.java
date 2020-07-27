@@ -24,9 +24,6 @@ import android.os.Trace;
 import com.dailystudio.devbricksx.development.Logger;
 
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.Interpreter;
-import org.tensorflow.lite.gpu.GpuDelegate;
-import org.tensorflow.lite.nnapi.NnApiDelegate;
 import org.tensorflow.lite.support.common.FileUtil;
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.TensorProcessor;
@@ -38,6 +35,8 @@ import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp;
 import org.tensorflow.lite.support.image.ops.Rot90Op;
 import org.tensorflow.lite.support.label.TensorLabel;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+import org.tensorflow.litex.Device;
+import org.tensorflow.litex.TFLiteModel;
 
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
@@ -48,7 +47,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 /** A classifier specialized to label images using TensorFlow Lite. */
-public abstract class Classifier {
+public abstract class Classifier extends TFLiteModel {
 
   /** The model type used for classification. */
   public enum Model {
@@ -56,13 +55,6 @@ public abstract class Classifier {
     QUANTIZED_MOBILENET,
     FLOAT_EFFICIENTNET,
     QUANTIZED_EFFICIENTNET
-  }
-
-  /** The runtime device type used for executing classification. */
-  public enum Device {
-    CPU,
-    NNAPI,
-    GPU
   }
 
   /** Number of results to show in the UI. */
@@ -76,18 +68,6 @@ public abstract class Classifier {
 
   /** Image size along the y axis. */
   private final int imageSizeY;
-
-  /** Optional GPU delegate for accleration. */
-  private GpuDelegate gpuDelegate = null;
-
-  /** Optional NNAPI delegate for accleration. */
-  private NnApiDelegate nnApiDelegate = null;
-
-  /** An instance of the driver class to run model inference with Tensorflow Lite. */
-  protected Interpreter tflite;
-
-  /** Options for configuring the Interpreter. */
-  private final Interpreter.Options tfliteOptions = new Interpreter.Options();
 
   /** Labels corresponding to the output of the vision model. */
   private List<String> labels;
@@ -196,38 +176,22 @@ public abstract class Classifier {
   }
 
   /** Initializes a {@code Classifier}. */
-  protected Classifier(Context context, Device device, int numThreads) throws IOException {
-    String modelPath = getModelPath();
-    Logger.INSTANCE.debug("model path: %s", modelPath);
-    tfliteModel = FileUtil.loadMappedFile(context, getModelPath());
-    switch (device) {
-      case NNAPI:
-        nnApiDelegate = new NnApiDelegate();
-        tfliteOptions.addDelegate(nnApiDelegate);
-        break;
-      case GPU:
-        gpuDelegate = new GpuDelegate();
-        tfliteOptions.addDelegate(gpuDelegate);
-        break;
-      case CPU:
-        break;
-    }
-    tfliteOptions.setNumThreads(numThreads);
-    tflite = new Interpreter(tfliteModel, tfliteOptions);
+  protected Classifier(Context context, String modelPath, Device device, int numThreads) throws IOException {
+    super(context, modelPath, device, numThreads);
 
     // Loads labels out from the label file.
     labels = FileUtil.loadLabels(context, getLabelPath());
 
     // Reads type and shape of input and output tensors, respectively.
     int imageTensorIndex = 0;
-    int[] imageShape = tflite.getInputTensor(imageTensorIndex).shape(); // {1, height, width, 3}
+    int[] imageShape = tfLiteInterpreter.getInputTensor(imageTensorIndex).shape(); // {1, height, width, 3}
     imageSizeY = imageShape[1];
     imageSizeX = imageShape[2];
-    DataType imageDataType = tflite.getInputTensor(imageTensorIndex).dataType();
+    DataType imageDataType = tfLiteInterpreter.getInputTensor(imageTensorIndex).dataType();
     int probabilityTensorIndex = 0;
     int[] probabilityShape =
-        tflite.getOutputTensor(probabilityTensorIndex).shape(); // {1, NUM_CLASSES}
-    DataType probabilityDataType = tflite.getOutputTensor(probabilityTensorIndex).dataType();
+            tfLiteInterpreter.getOutputTensor(probabilityTensorIndex).shape(); // {1, NUM_CLASSES}
+    DataType probabilityDataType = tfLiteInterpreter.getOutputTensor(probabilityTensorIndex).dataType();
 
     // Creates the input tensor.
     inputImageBuffer = new TensorImage(imageDataType);
@@ -256,7 +220,7 @@ public abstract class Classifier {
     // Runs the inference call.
     Trace.beginSection("runInference");
     long startTimeForReference = SystemClock.uptimeMillis();
-    tflite.run(inputImageBuffer.getBuffer(), outputProbabilityBuffer.getBuffer().rewind());
+    tfLiteInterpreter.run(inputImageBuffer.getBuffer(), outputProbabilityBuffer.getBuffer().rewind());
     long endTimeForReference = SystemClock.uptimeMillis();
     Trace.endSection();
     Logger.INSTANCE.info("Timecost to run model inference: " + (endTimeForReference - startTimeForReference));
@@ -269,23 +233,6 @@ public abstract class Classifier {
 
     // Gets top-k results.
     return getTopKProbability(labeledProbability);
-  }
-
-  /** Closes the interpreter and model to release resources. */
-  public void close() {
-    if (tflite != null) {
-      tflite.close();
-      tflite = null;
-    }
-    if (gpuDelegate != null) {
-      gpuDelegate.close();
-      gpuDelegate = null;
-    }
-    if (nnApiDelegate != null) {
-      nnApiDelegate.close();
-      nnApiDelegate = null;
-    }
-    tfliteModel = null;
   }
 
   /** Get the image size along the x axis. */
@@ -342,9 +289,6 @@ public abstract class Classifier {
     }
     return recognitions;
   }
-
-  /** Gets the name of the model file stored in Assets. */
-  protected abstract String getModelPath();
 
   /** Gets the name of the label file stored in Assets. */
   protected abstract String getLabelPath();

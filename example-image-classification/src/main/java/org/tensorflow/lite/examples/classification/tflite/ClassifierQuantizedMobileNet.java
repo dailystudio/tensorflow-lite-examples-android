@@ -19,6 +19,7 @@ import android.content.Context;
 
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
+import org.tensorflow.litex.Device;
 
 import java.io.IOException;
 
@@ -45,15 +46,7 @@ public class ClassifierQuantizedMobileNet extends Classifier {
    */
   public ClassifierQuantizedMobileNet(Context context, Device device, int numThreads)
       throws IOException {
-    super(context, device, numThreads);
-  }
-
-  @Override
-  protected String getModelPath() {
-    // you can download this file from
-    // see build.gradle for where to obtain this file. It should be auto
-    // downloaded into assets.
-    return "mobilenet_v1_1.0_224_quant.tflite";
+    super(context, "mobilenet_v1_1.0_224_quant.tflite", device, numThreads);
   }
 
   @Override
