@@ -24,7 +24,7 @@ Digit Classifier     | CLEANED UP     | 6 ms per frame
 Text Classification  | CLEANED UP     | 10 ms per frame
 Q&A (BERT)           | CLEANED UP     | 280 ms per frame (Include pre-process time)
 
-The results above are tested on Oneplus 7 (Snapdragon 855 + 128G RAM) wit TensorFlow Lite Nightly Build library.
+The results above are tested on **Oneplus 7 (Snapdragon 855 + 128G RAM)** with TensorFlow Lite Nightly Build library.
 
 ## License
 
