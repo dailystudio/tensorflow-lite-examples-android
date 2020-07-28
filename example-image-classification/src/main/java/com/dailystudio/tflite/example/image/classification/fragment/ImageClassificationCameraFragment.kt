@@ -5,18 +5,19 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
+import com.dailystudio.tflite.example.common.InferenceSettings
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
-import org.tensorflow.litex.Device
 
 private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
     : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing) {
 
     private var classifier: Classifier? = null
 
+    @Synchronized
     override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Recognition>? {
         var results: List<Recognition>? = null
 
@@ -25,8 +26,8 @@ private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
             context?.let {
                 classifier = Classifier.create(it,
                     Classifier.Model.QUANTIZED_EFFICIENTNET,
-                    Device.CPU,
-                    1)
+                    inferenceSettings.device,
+                    inferenceSettings.numOfThreads)
             }
 
             Logger.debug("classifier created: $classifier")
@@ -45,6 +46,18 @@ private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
 
     override fun createInferenceInfo(): ImageInferenceInfo {
        return ImageInferenceInfo()
+    }
+
+    override fun onInferenceSettingsChange(settings: InferenceSettings) {
+        super.onInferenceSettingsChange(settings)
+
+        invalidateClassifier()
+    }
+
+    @Synchronized
+    private fun invalidateClassifier() {
+        classifier?.close()
+        classifier = null
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,

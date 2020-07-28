@@ -19,7 +19,7 @@ import android.content.Context;
 
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
-import org.tensorflow.litex.Device;
+import org.tensorflow.lite.support.model.Model.Device;
 
 import java.io.IOException;
 

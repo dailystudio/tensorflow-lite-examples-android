@@ -17,4 +17,5 @@ object Constants {
 
     const val EVENT_INFERENCE_INFO_UPDATE = "inference-info-update"
     const val EVENT_RESULTS_UPDATE = "results-update"
+    const val EVENT_SETTINGS_CHANGE = "settings-change"
 }

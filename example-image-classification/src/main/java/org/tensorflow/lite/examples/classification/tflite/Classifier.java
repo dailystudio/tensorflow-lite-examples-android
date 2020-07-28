@@ -34,12 +34,11 @@ import org.tensorflow.lite.support.image.ops.ResizeOp.ResizeMethod;
 import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp;
 import org.tensorflow.lite.support.image.ops.Rot90Op;
 import org.tensorflow.lite.support.label.TensorLabel;
+import org.tensorflow.lite.support.model.Model.Device;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
-import org.tensorflow.litex.Device;
 import org.tensorflow.litex.TFLiteModel;
 
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -59,9 +58,6 @@ public abstract class Classifier extends TFLiteModel {
 
   /** Number of results to show in the UI. */
   private static final int MAX_RESULTS = 3;
-
-  /** The loaded TensorFlow Lite model. */
-  private MappedByteBuffer tfliteModel;
 
   /** Image size along the x axis. */
   private final int imageSizeX;

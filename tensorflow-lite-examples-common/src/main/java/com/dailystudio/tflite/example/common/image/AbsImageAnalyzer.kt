@@ -11,6 +11,8 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
 import com.dailystudio.tflite.example.common.InferenceAgent
+import com.dailystudio.tflite.example.common.InferenceSettings
+import org.tensorflow.lite.support.model.Model
 import java.io.File
 
 abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val rotation: Int,
@@ -18,6 +20,8 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
 
     private var inferenceAgent: InferenceAgent<Info, Results> =
         InferenceAgent()
+
+    protected var inferenceSettings = InferenceSettings(Model.Device.CPU, -1)
 
     init {
         inferenceAgent.deliverInferenceInfo(createInferenceInfo())
@@ -91,6 +95,12 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
 
     protected open fun isDumpIntermediatesEnabled(): Boolean {
         return false
+    }
+
+    @Synchronized
+    open fun onInferenceSettingsChange(settings: InferenceSettings) {
+        Logger.debug("new settings: $settings")
+        inferenceSettings = settings
     }
 
     abstract fun createInferenceInfo(): Info
