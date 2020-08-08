@@ -80,10 +80,6 @@ abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Resu
         return null
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun onResultsUpdated(results: Results) {
     }
 

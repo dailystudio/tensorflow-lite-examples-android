@@ -3,16 +3,16 @@ package com.dailystudio.tflite.example.common
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.app.activity.DevBricksActivity
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.fragment.AbsAboutFragment
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.dailystudio.tflite.example.common.utils.ResultsUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -24,6 +24,24 @@ import com.rasalexman.kdispatcher.unsubscribe
 
 abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActivity() {
 
+    class AboutFragment(private val exampleName: CharSequence?,
+                        private val exampleIconResId: Int,
+                        private val exampleDesc: CharSequence?,
+                        private val exampleThumbResId: Int) : AbsAboutFragment() {
+        override val appThumbResource: Int
+            get() = exampleThumbResId
+
+        override val appName: CharSequence?
+            get() = exampleName
+
+        override val appDescription: CharSequence?
+            get() = exampleDesc
+
+        override val appIconResource: Int
+            get() = exampleIconResId
+
+    }
+
     private var bottomSheetLayout: ViewGroup? = null
     private var visibleLayout: ViewGroup? = null
     private var divider: View? = null
@@ -34,7 +52,8 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
 
     private var resultsView: View? = null
     private var inferenceInfoView: InferenceInfoView? = null
-    private var settingsView: View? = null
+
+    private var settingsFragment: AbsSettingsDialogFragment? = null
 
     private lateinit var uiThread: Thread
 
@@ -52,6 +71,33 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
         }
     }
 
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_example_activity, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_about -> {
+                val fragment = createAboutFragment()
+
+                fragment.show(supportFragmentManager, "about")
+            }
+
+            R.id.action_settings -> {
+                val fragment = settingsFragment ?: createSettingsFragment()
+
+                settingsFragment = fragment
+
+
+                settingsFragment?.show(supportFragmentManager, "settings")
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
     protected open fun setupViews() {
         supportFragmentManager.beginTransaction().also {
             val exampleFragment = createBaseFragment()
@@ -62,6 +108,23 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
         }
 
         applyBottomSheetFeatures()
+        applyOverflowMenus()
+    }
+
+    private fun applyOverflowMenus() {
+        val overflowMenu: View? = findViewById(R.id.overflow_menu)
+        overflowMenu?.setOnClickListener {
+            val popup = PopupMenu(this, it)
+            val inflater: MenuInflater = popup.menuInflater
+
+            inflater.inflate(R.menu.menu_example_activity, popup.menu)
+
+            popup.setOnMenuItemClickListener { menuItem ->
+                onOptionsItemSelected(menuItem)
+            }
+
+            popup.show()
+        }
     }
 
     private fun applyBottomSheetFeatures() {
@@ -135,12 +198,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
                 it.addView(inferenceInfoView)
             }
 
-            settingsView = createSettingsView()
-            if (settingsView != null) {
-                it.addView(settingsView)
-            }
-
-            if (inferenceInfoView == null && settingsView == null) {
+            if (inferenceInfoView == null) {
                 it.visibility = View.GONE
             } else {
                 it.visibility = View.VISIBLE
@@ -149,8 +207,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
 
         divider?.let {
             it.visibility = if (resultsView == null
-                && inferenceInfoView == null
-                && settingsView == null) {
+                && inferenceInfoView == null) {
                 View.GONE
             } else {
                 View.VISIBLE
@@ -159,7 +216,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
 
         expandIndicator = findViewById(R.id.bottom_sheet_expand_indicator)
         expandIndicator?.let {
-            if (inferenceInfoView == null && settingsView == null) {
+            if (inferenceInfoView == null) {
                 it.visibility = View.GONE
             } else {
                 it.visibility = View.VISIBLE
@@ -211,9 +268,33 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
         titleView?.text = title
     }
 
+    protected open fun createAboutFragment(): AbsAboutFragment {
+        return AboutFragment(
+            getExampleName(),
+            getExampleIconResource(),
+            getExampleDesc(),
+            getExampleThumbResource())
+    }
+
+    protected open fun getExampleThumbResource(): Int {
+        return R.drawable.app_thumb
+    }
+
+    protected open fun getExampleIconResource(): Int {
+        return R.mipmap.ic_launcher
+    }
+
+    protected open fun getExampleName(): CharSequence? {
+        return getString(R.string.default_app_name)
+    }
+
+    protected open fun getExampleDesc(): CharSequence? {
+        return getString(R.string.default_example_desc)
+    }
+
     abstract fun createBaseFragment(): Fragment
+    abstract fun createSettingsFragment(): AbsSettingsDialogFragment?
     abstract fun createResultsView(): View?
-    abstract fun createSettingsView(): View?
     abstract fun onResultsUpdated(results: Results)
 
     @Suppress("UNCHECKED_CAST")

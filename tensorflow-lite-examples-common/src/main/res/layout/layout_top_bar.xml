@@ -16,4 +16,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <ImageView
+        android:id="@+id/overflow_menu"
+        android:src="@drawable/ic_overflow"
+        android:tint="@color/overflow_button_tint"
+        android:layout_margin="@dimen/overflow_menu_margin"
+        android:layout_gravity="center_vertical|end"
+        android:layout_width="@dimen/overflow_menu_size"
+        android:layout_height="@dimen/overflow_menu_size" />
+
 </FrameLayout>

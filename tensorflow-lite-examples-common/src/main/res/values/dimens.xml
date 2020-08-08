@@ -23,4 +23,8 @@
     <dimen name="item_label_corner_radius">4dp</dimen>
     <dimen name="item_label_font_size">12dp</dimen>
 
+    <dimen name="overflow_menu_size">32dp</dimen>
+    <dimen name="overflow_menu_margin">8dp</dimen>
+
+
 </resources>

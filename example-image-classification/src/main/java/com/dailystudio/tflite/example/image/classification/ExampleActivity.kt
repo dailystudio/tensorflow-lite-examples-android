@@ -4,8 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.ui.BaseSettingsFragment
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationCameraFragment
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import kotlin.math.min
@@ -48,10 +50,6 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         }
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun onResultsUpdated(results: List<Classifier.Recognition>) {
         val itemCount = min(results.size, REPRESENTED_ITEMS_COUNT)
 
@@ -59,6 +57,10 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
             detectItemViews[i]?.text = results[i].title
             detectItemValueViews[i]?.text = "%.1f%%".format(results[i].confidence * 100)
         }
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        return BaseSettingsFragment()
     }
 
 }
