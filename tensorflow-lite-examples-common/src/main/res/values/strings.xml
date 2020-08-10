@@ -25,5 +25,6 @@
     <string name="label_nnapi">Neural Network API</string>
 
     <string name="setting_device">Inference Device</string>
+    <string name="setting_threads">Number of threads</string>
 
 </resources>
