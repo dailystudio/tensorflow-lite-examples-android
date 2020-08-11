@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Image Segmentation</string>
+    <string name="app_desc">Predict whether each pixel of an image is associated with a certain class. Trained with people, places, animals, and more.</string>
 </resources>
