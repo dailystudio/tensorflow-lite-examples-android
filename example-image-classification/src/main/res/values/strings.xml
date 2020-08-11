@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Image Classification</string>
+    <string name="app_desc">Test an image classification solution with a pre-trained model that can recognize 1000 different types of items from input frames on a mobile camera.</string>
+
+    <string name="setting_model">TensorFlow Lite models</string>
+
+    <string name="model_float_mobile_net">MobileNet (Float32)</string>
+    <string name="model_quantized_mobile_net">MobileNet (Quantized)</string>
+    <string name="model_float_efficient_net">Efficient (Float32)</string>
+    <string name="model_quantized_efficient_net">Efficient (Quantized)</string>
 </resources>

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
 import com.dailystudio.tflite.example.common.ui.ItemLabel
@@ -50,10 +51,6 @@ class ExampleActivity : AbsExampleActivity<AdvanceInferenceInfo, SegmentationRes
         return stubView
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun onResultsUpdated(results: SegmentationResult) {
         val overlay: MaskOverlay = findViewById(R.id.mask_overlay)
         overlay?.setMask(results.maskBitmap)
@@ -81,6 +78,10 @@ class ExampleActivity : AbsExampleActivity<AdvanceInferenceInfo, SegmentationRes
         for (i in 0 until MAX_ITEMS) {
             viewModel.insertItemLabel(ItemLabel(i, "", ""))
         }
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        TODO("Not yet implemented")
     }
 
 }

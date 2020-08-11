@@ -3,13 +3,14 @@ package com.dailystudio.tflite.example.image.styletransfer
 import android.os.Bundle
 import android.view.View
 import androidx.camera.core.CameraSelector
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.PickStyleDialogFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.StyleTransferCameraFragment
 import com.dailystudio.tflite.example.image.styletransfer.model.StyleImageViewModel
@@ -97,10 +98,6 @@ class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferRes
         return null
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun onResultsUpdated(results: StyleTransferResult) {
         styledOverlay?.setStyledOverlay(results.styledBitmap)
     }
@@ -123,6 +120,10 @@ class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferRes
 
             viewModel.insertStyleImage(styleImage)
         }
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        return InferenceSettingsFragment()
     }
 
 }

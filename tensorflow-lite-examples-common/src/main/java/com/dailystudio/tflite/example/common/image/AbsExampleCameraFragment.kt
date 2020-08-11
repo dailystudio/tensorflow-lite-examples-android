@@ -3,14 +3,13 @@ package com.dailystudio.tflite.example.common.image
 import android.os.Bundle
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.UseCase
+import androidx.lifecycle.Observer
 import com.dailystudio.devbricksx.camera.CameraFragment
-import com.dailystudio.tflite.example.common.Constants
-import com.dailystudio.tflite.example.common.InferenceSettings
+import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.preference.AbsPrefs
+import com.dailystudio.devbricksx.preference.PrefsChange
 import com.dailystudio.tflite.example.common.R
-import com.rasalexman.kdispatcher.KDispatcher
-import com.rasalexman.kdispatcher.Notification
-import com.rasalexman.kdispatcher.subscribe
-import com.rasalexman.kdispatcher.unsubscribe
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -28,15 +27,23 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
     override fun onResume() {
         super.onResume()
 
-        KDispatcher.subscribe(Constants.EVENT_SETTINGS_CHANGE,
-            1, ::eventSettingsUpdateHandler)
+        val settingsPrefs = getSettingsPreference()
+        Logger.debug("[CLF UPDATE]: prefs = $settingsPrefs")
+        settingsPrefs.prefsChange.observe(viewLifecycleOwner,
+            settingsObserver)
     }
 
     override fun onPause() {
         super.onPause()
 
-        KDispatcher.unsubscribe(Constants.EVENT_SETTINGS_CHANGE,
-            ::eventSettingsUpdateHandler)
+        val settingsPrefs = getSettingsPreference()
+        Logger.debug("[CLF UPDATE]: prefs = $settingsPrefs")
+
+        settingsPrefs.prefsChange.removeObserver(settingsObserver)
+    }
+
+    open protected fun getSettingsPreference(): AbsPrefs {
+        return InferenceSettingsPrefs.instance
     }
 
     override fun buildUseCases(screenAspectRatio: Int, rotation: Int): MutableList<UseCase> {
@@ -75,12 +82,11 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
         setCameraLens(lensFacing)
     }
 
-    private fun eventSettingsUpdateHandler(notification: Notification<InferenceSettings>) {
-        val analyzer = this.analyzer ?: return
+    private val settingsObserver = Observer<PrefsChange> {
+        Logger.debug("[CLF UPDATE]: analyzer = ${this.analyzer}, key = ${it.prefKey}")
+        val analyzer = this.analyzer ?: return@Observer
 
-        notification.data?.let {
-            analyzer.onInferenceSettingsChange(it)
-        }
+        analyzer.onInferenceSettingsChange(it.prefKey)
     }
 
 }

@@ -6,6 +6,7 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.devbricksx.utils.StringUtils
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.text.AbsChatActivity
@@ -142,6 +143,10 @@ class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Res
         for ((i, l) in labels.withIndex()) {
             viewModel.insertItemLabel(ItemLabel(i, l, l))
         }
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        TODO("Not yet implemented")
     }
 
 }

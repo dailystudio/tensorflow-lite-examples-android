@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.AbsRecyclerViewFragment
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.devbricksx.utils.StringUtils
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
@@ -58,10 +59,6 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         return stubView
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun onResultsUpdated(results: List<Classifier.Recognition>) {
         val selectedGesture = if (results.isNotEmpty()) {
             results[0]
@@ -99,6 +96,10 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         if (fragment is AbsRecyclerViewFragment<*, *, *>) {
             fragment.setRecyclerViewTouchEnabled(false)
         }
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        TODO("Not yet implemented")
     }
 
 }

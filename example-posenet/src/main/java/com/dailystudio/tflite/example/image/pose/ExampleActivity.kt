@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.image.pose.fragment.PoseCameraFragment
@@ -29,10 +30,6 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Person>() {
         return PoseCameraFragment()
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun createResultsView(): View? {
         return null
     }
@@ -48,6 +45,10 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Person>() {
         poseOverlay?.setFrameConfiguration(
             info.imageSize.width, info.imageSize.height,
             info.imageRotation)
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        TODO("Not yet implemented")
     }
 
 }

@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
@@ -33,10 +34,6 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, RecognizedDigit>(
         return view
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun onResultsUpdated(results: RecognizedDigit) {
         Logger.debug("result: $results")
 
@@ -59,6 +56,10 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, RecognizedDigit>(
         } else {
             ""
         }
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        return null
     }
 
 }

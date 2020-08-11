@@ -3,6 +3,7 @@ package com.dailystudio.tflite.example.text.smartreply
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.text.AbsChatActivity
 import org.tensorflow.lite.examples.smartreply.SmartReply
@@ -44,6 +45,10 @@ class ExampleActivity : AbsChatActivity<Array<SmartReply>>() {
         }
 
         return results[0].text
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        TODO("Not yet implemented")
     }
 
 }

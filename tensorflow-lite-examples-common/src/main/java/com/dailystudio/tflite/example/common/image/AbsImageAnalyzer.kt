@@ -8,6 +8,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.preference.AbsPrefs
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
 import com.dailystudio.tflite.example.common.InferenceAgent
@@ -20,8 +21,6 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
 
     private var inferenceAgent: InferenceAgent<Info, Results> =
         InferenceAgent()
-
-    protected var inferenceSettings = InferenceSettings(Model.Device.CPU, -1)
 
     init {
         inferenceAgent.deliverInferenceInfo(createInferenceInfo())
@@ -98,9 +97,9 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
     }
 
     @Synchronized
-    open fun onInferenceSettingsChange(settings: InferenceSettings) {
-        Logger.debug("new settings: $settings")
-        inferenceSettings = settings
+    open fun onInferenceSettingsChange(changePrefName: String) {
+        Logger.debug("[CLF UPDATE]: changed preference: $changePrefName")
+
     }
 
     abstract fun createInferenceInfo(): Info

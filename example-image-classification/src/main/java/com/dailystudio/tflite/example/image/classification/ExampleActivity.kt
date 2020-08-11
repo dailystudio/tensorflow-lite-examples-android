@@ -4,11 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.dailystudio.devbricksx.fragment.AbsAboutFragment
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.ui.BaseSettingsFragment
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationCameraFragment
+import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationSettingsFragment
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import kotlin.math.min
 
@@ -60,7 +61,19 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
     }
 
     override fun createSettingsFragment(): AbsSettingsDialogFragment? {
-        return BaseSettingsFragment()
+        return ImageClassificationSettingsFragment()
+    }
+
+    override fun getExampleIconResource(): Int {
+        return R.drawable.about_icon
+    }
+
+    override fun getExampleName(): CharSequence {
+        return getString(R.string.app_name)
+    }
+
+    override fun getExampleDesc(): CharSequence? {
+        return getString(R.string.app_desc)
     }
 
 }

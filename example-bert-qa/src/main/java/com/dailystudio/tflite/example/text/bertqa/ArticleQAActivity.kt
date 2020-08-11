@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.text.bertqa.fragment.ArticleQAFragment
@@ -122,10 +123,6 @@ class ArticleQAActivity : AbsExampleActivity<InferenceInfo, List<QaAnswer>>() {
         return null
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun onResultsUpdated(results: List<QaAnswer>) {
     }
 
@@ -179,5 +176,9 @@ class ArticleQAActivity : AbsExampleActivity<InferenceInfo, List<QaAnswer>>() {
                 }
             }
         }
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        TODO("Not yet implemented")
     }
 }

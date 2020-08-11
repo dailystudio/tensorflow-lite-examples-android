@@ -3,6 +3,7 @@ package com.dailystudio.tflite.example.image.detection
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
@@ -38,10 +39,6 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Classifier.R
         return null
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun onResultsUpdated(results: List<Classifier.Recognition>) {
         tracker.trackResults(results, System.currentTimeMillis())
         trackingOverlay?.postInvalidate()
@@ -53,6 +50,10 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Classifier.R
         tracker.setFrameConfiguration(
             info.imageSize.width, info.imageSize.height,
             info.imageRotation)
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        TODO("Not yet implemented")
     }
 
 }

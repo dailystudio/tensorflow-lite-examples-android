@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.devbricksx.utils.FileUtils
 import com.dailystudio.devbricksx.utils.StringUtils
 import com.dailystudio.tflite.example.common.AbsExampleActivity
@@ -61,10 +62,6 @@ class ExampleActivity : AbsExampleActivity<AudioInferenceInfo, RecognizeCommands
         return null
     }
 
-    override fun createSettingsView(): View? {
-        return null
-    }
-
     override fun onResultsUpdated(results: RecognizeCommands.RecognitionResult) {
         Logger.debug("command: ${results.foundCommand}")
         Logger.debug("score: ${results.score}")
@@ -84,6 +81,10 @@ class ExampleActivity : AbsExampleActivity<AudioInferenceInfo, RecognizeCommands
 
             viewModel.updateCommand(command)
         }
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        TODO("Not yet implemented")
     }
 
 }

@@ -8,9 +8,10 @@ import com.dailystudio.tflite.example.common.R
 import org.tensorflow.lite.support.model.Model
 import kotlin.math.roundToInt
 
-open class BaseSettingsFragment : AbsSettingsDialogFragment() {
+abstract class InferenceSettingsFragment: AbsSettingsDialogFragment() {
 
     override fun createSettings(context: Context): Array<AbsSetting> {
+        val settingsPrefs = getInferenceSettingsPrefs()
 
         val devices = arrayOf(
             SimpleRadioSettingItem(context,
@@ -23,16 +24,16 @@ open class BaseSettingsFragment : AbsSettingsDialogFragment() {
 
         val deviceSetting = object: RadioSetting<SimpleRadioSettingItem>(
             context,
-            BaseSettingPrefs.PREF_DEVICE,
+            InferenceSettingsPrefs.PREF_DEVICE,
             R.drawable.ic_setting_device,
             R.string.setting_device,
             devices) {
             override val selectedId: String?
-                get() = BaseSettingPrefs.device
+                get() = settingsPrefs.device
 
             override fun setSelected(selectedId: String?) {
                 selectedId?.let {
-                    BaseSettingPrefs.device = it
+                    settingsPrefs.device = it
                 }
             }
         }
@@ -40,27 +41,27 @@ open class BaseSettingsFragment : AbsSettingsDialogFragment() {
 
         val threadSetting = object: SeekBarSetting(
             context,
-            BaseSettingPrefs.PREF_NUMBER_OF_THREADS,
+            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS,
             R.drawable.ic_setting_threads,
             R.string.setting_threads) {
             override fun getMaxValue(context: Context): Float {
-                return BaseSetting.MAX_NUM_OF_THREADS.toFloat()
+                return InferenceSettings.MAX_NUM_OF_THREADS.toFloat()
             }
 
             override fun getMinValue(context: Context): Float {
-                return BaseSetting.MIN_NUM_OF_THREADS.toFloat()
+                return InferenceSettings.MIN_NUM_OF_THREADS.toFloat()
             }
 
             override fun getProgress(context: Context): Float {
-                return BaseSettingPrefs.numberOfThreads.toFloat()
+                return settingsPrefs.numberOfThreads.toFloat()
             }
 
             override fun getStep(context: Context): Float {
-                return BaseSetting.NUM_OF_THREADS_STEP.toFloat()
+                return InferenceSettings.NUM_OF_THREADS_STEP.toFloat()
             }
 
             override fun setProgress(context: Context, progress: Float) {
-                BaseSettingPrefs.numberOfThreads = progress.roundToInt()
+                settingsPrefs.numberOfThreads = progress.roundToInt()
             }
 
         }
@@ -71,5 +72,7 @@ open class BaseSettingsFragment : AbsSettingsDialogFragment() {
     override fun getSettingsTopImageDrawable(): Drawable? {
         return ResourcesCompatUtils.getDrawable(requireContext(), R.drawable.settings_top)
     }
+
+    abstract fun getInferenceSettingsPrefs(): InferenceSettingsPrefs
 
 }
