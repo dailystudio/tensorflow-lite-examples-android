@@ -83,8 +83,16 @@ class ExampleActivity : AbsExampleActivity<AudioInferenceInfo, RecognizeCommands
         }
     }
 
-    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
-        TODO("Not yet implemented")
+    override fun getExampleName(): CharSequence? {
+        return getString(R.string.app_name)
+    }
+
+    override fun getExampleIconResource(): Int {
+        return R.drawable.about_icon
+    }
+
+    override fun getExampleDesc(): CharSequence? {
+        return getString(R.string.app_desc)
     }
 
 }
