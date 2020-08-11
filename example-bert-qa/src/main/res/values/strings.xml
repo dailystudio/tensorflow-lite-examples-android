@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Question and answer</string>
+    <string name="app_desc">Answer user queries based on information extracted from a given text archive.</string>
 
     <string name="label_questions">You might want to ask?</string>
 
