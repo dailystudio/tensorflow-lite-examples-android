@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Text Classification</string>
+    <string name="app_desc">Categorize free text into predefined groups. Potential applications include abusive content moderation, tone detection and more.</string>
 
     <string name="chat_text_question">How do you feel about that movie?</string>
 
     <string name="prompt_positive">Great, you like it!</string>
     <string name="prompt_native">Hmm, it seems that you don\'t like it.</string>
     <string name="prompt_default">May I have your pardon?</string>
+
 </resources>
