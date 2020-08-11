@@ -7,6 +7,7 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.image.pose.fragment.PoseCameraFragment
 import com.dailystudio.tflite.example.image.pose.ui.PoseOverlayView
 import org.tensorflow.lite.examples.posenet.lib.Person
@@ -47,8 +48,16 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Person>() {
             info.imageRotation)
     }
 
-    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
-        TODO("Not yet implemented")
+    override fun getExampleName(): CharSequence? {
+        return getString(R.string.app_name)
+    }
+
+    override fun getExampleIconResource(): Int {
+        return R.drawable.about_icon
+    }
+
+    override fun getExampleDesc(): CharSequence? {
+        return getString(R.string.app_desc)
     }
 
 }

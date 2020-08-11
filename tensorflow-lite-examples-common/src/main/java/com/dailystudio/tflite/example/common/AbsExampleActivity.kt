@@ -14,6 +14,7 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.AbsAboutFragment
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.ui.InferenceInfoView
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.common.utils.ResultsUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -292,8 +293,11 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
         return getString(R.string.default_example_desc)
     }
 
+    protected open fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        return InferenceSettingsFragment()
+    }
+
     abstract fun createBaseFragment(): Fragment
-    abstract fun createSettingsFragment(): AbsSettingsDialogFragment?
     abstract fun createResultsView(): View?
     abstract fun onResultsUpdated(results: Results)
 

@@ -60,10 +60,6 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         }
     }
 
-    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
-        return ImageClassificationSettingsFragment()
-    }
-
     override fun getExampleIconResource(): Int {
         return R.drawable.about_icon
     }
@@ -74,6 +70,10 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        return ImageClassificationSettingsFragment()
     }
 
 }

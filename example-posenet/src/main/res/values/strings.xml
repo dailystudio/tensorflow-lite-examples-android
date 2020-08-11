@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Pose Estimation</string>
+    <string name="app_desc">Explore an app that estimates poses of people in an image.</string>
 </resources>

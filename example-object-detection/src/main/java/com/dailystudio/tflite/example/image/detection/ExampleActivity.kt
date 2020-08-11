@@ -53,10 +53,6 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Classifier.R
             info.imageRotation)
     }
 
-    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
-        return InferenceSettingsFragment()
-    }
-
     override fun getExampleName(): CharSequence? {
         return getString(R.string.app_name)
     }
