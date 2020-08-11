@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Object Detection</string>
+    <string name="app_desc">Explore an app using a pre-trained model that draws and labels bounding boxes around 1000 different recognizable objects from input frames on a mobile camera.</string>
 </resources>

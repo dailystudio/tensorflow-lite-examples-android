@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
 import org.tensorflow.lite.examples.detection.customview.OverlayView
 import org.tensorflow.lite.examples.detection.tflite.Classifier
@@ -53,7 +54,19 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Classifier.R
     }
 
     override fun createSettingsFragment(): AbsSettingsDialogFragment? {
-        TODO("Not yet implemented")
+        return InferenceSettingsFragment()
+    }
+
+    override fun getExampleName(): CharSequence? {
+        return getString(R.string.app_name)
+    }
+
+    override fun getExampleIconResource(): Int {
+        return R.drawable.about_icon
+    }
+
+    override fun getExampleDesc(): CharSequence? {
+        return getString(R.string.app_desc)
     }
 
 }

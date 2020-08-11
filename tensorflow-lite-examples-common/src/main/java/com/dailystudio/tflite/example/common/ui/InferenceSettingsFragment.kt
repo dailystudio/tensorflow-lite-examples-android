@@ -8,7 +8,7 @@ import com.dailystudio.tflite.example.common.R
 import org.tensorflow.lite.support.model.Model
 import kotlin.math.roundToInt
 
-abstract class InferenceSettingsFragment: AbsSettingsDialogFragment() {
+open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
 
     override fun createSettings(context: Context): Array<AbsSetting> {
         val settingsPrefs = getInferenceSettingsPrefs()
@@ -73,6 +73,8 @@ abstract class InferenceSettingsFragment: AbsSettingsDialogFragment() {
         return ResourcesCompatUtils.getDrawable(requireContext(), R.drawable.settings_top)
     }
 
-    abstract fun getInferenceSettingsPrefs(): InferenceSettingsPrefs
+    open fun getInferenceSettingsPrefs(): InferenceSettingsPrefs {
+        return InferenceSettingsPrefs()
+    }
 
 }
