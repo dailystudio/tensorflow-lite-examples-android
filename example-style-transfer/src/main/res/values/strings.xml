@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Style Transfer</string>
+    <string name="app_desc">Apply any styles on an input image to create a new artistic image.</string>
+
     <string name="label_back">Back</string>
+
 </resources>
