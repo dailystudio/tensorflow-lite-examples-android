@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Smart Reply</string>
+    <string name="app_desc">Generate reply suggestions to input conversational chat messages.</string>
 </resources>
