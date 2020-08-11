@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Gesture</string>
+    <string name="app_desc">Train a neural network to recognize gestures caught on your webcam using TensorFlow.js, then use TensorFlow Lite to convert the model to run inference on your device.</string>
 </resources>
