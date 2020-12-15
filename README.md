@@ -8,6 +8,8 @@ The target of this repository is to provide you a much simpler way to use Tensor
 
 The first step of this repository is almost accomplished. I have cleaned up the source codes from the official examples and simply refactor them to remove duplicated and low-performance parts. The next step is to refactor the code deeply, extract more reusable parts, and create a support library.
 
+[![](.github/youtube.png)](https://www.youtube.com/watch?v=ctn-t1pg9pA&feature=youtu.be)
+
 Here is an overview of the progress of each standalone example:
 
 Examples             | Status         | Inference Performance
