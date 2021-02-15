@@ -20,6 +20,7 @@ enum class MessageType {
 @ViewModel
 @Adapter(
     layoutByName = "layout_chat_record",
+    paged = false,
     viewType = ViewType.Customized,
     viewHolder = ChatRecordViewHolder::class)
 @InMemoryRepository(key = Long::class)

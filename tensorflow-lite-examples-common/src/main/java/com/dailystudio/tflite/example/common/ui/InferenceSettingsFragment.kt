@@ -69,7 +69,7 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
         return arrayOf(deviceSetting, threadSetting)
     }
 
-    override fun getSettingsTopImageDrawable(): Drawable? {
+    override fun getDialogThumbImageDrawable(): Drawable? {
         return ResourcesCompatUtils.getDrawable(requireContext(), R.drawable.settings_top)
     }
 

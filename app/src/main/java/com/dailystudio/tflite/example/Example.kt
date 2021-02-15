@@ -20,7 +20,8 @@ import com.nostra13.universalimageloader.core.ImageLoader
 
 @ViewModel
 @Adapter(viewHolder = ExampleViewHolder::class,
-    viewType = ViewType.CardInformative
+    viewType = ViewType.CardInformative,
+    paged = true
 )
 @ListFragment(gridLayout = false)
 @DiffUtil
