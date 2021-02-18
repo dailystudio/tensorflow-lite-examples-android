@@ -53,8 +53,9 @@ dependencies {
 
     // Build off of nightly TensorFlow Lite
     api("org.tensorflow:tensorflow-lite:${project.ext.tfliteVersion}") { changing = true }
-    api("org.tensorflow:tensorflow-lite-gpu:${project.ext.tfliteVersion}") { changing = true }
-    api("org.tensorflow:tensorflow-lite-support:${project.ext.tfliteVersion}") { changing = true }
+    api("org.tensorflow:tensorflow-lite-gpu:${project.ext.tfliteGpuVersion}") { changing = true }
+    api("org.tensorflow:tensorflow-lite-support:${project.ext.tfliteSupportVersion}") { changing = true }
+    api("org.tensorflow:tensorflow-lite-metadata:${project.ext.tfliteMetadataVersion}") { changing = true }
 
     // Test helpers
     testImplementation 'junit:junit:4.12'

@@ -247,6 +247,6 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
 
   @Override
   public void setUseNNAPI(boolean isChecked) {
-    if (tfLite != null) tfLite.setUseNNAPI(isChecked);
+//    if (tfLite != null) tfLite.setUseNNAPI(isChecked);
   }
 }
