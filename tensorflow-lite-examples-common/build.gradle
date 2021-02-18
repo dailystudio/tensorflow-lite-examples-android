@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.github.panpf.bintray-publish'
 
 android {
     compileSdkVersion COMPILE_SDK
@@ -62,4 +63,15 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     testImplementation "androidx.room:room-testing:${ROOM_VERSION}"
+}
+
+publish {
+    userOrg = 'dailystudio'
+    groupId = 'com.dailystudio'
+    artifactId = 'tensorflow-lite-examples-common'
+    publishVersion = VERSION_NAME
+    desc = 'TensorFlow Lite Examples Common Library'
+    bintrayUser = BINTRAY_USER
+    bintrayKey = BINTRAY_KEY
+    website = 'https://github.com/dailystudio/tensorflow-lite-examples-android'
 }

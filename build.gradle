@@ -2,15 +2,19 @@
 
 buildscript {
     ext.kotlin_version = '1.4.0'
+    ext.bintray_publish_version = '1.0.0'
+
     repositories {
         google()
         jcenter()
     }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath "com.github.panpf.bintray-publish:bintray-publish:$bintray_publish_version"
     }
 }
 
@@ -27,6 +31,17 @@ task clean(type: Delete) {
 }
 
 ext {
+    // Jcenter publish credentials
+    if (file("private.properties").exists()) {
+        Properties props = new Properties()
+        props.load(new FileInputStream(file("private.properties")))
+        BINTRAY_KEY = props.getProperty('BINTRAY_KEY')
+        BINTRAY_USER = props.getProperty('BINTRAY_USER')
+    } else {
+        BINTRAY_KEY = ""
+        BINTRAY_USER = ""
+    }
+
     // Compile Settings
     COMPILE_SDK = 30
     BUILD_TOOLS = '30.0.0'
