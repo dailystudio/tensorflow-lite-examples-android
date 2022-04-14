@@ -1,8 +1,8 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'com.github.panpf.bintray-publish'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+}
 
 android {
     compileSdkVersion COMPILE_SDK
@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
@@ -42,15 +42,15 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     api "com.facebook.stetho:stetho:${project.ext.stethoVersion}"
-    api "com.rasalexman.kdispatcher:kdispatcher:${project.ext.kDispactherVersion}"
+    api "com.github.Rasalexman:KDispatcher:${project.ext.kdispatcherVersion}"
     api "com.nostra13.universalimageloader:universal-image-loader:${project.ext.imageLoaderVersion}"
     api "com.squareup.retrofit2:retrofit:${project.ext.retrofitVersion}"
     api "com.squareup.retrofit2:converter-gson:${project.ext.retrofitVersion}"
 
-    api "com.dailystudio:devbricksx:${DEVBRICKS_X_VERSION}"
-    api "com.dailystudio:devbricksx-camera:${DEVBRICKS_X_VERSION}"
-    api "com.dailystudio:devbricksx-audio:${DEVBRICKS_X_VERSION}"
-    kapt "com.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
+    api "cn.dailystudio:devbricksx:${DEVBRICKS_X_VERSION}"
+    api "cn.dailystudio:devbricksx-camera:${DEVBRICKS_X_VERSION}"
+    api "cn.dailystudio:devbricksx-audio:${DEVBRICKS_X_VERSION}"
+    kapt "cn.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
 
     // Build off of nightly TensorFlow Lite
     api("org.tensorflow:tensorflow-lite:${project.ext.tfliteVersion}") { changing = true }
@@ -65,6 +65,7 @@ dependencies {
     testImplementation "androidx.room:room-testing:${ROOM_VERSION}"
 }
 
+/*
 publish {
     userOrg = 'dailystudio'
     groupId = 'com.dailystudio'
@@ -75,3 +76,4 @@ publish {
     bintrayKey = BINTRAY_KEY
     website = 'https://github.com/dailystudio/tensorflow-lite-examples-android'
 }
+*/
