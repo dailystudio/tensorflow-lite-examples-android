@@ -81,6 +81,8 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
   private ByteBuffer imgData;
 
   private Interpreter tfLite;
+  private Interpreter.Options tfLiteOptions;
+
 
   private TFLiteObjectDetectionAPIModel() {}
 
@@ -125,8 +127,11 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
 
     d.inputSize = inputSize;
 
+    d.tfLiteOptions = new Interpreter.Options();
+    d.tfLiteOptions.setNumThreads(NUM_THREADS);
+
     try {
-      d.tfLite = new Interpreter(loadModelFile(assetManager, modelFilename));
+      d.tfLite = new Interpreter(loadModelFile(assetManager, modelFilename), d.tfLiteOptions);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -143,7 +148,6 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
     d.imgData.order(ByteOrder.nativeOrder());
     d.intValues = new int[d.inputSize * d.inputSize];
 
-    d.tfLite.setNumThreads(NUM_THREADS);
     d.outputLocations = new float[1][NUM_DETECTIONS][4];
     d.outputClasses = new float[1][NUM_DETECTIONS];
     d.outputScores = new float[1][NUM_DETECTIONS];
@@ -243,7 +247,7 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
   public void close() {}
 
   public void setNumThreads(int num_threads) {
-    if (tfLite != null) tfLite.setNumThreads(num_threads);
+    if (tfLiteOptions != null) tfLiteOptions.setNumThreads(num_threads);
   }
 
   @Override

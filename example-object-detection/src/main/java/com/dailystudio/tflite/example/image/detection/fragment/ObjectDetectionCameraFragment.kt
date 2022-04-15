@@ -12,9 +12,10 @@ import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel
+import org.tensorflow.litex.images.Recognition
 
 private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
-    : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>>(rotation, lensFacing) {
+    : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing) {
 
     companion object {
         private const val TF_OD_API_INPUT_SIZE = 300
@@ -48,8 +49,8 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
     }
 
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Classifier.Recognition>? {
-        var results: List<Classifier.Recognition>?
+    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Recognition>? {
+        var results: List<Recognition>?
 
         if (classifier == null) {
             val context = GlobalContextWrapper.context
@@ -66,7 +67,7 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
             Logger.debug("classifier created: $classifier")
         }
 
-        var mappedResults: List<Classifier.Recognition>? = null
+        var mappedResults: List<Recognition>? = null
         classifier?.let { classifier ->
             val start = System.currentTimeMillis()
             results = classifier.recognizeImage(inferenceBitmap)
@@ -84,13 +85,13 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
         return mappedResults
     }
 
-    private fun mapRecognitions(results: List<Classifier.Recognition>): List<Classifier.Recognition> {
-        val mappedRecognitions: MutableList<Classifier.Recognition> =
+    private fun mapRecognitions(results: List<Recognition>): List<Recognition> {
+        val mappedRecognitions: MutableList<Recognition> =
             mutableListOf()
 
         for (result in results) {
             val location = result.location
-            if (location != null && result.confidence >= MINIMUM_CONFIDENCE_TF_OD_API) {
+            if (location != null && (result.confidence ?: 0f) >= MINIMUM_CONFIDENCE_TF_OD_API) {
                 cropToFrameTransform?.mapRect(location)
                 preScaleRevertTransform?.mapRect(location)
 
@@ -156,10 +157,10 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
 
 }
 
-class ObjectDetectionCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Classifier.Recognition>>() {
+class ObjectDetectionCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Recognition>>() {
 
     override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
-            : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>> {
+            : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
         return ObjectDetectionAnalyzer(rotation, lensFacing)
     }
 

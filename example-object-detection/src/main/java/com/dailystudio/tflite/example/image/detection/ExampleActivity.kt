@@ -3,16 +3,15 @@ package com.dailystudio.tflite.example.image.detection
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
 import org.tensorflow.lite.examples.detection.customview.OverlayView
 import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker
+import org.tensorflow.litex.images.Recognition
 
-class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Classifier.Recognition>>() {
+class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Recognition>>() {
 
     private lateinit var tracker: MultiBoxTracker
     private var trackingOverlay: OverlayView? = null
@@ -40,7 +39,7 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Classifier.R
         return null
     }
 
-    override fun onResultsUpdated(results: List<Classifier.Recognition>) {
+    override fun onResultsUpdated(results: List<Recognition>) {
         tracker.trackResults(results, System.currentTimeMillis())
         trackingOverlay?.postInvalidate()
     }
