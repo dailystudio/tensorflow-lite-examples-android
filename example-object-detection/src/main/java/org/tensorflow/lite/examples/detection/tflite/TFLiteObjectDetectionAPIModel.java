@@ -24,6 +24,7 @@ import android.os.Trace;
 import com.dailystudio.devbricksx.development.Logger;
 
 import org.tensorflow.lite.Interpreter;
+import org.tensorflow.litex.images.Recognition;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

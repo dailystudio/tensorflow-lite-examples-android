@@ -12,8 +12,8 @@ import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.classification.ImageClassificationSettingsPrefs
 import org.tensorflow.lite.examples.classification.tflite.Classifier
-import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.images.Recognition
 import java.lang.Exception
 
 private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
