@@ -24,6 +24,7 @@ import android.os.Trace;
 import com.dailystudio.devbricksx.development.Logger;
 
 import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.support.common.FileUtil;
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.TensorProcessor;
@@ -178,6 +179,8 @@ public abstract class Classifier extends TFLiteModel {
     // Loads labels out from the label file.
     labels = FileUtil.loadLabels(context, getLabelPath());
 
+    Interpreter tfLiteInterpreter = getTfLiteInterpreter();
+
     // Reads type and shape of input and output tensors, respectively.
     int imageTensorIndex = 0;
     int[] imageShape = tfLiteInterpreter.getInputTensor(imageTensorIndex).shape(); // {1, height, width, 3}
@@ -216,7 +219,7 @@ public abstract class Classifier extends TFLiteModel {
     // Runs the inference call.
     Trace.beginSection("runInference");
     long startTimeForReference = SystemClock.uptimeMillis();
-    tfLiteInterpreter.run(inputImageBuffer.getBuffer(), outputProbabilityBuffer.getBuffer().rewind());
+    getTfLiteInterpreter().run(inputImageBuffer.getBuffer(), outputProbabilityBuffer.getBuffer().rewind());
     long endTimeForReference = SystemClock.uptimeMillis();
     Trace.endSection();
     Logger.INSTANCE.info("Timecost to run model inference: " + (endTimeForReference - startTimeForReference));

@@ -12,13 +12,13 @@ import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.model.Model
 import java.io.IOException
 
-open class TFLiteModel(@JvmField val context: Context,
-                       @JvmField val modelPath: String,
-                       @JvmField val device: Model.Device = Model.Device.CPU,
-                       @JvmField val numOfThreads: Int = 1) {
+open class TFLiteModel(val context: Context,
+                       val modelPath: String,
+                       val device: Model.Device = Model.Device.CPU,
+                       val numOfThreads: Int = 1) {
 
-    @JvmField protected var delegate: Delegate? = null
-    @JvmField  protected var tfLiteInterpreter: Interpreter? = null
+    protected var delegate: Delegate? = null
+    protected var tfLiteInterpreter: Interpreter? = null
     private val tfLiteOptions = Interpreter.Options()
 
     init {
