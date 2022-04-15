@@ -10,19 +10,17 @@ import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
-import org.tensorflow.lite.examples.detection.tflite.Classifier
-import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
+import org.tensorflow.lite.examples.detection.tflite.Detector
+import org.tensorflow.lite.examples.detection.tflite.ObjectDetectionModel
+import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.images.Recognition
+import java.lang.Exception
 
 private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
     : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing) {
 
     companion object {
-        private const val TF_OD_API_INPUT_SIZE = 300
-        private const val TF_OD_API_IS_QUANTIZED = true
-        private const val TF_OD_API_MODEL_FILE = "detect.tflite"
-        private const val TF_OD_API_LABELS_FILE = "file:///android_asset/labelmap.txt"
-
         private const val TF_OD_FRAME_WIDTH = 640
         private const val TF_OD_FRAME_HEIGHT = 480
 
@@ -33,7 +31,7 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
         private const val CROPPED_IMAGE_FILE = "cropped.png"
     }
 
-    private var classifier: Classifier? = null
+    private var classifier: Detector? = null
 
     private var preScaleTransform: Matrix? = null
     private var preScaleRevertTransform: Matrix? = null
@@ -42,7 +40,7 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
 
     private var croppedBitmap: Bitmap
     init {
-        val cropSize = TF_OD_API_INPUT_SIZE
+        val cropSize = ObjectDetectionModel.TF_OD_API_INPUT_SIZE
 
         croppedBitmap = Bitmap.createBitmap(
             cropSize, cropSize, Bitmap.Config.ARGB_8888)
@@ -55,13 +53,25 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
         if (classifier == null) {
             val context = GlobalContextWrapper.context
             context?.let {
-                classifier = TFLiteObjectDetectionAPIModel.create(
-                    context.assets,
-                    TF_OD_API_MODEL_FILE,
-                    TF_OD_API_LABELS_FILE,
-                    TF_OD_API_INPUT_SIZE,
-                    TF_OD_API_IS_QUANTIZED
-                )
+                val deviceStr = InferenceSettingsPrefs.instance.device
+
+                val device = try {
+                    Model.Device.valueOf(deviceStr)
+                } catch (e: Exception) {
+                    Logger.warn("cannot parse device from [$deviceStr]: $e")
+
+                    Model.Device.CPU
+                }
+
+                val threads = InferenceSettingsPrefs.instance.numberOfThreads
+                Logger.debug("[CLF UPDATE]: classifier creating: device = $device, threads = $threads")
+
+                classifier =
+                    ObjectDetectionModel(
+                        context,
+                        device,
+                        threads
+                    )
             }
 
             Logger.debug("classifier created: $classifier")
@@ -112,7 +122,7 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
         val scaledBitmap = preScaleImage(frameBitmap)
 
         scaledBitmap?.let {
-            val cropSize = TF_OD_API_INPUT_SIZE
+            val cropSize = ObjectDetectionModel.TF_OD_API_INPUT_SIZE
 
             val matrix = MatrixUtils.getTransformationMatrix(
                 it.width,

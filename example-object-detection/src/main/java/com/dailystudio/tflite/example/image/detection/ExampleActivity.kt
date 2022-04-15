@@ -7,7 +7,6 @@ import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
 import org.tensorflow.lite.examples.detection.customview.OverlayView
-import org.tensorflow.lite.examples.detection.tflite.Classifier
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker
 import org.tensorflow.litex.images.Recognition
 

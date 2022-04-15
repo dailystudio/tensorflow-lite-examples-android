@@ -17,7 +17,7 @@ open class TFLiteModel(val context: Context,
                        val device: Model.Device = Model.Device.CPU,
                        val numOfThreads: Int = 1) {
 
-    protected var delegate: Delegate? = null
+    private var delegate: Delegate? = null
     protected var tfLiteInterpreter: Interpreter? = null
     private val tfLiteOptions = Interpreter.Options()
 
