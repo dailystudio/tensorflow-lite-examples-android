@@ -55,13 +55,14 @@ dependencies {
     // Build off of nightly TensorFlow Lite
     api("org.tensorflow:tensorflow-lite:${project.ext.tfliteVersion}") { changing = true }
     api("org.tensorflow:tensorflow-lite-gpu:${project.ext.tfliteGpuVersion}") { changing = true }
+    api("org.tensorflow:tensorflow-lite-gpu-delegate-plugin:${project.ext.tfliteGpuPluginVersion}") { changing = true }
     api("org.tensorflow:tensorflow-lite-support:${project.ext.tfliteSupportVersion}") { changing = true }
     api("org.tensorflow:tensorflow-lite-metadata:${project.ext.tfliteMetadataVersion}") { changing = true }
 
     // Test helpers
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     testImplementation "androidx.room:room-testing:${ROOM_VERSION}"
 }
 

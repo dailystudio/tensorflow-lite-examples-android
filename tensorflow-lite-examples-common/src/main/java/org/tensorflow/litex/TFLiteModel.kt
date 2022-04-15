@@ -5,6 +5,7 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.development.Logger.debug
 import org.tensorflow.lite.Delegate
 import org.tensorflow.lite.Interpreter
+import org.tensorflow.lite.gpu.CompatibilityList
 import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.nnapi.NnApiDelegate
 import org.tensorflow.lite.support.common.FileUtil
@@ -23,7 +24,22 @@ open class TFLiteModel(@JvmField val context: Context,
     init {
         delegate = when (device) {
             Model.Device.NNAPI ->  NnApiDelegate()
-            Model.Device.GPU ->  GpuDelegate()
+            Model.Device.GPU ->  {
+                val compatList = CompatibilityList()
+                if(compatList.isDelegateSupportedOnThisDevice) {
+                    val delegateOptions: GpuDelegate.Options =
+                        compatList.bestOptionsForThisDevice
+
+                    GpuDelegate(delegateOptions)
+                } else {
+                    tfLiteOptions.setUseXNNPACK(true)
+                    null
+                }
+            }
+            Model.Device.CPU -> {
+                tfLiteOptions.setUseXNNPACK(true)
+                null
+            }
             else -> null
         }
 
