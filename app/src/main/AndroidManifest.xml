@@ -25,4 +25,10 @@
 
     </application>
 
+    <queries>
+        <intent>
+            <action android:name="com.dailystudio.tflite.example.ACTION_MAIN" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent>
+    </queries>
 </manifest>
