@@ -13,9 +13,9 @@ import org.tensorflow.lite.support.model.Model
 import java.io.IOException
 
 open class TFLiteModel(val context: Context,
-                       val modelPath: String,
+                       private val modelPath: String,
                        val device: Model.Device = Model.Device.CPU,
-                       val numOfThreads: Int = 1) {
+                       private val numOfThreads: Int = 1) {
 
     private var delegate: Delegate? = null
     protected var tfLiteInterpreter: Interpreter? = null
