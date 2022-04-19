@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Matrix
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.preference.AbsPrefs
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
@@ -17,8 +18,10 @@ import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.images.Recognition
 import java.lang.Exception
 
-private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
-    : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing) {
+private class ObjectDetectionAnalyzer(rotation: Int,
+                                      lensFacing: Int,
+                                      useAverageTime: Boolean
+) : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing, useAverageTime) {
 
     companion object {
         private const val TF_OD_FRAME_WIDTH = 640
@@ -45,7 +48,6 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
         croppedBitmap = Bitmap.createBitmap(
             cropSize, cropSize, Bitmap.Config.ARGB_8888)
     }
-
 
     override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Recognition>? {
         var results: List<Recognition>?
@@ -169,9 +171,14 @@ private class ObjectDetectionAnalyzer(rotation: Int, lensFacing: Int)
 
 class ObjectDetectionCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
-            : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
-        return ObjectDetectionAnalyzer(rotation, lensFacing)
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        useAverageTime: Boolean,
+        imagePreprocessEnabled: Boolean
+    ): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
+        return ObjectDetectionAnalyzer(rotation, lensFacing, useAverageTime)
     }
 
 }

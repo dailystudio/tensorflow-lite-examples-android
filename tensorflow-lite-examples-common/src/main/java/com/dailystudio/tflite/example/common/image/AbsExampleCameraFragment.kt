@@ -28,7 +28,7 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
         super.onResume()
 
         val settingsPrefs = getSettingsPreference()
-        Logger.debug("[CLF UPDATE]: prefs = $settingsPrefs")
+        Logger.debug("[SETTINGS UPDATE]: prefs = $settingsPrefs")
         settingsPrefs.prefsChange.observe(viewLifecycleOwner,
             settingsObserver)
     }
@@ -37,7 +37,7 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
         super.onPause()
 
         val settingsPrefs = getSettingsPreference()
-        Logger.debug("[CLF UPDATE]: prefs = $settingsPrefs")
+        Logger.debug("[SETTINGS UPDATE]: prefs = $settingsPrefs")
 
         settingsPrefs.prefsChange.removeObserver(settingsObserver)
     }
@@ -54,7 +54,16 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
             .setTargetRotation(rotation)
             .build()
             .also {
-                val analyzer = createAnalyzer(screenAspectRatio, rotation, lensFacing)
+                val settingsPrefs = getSettingsPreference()
+
+                val analyzer = if (settingsPrefs is InferenceSettingsPrefs) {
+                    createAnalyzer(screenAspectRatio, rotation, lensFacing,
+                        settingsPrefs.userAverageTime,
+                        settingsPrefs.enableImagePreprocess)
+                } else {
+                    createAnalyzer(screenAspectRatio, rotation, lensFacing,
+                        useAverageTime = true, imagePreprocessEnabled = true)
+                }
 
                 this.analyzer = analyzer
                 
@@ -72,7 +81,10 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
 
     abstract fun createAnalyzer(screenAspectRatio: Int,
                                 rotation: Int,
-                                lensFacing: Int): AbsImageAnalyzer<Info, Results>
+                                lensFacing: Int,
+                                useAverageTime: Boolean,
+                                imagePreprocessEnabled: Boolean
+    ): AbsImageAnalyzer<Info, Results>
 
     fun getCurrentLensFacing(): Int {
         return lensFacing
@@ -83,10 +95,10 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
     }
 
     private val settingsObserver = Observer<PrefsChange> {
-        Logger.debug("[CLF UPDATE]: analyzer = ${this.analyzer}, key = ${it.prefKey}")
+        Logger.debug("[SETTINGS UPDATE]: analyzer = ${this.analyzer}, key = ${it.prefKey}")
         val analyzer = this.analyzer ?: return@Observer
 
-        analyzer.onInferenceSettingsChange(it.prefKey)
+        analyzer.onInferenceSettingsChange(it.prefKey, getSettingsPreference())
     }
 
 }

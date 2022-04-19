@@ -2,6 +2,9 @@ package com.dailystudio.tflite.example.common.ui
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.view.LayoutInflater
+import android.view.View
+import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.settings.*
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 import com.dailystudio.tflite.example.common.R
@@ -12,6 +15,49 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
 
     override fun createSettings(context: Context): Array<AbsSetting> {
         val settingsPrefs = getInferenceSettingsPrefs()
+
+        val useAverageTime = object: SwitchSetting(
+            context,
+            InferenceSettingsPrefs.PREF_USER_AVERAGE_TIME,
+            R.drawable.ic_setting_use_avg_time,
+            R.string.setting_use_average,
+        ) {
+
+
+            override fun isOn(): Boolean {
+                Logger.debug("[${settingsPrefs.hashCode()}] GET PROP: AVG: ${settingsPrefs.userAverageTime}")
+                return settingsPrefs.userAverageTime
+            }
+
+            override fun setOn(on: Boolean) {
+                settingsPrefs.userAverageTime = on
+                Logger.debug("[${settingsPrefs.hashCode()}]SET PROP: AVG: ${settingsPrefs.userAverageTime}")
+            }
+
+        }
+
+        val enableImagePreprocess = object: SwitchSetting(
+            context,
+            InferenceSettingsPrefs.PREF_ENABLE_IMAGE_PREPROCESS,
+            R.drawable.ic_setting_pre_process,
+            R.string.setting_pre_process,
+        ) {
+
+            override fun isOn(): Boolean {
+                Logger.debug("[${settingsPrefs.hashCode()}]GET PROP: PRE: ${settingsPrefs.enableImagePreprocess}")
+
+                return settingsPrefs.enableImagePreprocess
+            }
+
+            override fun setOn(on: Boolean) {
+                Exception("isOn").printStackTrace()
+
+                settingsPrefs.enableImagePreprocess = on
+                Logger.debug("[${settingsPrefs.hashCode()}]SET PROP: PRE: ${settingsPrefs.enableImagePreprocess}")
+
+            }
+
+        }
 
         val devices = arrayOf(
             SimpleRadioSettingItem(context,
@@ -66,7 +112,7 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
 
         }
 
-        return arrayOf(deviceSetting, threadSetting)
+        return arrayOf(useAverageTime, enableImagePreprocess, deviceSetting, threadSetting)
     }
 
     override fun getDialogThumbImageDrawable(): Drawable? {
@@ -74,7 +120,7 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
     }
 
     open fun getInferenceSettingsPrefs(): InferenceSettingsPrefs {
-        return InferenceSettingsPrefs()
+        return InferenceSettingsPrefs.instance
     }
 
 }

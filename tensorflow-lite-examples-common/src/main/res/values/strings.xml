@@ -26,5 +26,7 @@
 
     <string name="setting_device">Inference Device</string>
     <string name="setting_threads">Number of threads</string>
+    <string name="setting_pre_process">Pre-process images</string>
+    <string name="setting_use_average">Averaged time analysis</string>
 
 </resources>

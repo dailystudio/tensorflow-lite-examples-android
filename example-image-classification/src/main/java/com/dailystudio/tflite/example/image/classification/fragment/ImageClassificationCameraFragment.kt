@@ -16,8 +16,11 @@ import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.images.Recognition
 import java.lang.Exception
 
-private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
-    : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing) {
+private class ImageClassificationAnalyzer(rotation: Int,
+                                          lensFacing: Int,
+                                          useAverageTime: Boolean,
+                                          imagePreprocessEnabled: Boolean)
+    : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing, useAverageTime, imagePreprocessEnabled) {
 
     private var classifier: Classifier? = null
 
@@ -76,8 +79,8 @@ private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
        return ImageInferenceInfo()
     }
 
-    override fun onInferenceSettingsChange(changePrefName: String) {
-        super.onInferenceSettingsChange(changePrefName)
+    override fun onInferenceSettingsChange(changePrefName: String, inferenceSettings: AbsPrefs) {
+        super.onInferenceSettingsChange(changePrefName, inferenceSettings)
         Logger.debug("[CLF UPDATE]: new settings: $changePrefName")
 
         when (changePrefName) {
@@ -111,12 +114,19 @@ private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
 
 class ImageClassificationCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
-        return ImageClassificationAnalyzer(rotation, lensFacing)
-    }
-
     override fun getSettingsPreference(): AbsPrefs {
         return ImageClassificationSettingsPrefs.instance
+    }
+
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        useAverageTime: Boolean,
+        imagePreprocessEnabled: Boolean
+    ): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
+        return ImageClassificationAnalyzer(rotation, lensFacing, useAverageTime, imagePreprocessEnabled)
+
     }
 
 }

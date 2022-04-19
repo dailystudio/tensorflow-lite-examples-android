@@ -8,13 +8,20 @@ import org.tensorflow.lite.support.model.Model
 open class InferenceSettings(@PreferenceValue(defaultValueStr = "CPU")
                              val device: String = Model.Device.CPU.toString(),
                              @PreferenceValue(defaultValueStr = DEFAULT_NUM_OF_THREADS.toString())
-                             val numberOfThreads: Int = 1) {
+                             val numberOfThreads: Int = 1,
+                             @PreferenceValue(defaultValueStr = USE_AVERAGE_TIME.toString())
+                             val userAverageTime: Boolean = true,
+                             @PreferenceValue(defaultValueStr = IMAGE_PREPROCESS_ENABLED.toString())
+                             val enableImagePreprocess: Boolean = true,
+) {
 
     companion object {
         const val DEFAULT_NUM_OF_THREADS = 1
         const val MIN_NUM_OF_THREADS = 1
         const val MAX_NUM_OF_THREADS = 4
         const val NUM_OF_THREADS_STEP = 1
+        const val USE_AVERAGE_TIME = true
+        const val IMAGE_PREPROCESS_ENABLED = true
     }
 
 }

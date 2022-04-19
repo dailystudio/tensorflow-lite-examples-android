@@ -1,14 +1,29 @@
 package com.dailystudio.tflite.example.image.detection
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.dailystudio.devbricksx.settings.AbsSetting
+import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
 import org.tensorflow.lite.examples.detection.customview.OverlayView
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker
 import org.tensorflow.litex.images.Recognition
+
+class ObjectDetectionSettingsFragment: InferenceSettingsFragment() {
+    override fun createSettings(context: Context): Array<AbsSetting> {
+        val settings = super.createSettings(context)
+
+        return settings.filter {
+            it.name != InferenceSettingsPrefs.PREF_ENABLE_IMAGE_PREPROCESS
+        }.toTypedArray()
+    }
+}
 
 class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Recognition>>() {
 
@@ -63,4 +78,7 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Recognition>
         return getString(R.string.app_desc)
     }
 
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        return ObjectDetectionSettingsFragment();
+    }
 }

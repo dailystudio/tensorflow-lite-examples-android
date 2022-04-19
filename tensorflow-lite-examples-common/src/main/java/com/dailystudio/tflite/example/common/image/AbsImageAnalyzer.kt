@@ -12,21 +12,50 @@ import com.dailystudio.devbricksx.preference.AbsPrefs
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
 import com.dailystudio.tflite.example.common.InferenceAgent
-import com.dailystudio.tflite.example.common.InferenceSettings
-import org.tensorflow.lite.support.model.Model
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import java.io.File
 
+class AvgTime(private val capacity: Int = 10) {
+
+    private val timeValues = Array<Long>(capacity) { 0 }
+    private var wIndex = 0
+
+    val value: Long
+        get() {
+            val len = timeValues.size
+            var sum = 0L
+
+            for (i in 0 until len) {
+                sum += timeValues[i]
+            }
+            return sum / len
+        }
+
+
+    fun record(newValue: Long) {
+        timeValues[wIndex] = newValue
+        wIndex = (wIndex + 1) % capacity
+    }
+
+}
+
+
 abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val rotation: Int,
-                                                                    private val lensFacing: Int): ImageAnalysis.Analyzer {
+                                                                    private val lensFacing: Int,
+                                                                    var useAverageTime: Boolean = true,
+                                                                    var preprocessEnabled: Boolean = true,
+): ImageAnalysis.Analyzer {
 
     private var inferenceAgent: InferenceAgent<Info, Results> =
         InferenceAgent()
+
+    private val avgInferenceTime = AvgTime(20)
+    private val avgAnalyzeTime = AvgTime(20)
 
     init {
         inferenceAgent.deliverInferenceInfo(createInferenceInfo())
     }
 
-    @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
         var results: Results? = null
         val info: Info = createInferenceInfo().apply {
@@ -39,7 +68,11 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
         val start = System.currentTimeMillis()
         image.image?.let {
             val frameBitmap: Bitmap? = it.toBitmap()
-            val inferenceBitmap: Bitmap? = preProcessImage(frameBitmap, info)
+            val inferenceBitmap: Bitmap? = if (preprocessEnabled) {
+                preProcessImage(frameBitmap, info)
+            } else {
+                frameBitmap
+            }
 
             inferenceBitmap?.let { bitmap ->
                 info.inferenceImageSize = Size(bitmap.width, bitmap.height)
@@ -55,6 +88,15 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
         }
 
         Logger.debug("analysis [in ${info.analysisTime} ms (inference: ${info.inferenceTime} ms)]: result = ${results.toString().replace("%", "%%")}")
+
+        Logger.debug("useAverageTime = $useAverageTime")
+        if (useAverageTime) {
+            avgInferenceTime.record(info.inferenceTime)
+            avgAnalyzeTime.record(info.analysisTime)
+
+            info.inferenceTime = avgInferenceTime.value
+            info.analysisTime = avgAnalyzeTime.value
+        }
 
         inferenceAgent.deliverInferenceInfo(info)
 
@@ -97,9 +139,21 @@ abstract class AbsImageAnalyzer<Info: ImageInferenceInfo, Results> (private val 
     }
 
     @Synchronized
-    open fun onInferenceSettingsChange(changePrefName: String) {
-        Logger.debug("[CLF UPDATE]: changed preference: $changePrefName")
+    open fun onInferenceSettingsChange(changePrefName: String, inferenceSettings: AbsPrefs) {
+        Logger.debug("[SETTINGS UPDATE]: changed preference: $changePrefName")
+        if (inferenceSettings !is InferenceSettingsPrefs) {
+            return
+        }
 
+        when (changePrefName) {
+            InferenceSettingsPrefs.PREF_ENABLE_IMAGE_PREPROCESS -> {
+                preprocessEnabled = inferenceSettings.enableImagePreprocess
+            }
+
+            InferenceSettingsPrefs.PREF_USER_AVERAGE_TIME -> {
+                useAverageTime = inferenceSettings.userAverageTime
+            }
+        }
     }
 
     abstract fun createInferenceInfo(): Info

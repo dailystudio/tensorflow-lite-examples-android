@@ -9,5 +9,7 @@ import org.tensorflow.lite.support.model.Model
 class ImageClassificationSettings(@PreferenceValue
                                   val tfLiteModel: String? = null,
                                   device: String = Model.Device.CPU.toString(),
-                                  numOfThread: Int = 1)
-    : InferenceSettings(device, numOfThread)
+                                  numOfThread: Int = 1,
+                                  userAverageTime: Boolean = true,
+                                  enableImagePreprocess: Boolean = true,
+) : InferenceSettings(device, numOfThread, userAverageTime, enableImagePreprocess)
