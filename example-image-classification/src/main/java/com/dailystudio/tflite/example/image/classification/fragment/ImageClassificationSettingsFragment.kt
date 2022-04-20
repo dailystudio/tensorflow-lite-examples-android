@@ -12,6 +12,9 @@ import org.tensorflow.lite.examples.classification.tflite.Classifier
 
 class ImageClassificationSettingsFragment : InferenceSettingsFragment() {
 
+    override val allowSkipPreprocess: Boolean
+        get() = true
+
     override fun createSettings(context: Context): Array<AbsSetting> {
         val settings: MutableList<AbsSetting> =
             super.createSettings(context).toMutableList()

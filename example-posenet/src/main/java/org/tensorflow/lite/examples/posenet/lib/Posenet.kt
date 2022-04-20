@@ -27,6 +27,8 @@ import java.nio.channels.FileChannel
 import kotlin.math.exp
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
+import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.TFLiteModel
 
 enum class BodyPart {
   NOSE,
@@ -91,43 +93,18 @@ enum class Device {
   GPU
 }
 
-class Posenet(
-  val context: Context,
-  val filename: String = "posenet_model.tflite",
-  val device: Device = Device.CPU
-) : AutoCloseable {
+class Posenet(context: Context,
+              modelPath: String,
+              device: Model.Device,
+              numOfThreads: Int = NUM_LITE_THREADS,
+) : TFLiteModel(context, modelPath, device, numOfThreads) {
+
+  companion object {
+    private const val NUM_LITE_THREADS = 4
+  }
+
   var lastInferenceTimeNanos: Long = -1
     private set
-
-  /** An Interpreter for the TFLite model.   */
-  private var interpreter: Interpreter? = null
-  private var gpuDelegate: GpuDelegate? = null
-  private val NUM_LITE_THREADS = 4
-
-  private fun getInterpreter(): Interpreter {
-    if (interpreter != null) {
-      return interpreter!!
-    }
-    val options = Interpreter.Options()
-    options.setNumThreads(NUM_LITE_THREADS)
-    when (device) {
-      Device.CPU -> { }
-      Device.GPU -> {
-        gpuDelegate = GpuDelegate()
-        options.addDelegate(gpuDelegate)
-      }
-      Device.NNAPI -> options.setUseNNAPI(true)
-    }
-    interpreter = Interpreter(loadModelFile(filename, context), options)
-    return interpreter!!
-  }
-
-  override fun close() {
-    interpreter?.close()
-    interpreter = null
-    gpuDelegate?.close()
-    gpuDelegate = null
-  }
 
   /** Returns value within [0,1].   */
   private fun sigmoid(x: Float): Float {
@@ -158,15 +135,6 @@ class Posenet(
       }
     }
     return inputBuffer
-  }
-
-  /** Preload and memory map the model file, returning a MappedByteBuffer containing the model. */
-  private fun loadModelFile(path: String, context: Context): MappedByteBuffer {
-    val fileDescriptor = context.assets.openFd(path)
-    val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-    return inputStream.channel.map(
-      FileChannel.MapMode.READ_ONLY, fileDescriptor.startOffset, fileDescriptor.declaredLength
-    )
   }
 
   /**
@@ -216,6 +184,8 @@ class Posenet(
    *      person: a Person object containing data about keypoint locations and confidence scores
    */
   fun estimateSinglePose(bitmap: Bitmap): Person {
+    val interpreter = tfLiteInterpreter ?: return Person()
+
     val estimationStartTimeNanos = SystemClock.elapsedRealtimeNanos()
     val inputArray = arrayOf(initInputArray(bitmap))
     Log.i(
@@ -226,10 +196,10 @@ class Posenet(
       )
     )
 
-    val outputMap = initOutputMap(getInterpreter())
+    val outputMap = initOutputMap(interpreter)
 
     val inferenceStartTimeNanos = SystemClock.elapsedRealtimeNanos()
-    getInterpreter().runForMultipleInputsOutputs(inputArray, outputMap)
+    interpreter.runForMultipleInputsOutputs(inputArray, outputMap)
     lastInferenceTimeNanos = SystemClock.elapsedRealtimeNanos() - inferenceStartTimeNanos
     Log.i(
       "posenet",

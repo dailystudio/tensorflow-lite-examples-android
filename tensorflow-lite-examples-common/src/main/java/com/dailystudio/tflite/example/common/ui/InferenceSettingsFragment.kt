@@ -13,6 +13,8 @@ import kotlin.math.roundToInt
 
 open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
 
+    protected open val allowSkipPreprocess = false
+
     override fun createSettings(context: Context): Array<AbsSetting> {
         val settingsPrefs = getInferenceSettingsPrefs()
 
@@ -22,7 +24,6 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
             R.drawable.ic_setting_use_avg_time,
             R.string.setting_use_average,
         ) {
-
 
             override fun isOn(): Boolean {
                 Logger.debug("[${settingsPrefs.hashCode()}] GET PROP: AVG: ${settingsPrefs.userAverageTime}")
@@ -112,7 +113,17 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
 
         }
 
-        return arrayOf(useAverageTime, enableImagePreprocess, deviceSetting, threadSetting)
+        val settings = mutableListOf(
+            useAverageTime,
+            deviceSetting,
+            threadSetting,
+        ).apply {
+            if (allowSkipPreprocess) {
+                add(0, enableImagePreprocess)
+            }
+        }
+
+        return settings.toTypedArray()
     }
 
     override fun getDialogThumbImageDrawable(): Drawable? {

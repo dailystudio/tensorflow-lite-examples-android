@@ -3,23 +3,32 @@ package com.dailystudio.tflite.example.image.pose.fragment
 import android.graphics.*
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.preference.AbsPrefs
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.pose.utils.mapKeyPoint
 import org.tensorflow.lite.examples.posenet.lib.BodyPart
 import org.tensorflow.lite.examples.posenet.lib.Device
 import org.tensorflow.lite.examples.posenet.lib.Person
 import org.tensorflow.lite.examples.posenet.lib.Posenet
+import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.images.Recognition
+import java.lang.Exception
 
-class PoseAnalyzer(rotation: Int, lensFacing: Int) : AbsImageAnalyzer<ImageInferenceInfo, Person>(rotation, lensFacing) {
+class PoseAnalyzer(rotation: Int,
+                   lensFacing: Int,
+                   useAverageTime: Boolean)
+    : AbsImageAnalyzer<ImageInferenceInfo, Person>(rotation, lensFacing, useAverageTime, true) {
 
     companion object {
         const val MODEL_WIDTH = 257
         const val MODEL_HEIGHT = 257
 
+        private const val MODEL_PATH = "posenet_model.tflite"
         private const val PRE_SCALE_WIDTH = 640
         private const val PRE_SCALE_HEIGHT = 480
 
@@ -68,6 +77,7 @@ class PoseAnalyzer(rotation: Int, lensFacing: Int) : AbsImageAnalyzer<ImageInfer
         return ImageInferenceInfo()
     }
 
+    @Synchronized
     override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): Person? {
         var results: Person? = null
 
@@ -75,7 +85,20 @@ class PoseAnalyzer(rotation: Int, lensFacing: Int) : AbsImageAnalyzer<ImageInfer
             val context = GlobalContextWrapper.context
 
             context?.let {
-                poseNet = Posenet(context, device = Device.CPU)
+                val deviceStr = InferenceSettingsPrefs.instance.device
+
+                val device = try {
+                    Model.Device.valueOf(deviceStr)
+                } catch (e: Exception) {
+                    Logger.warn("cannot parse device from [$deviceStr]: $e")
+
+                    Model.Device.CPU
+                }
+
+                val threads = InferenceSettingsPrefs.instance.numberOfThreads
+                Logger.debug("[CLF UPDATE]: classifier creating: device = $device, threads = $threads")
+
+                poseNet = Posenet(context, MODEL_PATH, device, threads)
             }
 
             Logger.debug("posenet created: $poseNet")
@@ -97,6 +120,24 @@ class PoseAnalyzer(rotation: Int, lensFacing: Int) : AbsImageAnalyzer<ImageInfer
         }
 
         return results
+    }
+
+
+    override fun onInferenceSettingsChange(changePrefName: String, inferenceSettings: AbsPrefs) {
+        super.onInferenceSettingsChange(changePrefName, inferenceSettings)
+        Logger.debug("[CLF UPDATE]: new settings: $changePrefName")
+
+        when (changePrefName) {
+            InferenceSettingsPrefs.PREF_DEVICE,
+            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS -> invalidateClassifier()
+        }
+    }
+
+    @Synchronized
+    private fun invalidateClassifier() {
+        poseNet?.close()
+        poseNet = null
+        Logger.debug("[CLF UPDATE]: posenet is invalidated to null")
     }
 
     private fun debugOutputs(bitmap: Bitmap, person: Person, filename: String) {
@@ -189,7 +230,6 @@ class PoseAnalyzer(rotation: Int, lensFacing: Int) : AbsImageAnalyzer<ImageInfer
         return false
     }
 
-
     private fun preScaleImage(frameBitmap: Bitmap?): Bitmap? {
         if (frameBitmap == null) {
             return null
@@ -214,10 +254,14 @@ class PoseAnalyzer(rotation: Int, lensFacing: Int) : AbsImageAnalyzer<ImageInfer
 
 class PoseCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, Person>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int,
-                                rotation: Int,
-                                lensFacing: Int): AbsImageAnalyzer<ImageInferenceInfo, Person> {
-        return PoseAnalyzer(rotation, lensFacing)
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        useAverageTime: Boolean,
+        imagePreprocessEnabled: Boolean
+    ): AbsImageAnalyzer<ImageInferenceInfo, Person> {
+        return PoseAnalyzer(rotation, lensFacing, useAverageTime)
     }
 
 }
