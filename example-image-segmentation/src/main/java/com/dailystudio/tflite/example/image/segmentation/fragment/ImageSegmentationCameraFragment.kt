@@ -13,8 +13,10 @@ import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
 import org.tensorflow.lite.examples.imagesegmentation.ImageSegmentationModelExecutor
 import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
 
-private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
-    : AbsImageAnalyzer<AdvanceInferenceInfo, SegmentationResult>(rotation, lensFacing) {
+private class ImageSegmentationAnalyzer(rotation: Int,
+                                        lensFacing: Int,
+                                        useAverageTime: Boolean,
+): AbsImageAnalyzer<AdvanceInferenceInfo, SegmentationResult>(rotation, lensFacing, useAverageTime, true) {
 
     companion object {
 
@@ -105,9 +107,14 @@ private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
 
 class ImageSegmentationCameraFragment : AbsExampleCameraFragment<AdvanceInferenceInfo, SegmentationResult>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
-            : AbsImageAnalyzer<AdvanceInferenceInfo, SegmentationResult> {
-        return ImageSegmentationAnalyzer(rotation, lensFacing)
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        useAverageTime: Boolean,
+        imagePreprocessEnabled: Boolean
+    ): AbsImageAnalyzer<AdvanceInferenceInfo, SegmentationResult> {
+        return ImageSegmentationAnalyzer(rotation, lensFacing, useAverageTime)
     }
 
 }
