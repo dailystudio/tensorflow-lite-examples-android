@@ -64,14 +64,10 @@ class PoseAnalyzer(rotation: Int,
 
     private var originalBitmap: Bitmap? = null
     private var preScaledBitmap: Bitmap? = null
-    private var croppedBitmap: Bitmap
+    private var croppedBitmap: Bitmap = Bitmap.createBitmap(
+        MODEL_WIDTH, MODEL_HEIGHT, Bitmap.Config.ARGB_8888)
 
     private var poseNet: Posenet? = null
-
-    init {
-        croppedBitmap = Bitmap.createBitmap(
-            MODEL_WIDTH, MODEL_HEIGHT, Bitmap.Config.ARGB_8888)
-    }
 
     override fun createInferenceInfo(): ImageInferenceInfo {
         return ImageInferenceInfo()
