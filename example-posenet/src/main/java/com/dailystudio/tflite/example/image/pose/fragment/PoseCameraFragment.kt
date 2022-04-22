@@ -1,9 +1,9 @@
 package com.dailystudio.tflite.example.image.pose.fragment
 
+import android.content.Context
 import android.graphics.*
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.preference.AbsPrefs
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
@@ -12,17 +12,14 @@ import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.pose.utils.mapKeyPoint
 import org.tensorflow.lite.examples.posenet.lib.BodyPart
-import org.tensorflow.lite.examples.posenet.lib.Device
 import org.tensorflow.lite.examples.posenet.lib.Person
 import org.tensorflow.lite.examples.posenet.lib.Posenet
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.images.Recognition
-import java.lang.Exception
 
 class PoseAnalyzer(rotation: Int,
                    lensFacing: Int,
                    useAverageTime: Boolean)
-    : AbsImageAnalyzer<ImageInferenceInfo, Person>(rotation, lensFacing, useAverageTime, true) {
+    : AbsImageAnalyzer<Posenet, ImageInferenceInfo, Person>(rotation, lensFacing, useAverageTime) {
 
     companion object {
         const val MODEL_WIDTH = 257
@@ -74,66 +71,24 @@ class PoseAnalyzer(rotation: Int,
     }
 
     @Synchronized
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): Person? {
-        var results: Person? = null
+    override fun analyzeFrame(
+        model: Posenet,
+        inferenceBitmap: Bitmap,
+        info: ImageInferenceInfo
+    ): Person? {
+        val start = System.currentTimeMillis()
+        val results = model.estimateSinglePose(inferenceBitmap)
+        val end = System.currentTimeMillis()
 
-        if (poseNet == null) {
-            val context = GlobalContextWrapper.context
+        info.inferenceTime = (end - start)
 
-            context?.let {
-                val deviceStr = InferenceSettingsPrefs.instance.device
-
-                val device = try {
-                    Model.Device.valueOf(deviceStr)
-                } catch (e: Exception) {
-                    Logger.warn("cannot parse device from [$deviceStr]: $e")
-
-                    Model.Device.CPU
-                }
-
-                val threads = InferenceSettingsPrefs.instance.numberOfThreads
-                Logger.debug("[CLF UPDATE]: classifier creating: device = $device, threads = $threads")
-
-                poseNet = Posenet(context, MODEL_PATH, device, threads)
-            }
-
-            Logger.debug("posenet created: $poseNet")
-        }
-
-        poseNet?.let { classifier ->
-            val start = System.currentTimeMillis()
-            results = classifier.estimateSinglePose(inferenceBitmap)
-            val end = System.currentTimeMillis()
-
-            info.inferenceTime = (end - start)
-
-            Logger.debug("raw results: ${results.toString().replace("%", "%%")}")
-            results?.let {
-                debugOutputs(inferenceBitmap, it, "result.png")
-                mapKeyPoints(it)
-            }
-
+        Logger.debug("raw results: ${results.toString().replace("%", "%%")}")
+        results?.let {
+            debugOutputs(inferenceBitmap, it, "result.png")
+            mapKeyPoints(it)
         }
 
         return results
-    }
-
-
-    override fun onInferenceSettingsChange(changePrefName: String, inferenceSettings: AbsPrefs) {
-        super.onInferenceSettingsChange(changePrefName, inferenceSettings)
-        Logger.debug("[CLF UPDATE]: new settings: $changePrefName")
-
-        when (changePrefName) {
-            InferenceSettingsPrefs.PREF_DEVICE,
-            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS -> invalidateClassifier()
-        }
-    }
-
-    @Synchronized
-    private fun invalidateClassifier() {
-        poseNet?.close()
-        poseNet = null
-        Logger.debug("[CLF UPDATE]: posenet is invalidated to null")
     }
 
     private fun debugOutputs(bitmap: Bitmap, person: Person, filename: String) {
@@ -246,17 +201,25 @@ class PoseAnalyzer(rotation: Int,
         return scaledBitmap
     }
 
+    override fun createModel(
+        context: Context,
+        device: Model.Device,
+        numOfThreads: Int,
+        settings: InferenceSettingsPrefs
+    ): Posenet {
+        return Posenet(context, MODEL_PATH, device, numOfThreads)
+    }
+
 }
 
-class PoseCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, Person>() {
+class PoseCameraFragment : AbsExampleCameraFragment<Posenet, ImageInferenceInfo, Person>() {
 
     override fun createAnalyzer(
         screenAspectRatio: Int,
         rotation: Int,
         lensFacing: Int,
-        useAverageTime: Boolean,
-        imagePreprocessEnabled: Boolean
-    ): AbsImageAnalyzer<ImageInferenceInfo, Person> {
+        useAverageTime: Boolean
+    ): AbsImageAnalyzer<Posenet, ImageInferenceInfo, Person> {
         return PoseAnalyzer(rotation, lensFacing, useAverageTime)
     }
 
