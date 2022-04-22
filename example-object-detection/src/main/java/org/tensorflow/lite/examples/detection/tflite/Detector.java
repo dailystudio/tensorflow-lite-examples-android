@@ -73,7 +73,7 @@ abstract public class Detector extends TFLiteModel {
     super(context, modelPath, device, numOfThreads);
 
     labels = FileUtil.loadLabels(context, getLabelPath());
-    Interpreter tfLiteInterpreter = getTfLiteInterpreter();
+    Interpreter tfLiteInterpreter = getInterpreter();
 
     int imageTensorIndex = 0;
     int[] imageShape = tfLiteInterpreter.getInputTensor(imageTensorIndex).shape(); // {1, height, width, 3}
@@ -150,7 +150,7 @@ abstract public class Detector extends TFLiteModel {
 
     // Run the inference call.
     Trace.beginSection("run");
-    getTfLiteInterpreter().runForMultipleInputsOutputs(inputArray, outputMap);
+    getInterpreter().runForMultipleInputsOutputs(inputArray, outputMap);
     Trace.endSection();
 
     // Show the best detections.

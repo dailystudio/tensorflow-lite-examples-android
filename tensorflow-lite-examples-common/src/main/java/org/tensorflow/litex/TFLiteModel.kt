@@ -12,16 +12,18 @@ import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.model.Model
 import java.io.IOException
 
-open class TFLiteModel(val context: Context,
-                       private val modelPath: String,
-                       val device: Model.Device = Model.Device.CPU,
-                       private val numOfThreads: Int = 1) {
+private data class _TFLiteInterpreter(
+    val modelPath: String,
+    val device: Model.Device = Model.Device.CPU,
+    private val numOfThreads: Int = 1
+) {
 
     private var delegate: Delegate? = null
-    protected var tfLiteInterpreter: Interpreter? = null
     private val tfLiteOptions = Interpreter.Options()
 
-    init {
+    var tfLiteInterpreter: Interpreter? = null
+
+    fun open(context: Context) {
         delegate = when (device) {
             Model.Device.NNAPI ->  NnApiDelegate()
             Model.Device.GPU ->  {
@@ -62,7 +64,7 @@ open class TFLiteModel(val context: Context,
         }
     }
 
-    open fun close() {
+    fun close() {
         tfLiteInterpreter?.let {
             it.close()
             tfLiteInterpreter = null
@@ -75,6 +77,50 @@ open class TFLiteModel(val context: Context,
             }
 
             delegate = null
+        }
+    }
+
+}
+
+open class TFLiteModel(val context: Context,
+                       private val modelPaths: Array<String>,
+                       val device: Model.Device = Model.Device.CPU,
+                       val numOfThreads: Int = 1) {
+
+    constructor(
+        context: Context,
+        modelPath: String,
+        device: Model.Device = Model.Device.CPU,
+        numOfThreads: Int = 1
+    ) : this (context, arrayOf(modelPath), device, numOfThreads)
+
+    private val interpreters: MutableList<_TFLiteInterpreter> = mutableListOf()
+
+    init {
+        for (p in modelPaths) {
+            interpreters.add(
+                _TFLiteInterpreter(p, device, numOfThreads).apply {
+                    open(context)
+                }
+            )
+        }
+    }
+
+    fun getInterpreter(): Interpreter? {
+        return getInterpreter(0)
+    }
+
+    fun getInterpreter(index: Int = 0): Interpreter? {
+        return if (interpreters.size > 0) {
+            interpreters.getOrNull(index)?.tfLiteInterpreter
+        } else {
+            null
+        }
+    }
+
+    open fun close() {
+        interpreters.forEach {
+            it.close()
         }
     }
 

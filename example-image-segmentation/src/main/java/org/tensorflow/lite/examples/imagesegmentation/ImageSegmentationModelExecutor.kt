@@ -87,7 +87,7 @@ class ImageSegmentationModelExecutor(
       info.preProcessTime = preprocessTime
 
       imageSegmentationTime = SystemClock.uptimeMillis()
-      tfLiteInterpreter?.run(contentArray, segmentationMasks)
+      getInterpreter()?.run(contentArray, segmentationMasks)
       imageSegmentationTime = SystemClock.uptimeMillis() - imageSegmentationTime
       Log.d(TAG, "Time to run the model $imageSegmentationTime")
       info.inferenceTime = imageSegmentationTime
@@ -183,7 +183,7 @@ class ImageSegmentationModelExecutor(
       preprocessTime = SystemClock.uptimeMillis() - preprocessTime
 
       imageSegmentationTime = SystemClock.uptimeMillis()
-      tfLiteInterpreter?.run(contentArray, segmentationMasks)
+      getInterpreter()?.run(contentArray, segmentationMasks)
       imageSegmentationTime = SystemClock.uptimeMillis() - imageSegmentationTime
       Log.d(TAG, "Time to run the model $imageSegmentationTime")
 

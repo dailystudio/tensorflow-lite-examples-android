@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId "com.dailystudio.tflite.example.image.styletransfer"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
@@ -63,7 +63,7 @@ dependencies {
 
     implementation project(":tensorflow-lite-examples-common")
 
-    kapt "com.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
+    kapt "cn.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
 }
 
 // Download default models; if you wish to use your own models then

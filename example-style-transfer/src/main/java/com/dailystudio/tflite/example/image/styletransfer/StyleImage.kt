@@ -1,15 +1,10 @@
 package com.dailystudio.tflite.example.image.styletransfer
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
-import com.dailystudio.devbricksx.ui.AbsCardViewHolder
 import com.dailystudio.devbricksx.ui.AbsViewHolder
-import com.dailystudio.devbricksx.utils.ImageUtils
-import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 import com.dailystudio.tflite.example.common.Constants
 import com.nostra13.universalimageloader.core.ImageLoader
 

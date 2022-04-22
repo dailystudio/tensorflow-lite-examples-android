@@ -47,7 +47,7 @@ class StyleImagesListFragmentExt : StyleImagesListFragment() {
         lastPosition = newPos
     }
 
-    override fun submitData(adapter: StyleImagesAdapter, data: PagedList<StyleImage>) {
+    override fun submitData(adapter: StyleImagesAdapter, data: List<StyleImage>) {
         lastPosition = -1
         val selectedStyle = StyleTransferPrefs.getSelectedStyle(requireContext())
 

@@ -109,7 +109,7 @@ public abstract class Classifier extends TFLiteModel {
     // Loads labels out from the label file.
     labels = FileUtil.loadLabels(context, getLabelPath());
 
-    Interpreter tfLiteInterpreter = getTfLiteInterpreter();
+    Interpreter tfLiteInterpreter = getInterpreter();
 
     // Reads type and shape of input and output tensors, respectively.
     int imageTensorIndex = 0;
@@ -149,7 +149,7 @@ public abstract class Classifier extends TFLiteModel {
     // Runs the inference call.
     Trace.beginSection("runInference");
     long startTimeForReference = SystemClock.uptimeMillis();
-    getTfLiteInterpreter().run(inputImageBuffer.getBuffer(), outputProbabilityBuffer.getBuffer().rewind());
+    getInterpreter().run(inputImageBuffer.getBuffer(), outputProbabilityBuffer.getBuffer().rewind());
     long endTimeForReference = SystemClock.uptimeMillis();
     Trace.endSection();
     Logger.INSTANCE.info("Timecost to run model inference: " + (endTimeForReference - startTimeForReference));

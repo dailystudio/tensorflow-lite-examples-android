@@ -30,33 +30,38 @@ import java.nio.channels.FileChannel
 import kotlin.collections.set
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
+import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.TFLiteModel
 
 @SuppressWarnings("GoodTime")
 class StyleTransferModelExecutor(
   context: Context,
-  private var useGPU: Boolean = false
-) {
-  private var gpuDelegate: GpuDelegate? = null
-  private var numberThreads = 4
+  device: Model.Device,
+  numOfThreads: Int
+): TFLiteModel(context,
+  if (device == Model.Device.GPU) {
+    arrayOf(STYLE_PREDICT_FLOAT16_MODEL, STYLE_TRANSFER_FLOAT16_MODEL)
+  } else {
+    arrayOf(STYLE_PREDICT_INT8_MODEL, STYLE_TRANSFER_INT8_MODEL)
+  }
+  , device, numOfThreads) {
 
-  private val interpreterPredict: Interpreter
-  private val interpreterTransform: Interpreter
+
+  private val interpreterPredict: Interpreter?
+    get() {
+      return getInterpreter(0)
+    }
+
+  private val interpreterTransform: Interpreter?
+    get() {
+      return getInterpreter(1)
+    }
 
   private var fullExecutionTime = 0L
   private var preProcessTime = 0L
   private var stylePredictTime = 0L
   private var styleTransferTime = 0L
   private var postProcessTime = 0L
-
-  init {
-    if (useGPU) {
-      interpreterPredict = getInterpreter(context, STYLE_PREDICT_FLOAT16_MODEL, true)
-      interpreterTransform = getInterpreter(context, STYLE_TRANSFER_FLOAT16_MODEL, true)
-    } else {
-      interpreterPredict = getInterpreter(context, STYLE_PREDICT_INT8_MODEL, false)
-      interpreterTransform = getInterpreter(context, STYLE_TRANSFER_INT8_MODEL, false)
-    }
-  }
 
   companion object {
     private const val TAG = "StyleTransferMExec"
@@ -92,7 +97,7 @@ class StyleTransferModelExecutor(
       stylePredictTime = SystemClock.uptimeMillis()
       // The results of this inference could be reused given the style does not change
       // That would be a good practice in case this was applied to a video stream.
-      interpreterPredict.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
+      interpreterPredict?.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
       stylePredictTime = SystemClock.uptimeMillis() - stylePredictTime
       Log.d(TAG, "Style Predict Time to run: $stylePredictTime")
       info.preProcessTime = stylePredictTime
@@ -104,7 +109,7 @@ class StyleTransferModelExecutor(
       outputsForStyleTransfer[0] = outputImage
 
       styleTransferTime = SystemClock.uptimeMillis()
-      interpreterTransform.runForMultipleInputsOutputs(
+      interpreterTransform?.runForMultipleInputsOutputs(
         inputsForStyleTransfer,
         outputsForStyleTransfer
       )
@@ -187,7 +192,7 @@ class StyleTransferModelExecutor(
       stylePredictTime = SystemClock.uptimeMillis()
       // The results of this inference could be reused given the style does not change
       // That would be a good practice in case this was applied to a video stream.
-      interpreterPredict.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
+      interpreterPredict?.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
       stylePredictTime = SystemClock.uptimeMillis() - stylePredictTime
       Log.d(TAG, "Style Predict Time to run: $stylePredictTime")
 
@@ -198,7 +203,7 @@ class StyleTransferModelExecutor(
       outputsForStyleTransfer[0] = outputImage
 
       styleTransferTime = SystemClock.uptimeMillis()
-      interpreterTransform.runForMultipleInputsOutputs(
+      interpreterTransform?.runForMultipleInputsOutputs(
         inputsForStyleTransfer,
         outputsForStyleTransfer
       )
@@ -249,30 +254,11 @@ class StyleTransferModelExecutor(
     return retFile
   }
 
-  @Throws(IOException::class)
-  private fun getInterpreter(
-    context: Context,
-    modelName: String,
-    useGpu: Boolean = false
-  ): Interpreter {
-    val tfliteOptions = Interpreter.Options()
-    tfliteOptions.setNumThreads(numberThreads)
-
-    gpuDelegate = null
-    if (useGpu) {
-      gpuDelegate = GpuDelegate()
-      tfliteOptions.addDelegate(gpuDelegate)
-    }
-
-    tfliteOptions.setNumThreads(numberThreads)
-    return Interpreter(loadModelFile(context, modelName), tfliteOptions)
-  }
-
   private fun formatExecutionLog(): String {
     val sb = StringBuilder()
     sb.append("Input Image Size: $CONTENT_IMAGE_SIZE x $CONTENT_IMAGE_SIZE\n")
-    sb.append("GPU enabled: $useGPU\n")
-    sb.append("Number of threads: $numberThreads\n")
+    sb.append("GPU enabled: ${device == Model.Device.GPU}\n")
+    sb.append("Number of threads: $\n")
     sb.append("Pre-process execution time: $preProcessTime ms\n")
     sb.append("Predicting style execution time: $stylePredictTime ms\n")
     sb.append("Transferring style execution time: $styleTransferTime ms\n")
@@ -281,11 +267,4 @@ class StyleTransferModelExecutor(
     return sb.toString()
   }
 
-  fun close() {
-    interpreterPredict.close()
-    interpreterTransform.close()
-    if (gpuDelegate != null) {
-      gpuDelegate!!.close()
-    }
-  }
 }

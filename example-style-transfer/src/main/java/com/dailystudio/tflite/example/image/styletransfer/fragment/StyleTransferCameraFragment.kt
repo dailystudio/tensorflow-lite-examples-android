@@ -16,12 +16,16 @@ import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.styletransfer.StyleTransferPrefs
 import org.tensorflow.lite.examples.styletransfer.StyleTransferModelExecutor
 import org.tensorflow.lite.examples.styletransfer.StyleTransferResult
+import org.tensorflow.lite.support.model.Model
 
-private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
-    : AbsImageAnalyzer<AdvanceInferenceInfo, StyleTransferResult>(rotation, lensFacing) {
+private class StyleTransferAnalyzer(rotation: Int,
+                                    lensFacing: Int,
+                                    useAverageTime: Boolean
+): AbsImageAnalyzer<StyleTransferModelExecutor, AdvanceInferenceInfo, StyleTransferResult>(rotation, lensFacing, useAverageTime) {
 
     companion object {
 
@@ -40,17 +44,14 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
         this.styleName = styleName
     }
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: AdvanceInferenceInfo): StyleTransferResult? {
+    override fun analyzeFrame(
+        model: StyleTransferModelExecutor,
+        inferenceBitmap: Bitmap,
+        info: AdvanceInferenceInfo
+    ): StyleTransferResult? {
         val context = GlobalContextWrapper.context ?: return null
 
         var results: StyleTransferResult? = null
-
-        if (styleTransferModelExecutor == null) {
-            styleTransferModelExecutor =
-                StyleTransferModelExecutor(context, true)
-
-            Logger.debug("segmentation model created: $styleTransferModelExecutor")
-        }
 
         if (styleName == null) {
             styleName = StyleTransferPrefs.getSelectedStyle(context)
@@ -63,16 +64,14 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
             }
         }
 
-        styleTransferModelExecutor?.let { model ->
-            val styledBitmap = styleBitmap?.let {
-                model.fastExecute(inferenceBitmap, it , info)
-            } ?: inferenceBitmap
+        val styledBitmap = styleBitmap?.let {
+            model.fastExecute(inferenceBitmap, it , info)
+        } ?: inferenceBitmap
 
-            val trimmed = ImageUtils.trimBitmap(
-                styledBitmap, info.frameSize.width.toFloat() / info.frameSize.height)
-            results = StyleTransferResult(trimmed)
-            dumpIntermediateBitmap(trimmed, STYLED_IMAGE_FILE)
-        }
+        val trimmed = ImageUtils.trimBitmap(
+            styledBitmap, info.frameSize.width.toFloat() / info.frameSize.height)
+        results = StyleTransferResult(trimmed)
+        dumpIntermediateBitmap(trimmed, STYLED_IMAGE_FILE)
 
         return results
     }
@@ -115,16 +114,25 @@ private class StyleTransferAnalyzer(rotation: Int, lensFacing: Int)
         return false
     }
 
+    override fun createModel(
+        context: Context,
+        device: Model.Device,
+        numOfThreads: Int,
+        settings: InferenceSettingsPrefs
+    ): StyleTransferModelExecutor? {
+        return StyleTransferModelExecutor(context, device, numOfThreads)
+    }
+
 }
 
-class StyleTransferCameraFragment : AbsExampleCameraFragment<AdvanceInferenceInfo, StyleTransferResult>() {
+class StyleTransferCameraFragment : AbsExampleCameraFragment<StyleTransferModelExecutor, AdvanceInferenceInfo, StyleTransferResult>() {
 
     override fun onResume() {
         super.onResume()
 
         StyleTransferPrefs.prefsChange.observe(this, Observer<PrefsChange> {
             if (it.prefKey == StyleTransferPrefs.KEY_SELECTED_STYLE) {
-                val imageAnalyzer: AbsImageAnalyzer<*, *>? = analyzer
+                val imageAnalyzer = analyzer
 
                 if (imageAnalyzer is StyleTransferAnalyzer) {
                     imageAnalyzer.selectStyle(StyleTransferPrefs.getSelectedStyle(requireContext()))
@@ -133,9 +141,13 @@ class StyleTransferCameraFragment : AbsExampleCameraFragment<AdvanceInferenceInf
         })
     }
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
-            : AbsImageAnalyzer<AdvanceInferenceInfo, StyleTransferResult> {
-        return StyleTransferAnalyzer(rotation, lensFacing)
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        useAverageTime: Boolean
+    ): AbsImageAnalyzer<StyleTransferModelExecutor, AdvanceInferenceInfo, StyleTransferResult> {
+        return StyleTransferAnalyzer(rotation, lensFacing, useAverageTime)
     }
 
 }
