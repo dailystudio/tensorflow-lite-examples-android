@@ -1,9 +1,8 @@
 package com.dailystudio.tflite.example.image.classification.fragment
 
+import android.content.Context
 import android.graphics.Bitmap
-import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.preference.AbsPrefs
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
@@ -19,58 +18,20 @@ import java.lang.Exception
 private class ImageClassificationAnalyzer(rotation: Int,
                                           lensFacing: Int,
                                           useAverageTime: Boolean,
-                                          imagePreprocessEnabled: Boolean)
-    : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing, useAverageTime, imagePreprocessEnabled) {
+) : AbsImageAnalyzer<Classifier, ImageInferenceInfo, List<Recognition>>(rotation, lensFacing, useAverageTime) {
 
-    private var classifier: Classifier? = null
-
-    @Synchronized
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Recognition>? {
+    override fun analyzeFrame(
+        model: Classifier,
+        inferenceBitmap: Bitmap,
+        info: ImageInferenceInfo
+    ): List<Recognition>? {
         var results: List<Recognition>? = null
 
-        if (classifier == null) {
-            val context = GlobalContextWrapper.context
-            context?.let {
-                val modelStr = ImageClassificationSettingsPrefs.instance.tfLiteModel
-                val deviceStr = ImageClassificationSettingsPrefs.instance.device
+        val start = System.currentTimeMillis()
+        results = model.recognizeImage(inferenceBitmap, info.imageRotation)
+        val end = System.currentTimeMillis()
 
-                val model = modelStr?.let {str ->
-                    try {
-                        Classifier.Model.valueOf(str)
-                    } catch (e: Exception) {
-                        Logger.warn("cannot parse model from [$str]: $e")
-
-                        Classifier.Model.QUANTIZED_MOBILENET
-                    }
-                } ?: Classifier.Model.QUANTIZED_MOBILENET
-
-                val device = try {
-                        Model.Device.valueOf(deviceStr)
-                } catch (e: Exception) {
-                    Logger.warn("cannot parse device from [$deviceStr]: $e")
-
-                    Model.Device.CPU
-                }
-
-                val threads = ImageClassificationSettingsPrefs.instance.numberOfThreads
-                Logger.debug("[CLF UPDATE]: classifier creating: model = $model, device = $device, threads = $threads")
-
-
-                classifier = Classifier.create(it,
-                    model, device, threads)
-            }
-
-            Logger.debug("[CLF UPDATE]: classifier created =  $classifier")
-            Logger.debug("classifier created: $classifier")
-        }
-
-        classifier?.let { classifier ->
-            val start = System.currentTimeMillis()
-            results = classifier.recognizeImage(inferenceBitmap, info.imageRotation)
-            val end = System.currentTimeMillis()
-
-            info.inferenceTime = (end - start)
-        }
+        info.inferenceTime = (end - start)
 
         return results
     }
@@ -79,27 +40,22 @@ private class ImageClassificationAnalyzer(rotation: Int,
        return ImageInferenceInfo()
     }
 
-    override fun onInferenceSettingsChange(changePrefName: String, inferenceSettings: AbsPrefs) {
+    override fun onInferenceSettingsChange(
+        changePrefName: String,
+        inferenceSettings: InferenceSettingsPrefs
+    ) {
         super.onInferenceSettingsChange(changePrefName, inferenceSettings)
-        Logger.debug("[CLF UPDATE]: new settings: $changePrefName")
+        Logger.debug("new settings: $changePrefName")
 
         when (changePrefName) {
-            ImageClassificationSettingsPrefs.PREF_TF_LITE_MODEL,
-            InferenceSettingsPrefs.PREF_DEVICE,
-            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS -> invalidateClassifier()
+            ImageClassificationSettingsPrefs.PREF_TF_LITE_MODEL -> invalidateModel()
         }
-    }
-
-    @Synchronized
-    private fun invalidateClassifier() {
-        classifier?.close()
-        classifier = null
-        Logger.debug("[CLF UPDATE]: classifier is invalidated to null")
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,
                                  info: ImageInferenceInfo): Bitmap? {
-        if (frameBitmap == null) {
+        if (frameBitmap == null
+            || !ImageClassificationSettingsPrefs.instance.enableImagePreScale) {
             return frameBitmap
         }
 
@@ -110,11 +66,37 @@ private class ImageClassificationAnalyzer(rotation: Int,
             matrix)
     }
 
+    override fun createModel(
+        context: Context,
+        device: Model.Device,
+        numOfThreads: Int,
+        settings: InferenceSettingsPrefs
+    ): Classifier? {
+        val modelStr = if (settings is ImageClassificationSettingsPrefs) {
+            settings.tfLiteModel
+        } else {
+            Classifier.Model.QUANTIZED_MOBILENET.toString()
+        }
+
+        val model = modelStr?.let {str ->
+            try {
+                Classifier.Model.valueOf(str)
+            } catch (e: Exception) {
+                Logger.warn("cannot parse model from [$str]: $e")
+
+                Classifier.Model.QUANTIZED_MOBILENET
+            }
+        } ?: Classifier.Model.QUANTIZED_MOBILENET
+
+        return Classifier.create(context,
+            model, device, numOfThreads)
+    }
+
 }
 
-class ImageClassificationCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Recognition>>() {
+class ImageClassificationCameraFragment : AbsExampleCameraFragment<Classifier, ImageInferenceInfo, List<Recognition>>() {
 
-    override fun getSettingsPreference(): AbsPrefs {
+    override fun getSettingsPreference(): InferenceSettingsPrefs {
         return ImageClassificationSettingsPrefs.instance
     }
 
@@ -123,10 +105,8 @@ class ImageClassificationCameraFragment : AbsExampleCameraFragment<ImageInferenc
         rotation: Int,
         lensFacing: Int,
         useAverageTime: Boolean,
-        imagePreprocessEnabled: Boolean
-    ): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
-        return ImageClassificationAnalyzer(rotation, lensFacing, useAverageTime, imagePreprocessEnabled)
-
+    ): AbsImageAnalyzer<Classifier, ImageInferenceInfo, List<Recognition>> {
+        return ImageClassificationAnalyzer(rotation, lensFacing, useAverageTime)
     }
 
 }

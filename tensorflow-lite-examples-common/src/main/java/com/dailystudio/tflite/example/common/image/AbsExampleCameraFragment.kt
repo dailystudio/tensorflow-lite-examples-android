@@ -10,13 +10,14 @@ import com.dailystudio.devbricksx.preference.AbsPrefs
 import com.dailystudio.devbricksx.preference.PrefsChange
 import com.dailystudio.tflite.example.common.R
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
+import org.tensorflow.litex.TFLiteModel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : CameraFragment() {
+abstract class AbsExampleCameraFragment<Model:TFLiteModel, Info: ImageInferenceInfo, Results> : CameraFragment() {
 
     private lateinit var analyzerExecutor: ExecutorService
-    protected var analyzer: AbsImageAnalyzer<Info, Results>? = null
+    protected var analyzer: AbsImageAnalyzer<Model, Info, Results>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +43,7 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
         settingsPrefs.prefsChange.removeObserver(settingsObserver)
     }
 
-    open protected fun getSettingsPreference(): AbsPrefs {
+    open protected fun getSettingsPreference(): InferenceSettingsPrefs {
         return InferenceSettingsPrefs.instance
     }
 
@@ -56,18 +57,14 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
             .also {
                 val settingsPrefs = getSettingsPreference()
 
-                val analyzer = if (settingsPrefs is InferenceSettingsPrefs) {
-                    createAnalyzer(screenAspectRatio, rotation, lensFacing,
-                        settingsPrefs.userAverageTime,
-                        settingsPrefs.enableImagePreprocess)
-                } else {
-                    createAnalyzer(screenAspectRatio, rotation, lensFacing,
-                        useAverageTime = true, imagePreprocessEnabled = true)
-                }
+                val analyzer = createAnalyzer(screenAspectRatio, rotation, lensFacing,
+                        settingsPrefs.userAverageTime)
 
                 this.analyzer = analyzer
                 
-                it.setAnalyzer(analyzerExecutor, analyzer)
+                it.setAnalyzer(analyzerExecutor) { image ->
+                    this.analyzer?.run(image, getSettingsPreference())
+                }
             }
 
         cases.add(imageAnalyzer)
@@ -83,8 +80,7 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
                                 rotation: Int,
                                 lensFacing: Int,
                                 useAverageTime: Boolean,
-                                imagePreprocessEnabled: Boolean
-    ): AbsImageAnalyzer<Info, Results>
+    ): AbsImageAnalyzer<Model, Info, Results>
 
     fun getCurrentLensFacing(): Int {
         return lensFacing

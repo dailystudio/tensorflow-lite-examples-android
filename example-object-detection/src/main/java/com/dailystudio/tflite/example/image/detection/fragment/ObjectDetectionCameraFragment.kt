@@ -1,5 +1,6 @@
 package com.dailystudio.tflite.example.image.detection.fragment
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
@@ -21,7 +22,7 @@ import java.lang.Exception
 private class ObjectDetectionAnalyzer(rotation: Int,
                                       lensFacing: Int,
                                       useAverageTime: Boolean
-) : AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>>(rotation, lensFacing, useAverageTime) {
+) : AbsImageAnalyzer<Detector, ImageInferenceInfo, List<Recognition>>(rotation, lensFacing, useAverageTime) {
 
     companion object {
         private const val TF_OD_FRAME_WIDTH = 640
@@ -33,8 +34,6 @@ private class ObjectDetectionAnalyzer(rotation: Int,
         private const val PRE_SCALED_IMAGE_FILE = "pre-scaled.png"
         private const val CROPPED_IMAGE_FILE = "cropped.png"
     }
-
-    private var classifier: Detector? = null
 
     private var preScaleTransform: Matrix? = null
     private var preScaleRevertTransform: Matrix? = null
@@ -49,49 +48,23 @@ private class ObjectDetectionAnalyzer(rotation: Int,
             cropSize, cropSize, Bitmap.Config.ARGB_8888)
     }
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Recognition>? {
-        var results: List<Recognition>?
-
-        if (classifier == null) {
-            val context = GlobalContextWrapper.context
-            context?.let {
-                val deviceStr = InferenceSettingsPrefs.instance.device
-
-                val device = try {
-                    Model.Device.valueOf(deviceStr)
-                } catch (e: Exception) {
-                    Logger.warn("cannot parse device from [$deviceStr]: $e")
-
-                    Model.Device.CPU
-                }
-
-                val threads = InferenceSettingsPrefs.instance.numberOfThreads
-                Logger.debug("[CLF UPDATE]: classifier creating: device = $device, threads = $threads")
-
-                classifier =
-                    ObjectDetectionModel(
-                        context,
-                        device,
-                        threads
-                    )
-            }
-
-            Logger.debug("classifier created: $classifier")
-        }
+    override fun analyzeFrame(
+        model: Detector,
+        inferenceBitmap: Bitmap,
+        info: ImageInferenceInfo
+    ): List<Recognition>? {
 
         var mappedResults: List<Recognition>? = null
-        classifier?.let { classifier ->
-            val start = System.currentTimeMillis()
-            results = classifier.recognizeImage(inferenceBitmap)
-            val end = System.currentTimeMillis()
 
-            info.inferenceTime = (end - start)
+        val start = System.currentTimeMillis()
+        var results: List<Recognition>? = model.recognizeImage(inferenceBitmap)
+        val end = System.currentTimeMillis()
 
-            Logger.debug("raw results: ${results.toString().replace("%", "%%")}")
-            results?.let {
-                mappedResults = mapRecognitions(it)
-            }
+        info.inferenceTime = (end - start)
 
+        Logger.debug("raw results: ${results.toString().replace("%", "%%")}")
+        results?.let {
+            mappedResults = mapRecognitions(it)
         }
 
         return mappedResults
@@ -167,17 +140,29 @@ private class ObjectDetectionAnalyzer(rotation: Int,
         return scaledBitmap
     }
 
+    override fun createModel(
+        context: Context,
+        device: Model.Device,
+        numOfThreads: Int,
+        settings: InferenceSettingsPrefs
+    ): Detector? {
+        return ObjectDetectionModel(
+            context,
+            device,
+            numOfThreads
+        )
+    }
+
 }
 
-class ObjectDetectionCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Recognition>>() {
+class ObjectDetectionCameraFragment : AbsExampleCameraFragment<Detector, ImageInferenceInfo, List<Recognition>>() {
 
     override fun createAnalyzer(
         screenAspectRatio: Int,
         rotation: Int,
         lensFacing: Int,
-        useAverageTime: Boolean,
-        imagePreprocessEnabled: Boolean
-    ): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
+        useAverageTime: Boolean
+    ): AbsImageAnalyzer<Detector, ImageInferenceInfo, List<Recognition>> {
         return ObjectDetectionAnalyzer(rotation, lensFacing, useAverageTime)
     }
 

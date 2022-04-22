@@ -3,6 +3,7 @@
     <string name="app_desc">Test an image classification solution with a pre-trained model that can recognize 1000 different types of items from input frames on a mobile camera.</string>
 
     <string name="setting_model">TensorFlow Lite models</string>
+    <string name="setting_image_pre_scale">Pre-scale images</string>
 
     <string name="model_float_mobile_net">MobileNet (Float32)</string>
     <string name="model_quantized_mobile_net">MobileNet (Quantized)</string>

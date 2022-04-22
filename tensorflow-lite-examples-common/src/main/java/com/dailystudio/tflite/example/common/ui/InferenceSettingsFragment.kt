@@ -13,8 +13,6 @@ import kotlin.math.roundToInt
 
 open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
 
-    protected open val allowSkipPreprocess = false
-
     override fun createSettings(context: Context): Array<AbsSetting> {
         val settingsPrefs = getInferenceSettingsPrefs()
 
@@ -33,29 +31,6 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
             override fun setOn(on: Boolean) {
                 settingsPrefs.userAverageTime = on
                 Logger.debug("[${settingsPrefs.hashCode()}]SET PROP: AVG: ${settingsPrefs.userAverageTime}")
-            }
-
-        }
-
-        val enableImagePreprocess = object: SwitchSetting(
-            context,
-            InferenceSettingsPrefs.PREF_ENABLE_IMAGE_PREPROCESS,
-            R.drawable.ic_setting_pre_process,
-            R.string.setting_pre_process,
-        ) {
-
-            override fun isOn(): Boolean {
-                Logger.debug("[${settingsPrefs.hashCode()}]GET PROP: PRE: ${settingsPrefs.enableImagePreprocess}")
-
-                return settingsPrefs.enableImagePreprocess
-            }
-
-            override fun setOn(on: Boolean) {
-                Exception("isOn").printStackTrace()
-
-                settingsPrefs.enableImagePreprocess = on
-                Logger.debug("[${settingsPrefs.hashCode()}]SET PROP: PRE: ${settingsPrefs.enableImagePreprocess}")
-
             }
 
         }
@@ -117,11 +92,7 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
             useAverageTime,
             deviceSetting,
             threadSetting,
-        ).apply {
-            if (allowSkipPreprocess) {
-                add(0, enableImagePreprocess)
-            }
-        }
+        )
 
         return settings.toTypedArray()
     }
