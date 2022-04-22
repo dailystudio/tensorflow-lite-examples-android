@@ -1,25 +1,25 @@
 package com.dailystudio.tflite.example.image.segmentation.fragment
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.util.Size
-import com.dailystudio.devbricksx.GlobalContextWrapper
-import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.imagesegmentation.ImageSegmentationModelExecutor
 import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
+import org.tensorflow.lite.support.model.Model
 
 private class ImageSegmentationAnalyzer(rotation: Int,
                                         lensFacing: Int,
                                         useAverageTime: Boolean,
-): AbsImageAnalyzer<AdvanceInferenceInfo, SegmentationResult>(rotation, lensFacing, useAverageTime, true) {
+): AbsImageAnalyzer<ImageSegmentationModelExecutor, AdvanceInferenceInfo, SegmentationResult>(rotation, lensFacing, useAverageTime) {
 
     companion object {
-
         const val MODEL_IMAGE_SIZE = 257
 
         private const val PRE_SCALED_IMAGE_FILE = "pre-scaled.png"
@@ -27,30 +27,19 @@ private class ImageSegmentationAnalyzer(rotation: Int,
         private const val EXTRACTED_IMAGE_FILE = "extracted.png"
     }
 
-    private var segmentationModel: ImageSegmentationModelExecutor? = null
+    override fun analyzeFrame(
+        model: ImageSegmentationModelExecutor,
+        inferenceBitmap: Bitmap,
+        info: AdvanceInferenceInfo
+    ): SegmentationResult? {
+        val inferenceResult = model.fastExecute(inferenceBitmap, info)
+        val mask = trimBitmap(inferenceResult.first, info.frameSize)
+        val extracted = ImageUtils.maskBitmap(
+            trimBitmap(inferenceBitmap, info.frameSize), mask)
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: AdvanceInferenceInfo): SegmentationResult? {
-        var results: SegmentationResult? = null
-
-        if (segmentationModel == null) {
-            val context = GlobalContextWrapper.context
-            context?.let {
-                segmentationModel =
-                    ImageSegmentationModelExecutor(context, false)
-            }
-
-            Logger.debug("segmentation model created: $segmentationModel")
-        }
-
-        segmentationModel?.let { model ->
-            val inferenceResult = model.fastExecute(inferenceBitmap, info)
-            val mask = trimBitmap(inferenceResult.first, info.frameSize)
-            val extracted = ImageUtils.maskBitmap(
-                trimBitmap(inferenceBitmap, info.frameSize), mask)
-            results = SegmentationResult(mask, inferenceResult.second)
-            dumpIntermediateBitmap(mask, MASK_IMAGE_FILE)
-            dumpIntermediateBitmap(extracted, EXTRACTED_IMAGE_FILE)
-        }
+        val results = SegmentationResult(mask, inferenceResult.second)
+        dumpIntermediateBitmap(mask, MASK_IMAGE_FILE)
+        dumpIntermediateBitmap(extracted, EXTRACTED_IMAGE_FILE)
 
         return results
     }
@@ -103,17 +92,25 @@ private class ImageSegmentationAnalyzer(rotation: Int,
         return false
     }
 
+    override fun createModel(
+        context: Context,
+        device: Model.Device,
+        numOfThreads: Int,
+        settings: InferenceSettingsPrefs
+    ): ImageSegmentationModelExecutor? {
+        return ImageSegmentationModelExecutor(context, device, numOfThreads)
+    }
+
 }
 
-class ImageSegmentationCameraFragment : AbsExampleCameraFragment<AdvanceInferenceInfo, SegmentationResult>() {
+class ImageSegmentationCameraFragment : AbsExampleCameraFragment<ImageSegmentationModelExecutor, AdvanceInferenceInfo, SegmentationResult>() {
 
     override fun createAnalyzer(
         screenAspectRatio: Int,
         rotation: Int,
         lensFacing: Int,
-        useAverageTime: Boolean,
-        imagePreprocessEnabled: Boolean
-    ): AbsImageAnalyzer<AdvanceInferenceInfo, SegmentationResult> {
+        useAverageTime: Boolean
+    ): AbsImageAnalyzer<ImageSegmentationModelExecutor, AdvanceInferenceInfo, SegmentationResult> {
         return ImageSegmentationAnalyzer(rotation, lensFacing, useAverageTime)
     }
 

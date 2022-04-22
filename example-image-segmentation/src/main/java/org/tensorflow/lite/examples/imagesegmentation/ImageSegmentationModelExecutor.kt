@@ -35,6 +35,8 @@ import kotlin.collections.HashSet
 import kotlin.random.Random
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
+import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.TFLiteModel
 
 /**
  * Class responsible to run the Image Segmentation model.
@@ -50,12 +52,11 @@ import org.tensorflow.lite.gpu.GpuDelegate
  */
 class ImageSegmentationModelExecutor(
   context: Context,
-  private var useGPU: Boolean = false
-) {
-  private var gpuDelegate: GpuDelegate? = null
-
-  private val segmentationMasks: ByteBuffer
-  private val interpreter: Interpreter
+  device: Model.Device,
+  numOfThreads: Int
+): TFLiteModel(context, imageSegmentationModel, device, numOfThreads) {
+  private val segmentationMasks: ByteBuffer =
+    ByteBuffer.allocateDirect(1 * imageSize * imageSize * NUM_CLASSES * 4)
 
   private var fullTimeExecutionTime = 0L
   private var preprocessTime = 0L
@@ -65,9 +66,6 @@ class ImageSegmentationModelExecutor(
   private var numberThreads = 4
 
   init {
-
-    interpreter = getInterpreter(context, imageSegmentationModel, useGPU)
-    segmentationMasks = ByteBuffer.allocateDirect(1 * imageSize * imageSize * NUM_CLASSES * 4)
     segmentationMasks.order(ByteOrder.nativeOrder())
   }
 
@@ -89,7 +87,7 @@ class ImageSegmentationModelExecutor(
       info.preProcessTime = preprocessTime
 
       imageSegmentationTime = SystemClock.uptimeMillis()
-      interpreter.run(contentArray, segmentationMasks)
+      tfLiteInterpreter?.run(contentArray, segmentationMasks)
       imageSegmentationTime = SystemClock.uptimeMillis() - imageSegmentationTime
       Log.d(TAG, "Time to run the model $imageSegmentationTime")
       info.inferenceTime = imageSegmentationTime
@@ -185,7 +183,7 @@ class ImageSegmentationModelExecutor(
       preprocessTime = SystemClock.uptimeMillis() - preprocessTime
 
       imageSegmentationTime = SystemClock.uptimeMillis()
-      interpreter.run(contentArray, segmentationMasks)
+      tfLiteInterpreter?.run(contentArray, segmentationMasks)
       imageSegmentationTime = SystemClock.uptimeMillis() - imageSegmentationTime
       Log.d(TAG, "Time to run the model $imageSegmentationTime")
 
@@ -240,41 +238,16 @@ class ImageSegmentationModelExecutor(
     return retFile
   }
 
-  @Throws(IOException::class)
-  private fun getInterpreter(
-    context: Context,
-    modelName: String,
-    useGpu: Boolean = false
-  ): Interpreter {
-    val tfliteOptions = Interpreter.Options()
-    tfliteOptions.setNumThreads(numberThreads)
-
-    gpuDelegate = null
-    if (useGpu) {
-      gpuDelegate = GpuDelegate()
-      tfliteOptions.addDelegate(gpuDelegate)
-    }
-
-    return Interpreter(loadModelFile(context, modelName), tfliteOptions)
-  }
-
   private fun formatExecutionLog(): String {
     val sb = StringBuilder()
     sb.append("Input Image Size: $imageSize x $imageSize\n")
-    sb.append("GPU enabled: $useGPU\n")
+    sb.append("GPU enabled: ${device == Model.Device.GPU}\n")
     sb.append("Number of threads: $numberThreads\n")
     sb.append("Pre-process execution time: $preprocessTime ms\n")
     sb.append("Model execution time: $imageSegmentationTime ms\n")
     sb.append("Mask flatten time: $maskFlatteningTime ms\n")
     sb.append("Full execution time: $fullTimeExecutionTime ms\n")
     return sb.toString()
-  }
-
-  fun close() {
-    interpreter.close()
-    if (gpuDelegate != null) {
-      gpuDelegate!!.close()
-    }
   }
 
   private fun convertBytebufferMaskToBitmap(
