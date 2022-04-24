@@ -43,16 +43,21 @@ abstract class AbsExampleCameraFragment<Model:TFLiteModel, Info: ImageInferenceI
         settingsPrefs.prefsChange.removeObserver(settingsObserver)
     }
 
-    open protected fun getSettingsPreference(): InferenceSettingsPrefs {
+    protected open fun getSettingsPreference(): InferenceSettingsPrefs {
         return InferenceSettingsPrefs.instance
+    }
+
+    protected open fun getImageAnalysisBuilder(screenAspectRatio: Int, rotation: Int): ImageAnalysis.Builder {
+        return ImageAnalysis.Builder().apply {
+            setTargetAspectRatio(screenAspectRatio)
+            setTargetRotation(rotation)
+        }
     }
 
     override fun buildUseCases(screenAspectRatio: Int, rotation: Int): MutableList<UseCase> {
         val cases = super.buildUseCases(screenAspectRatio, rotation)
 
-        val imageAnalyzer = ImageAnalysis.Builder()
-            .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(rotation)
+        val imageAnalyzer = getImageAnalysisBuilder(screenAspectRatio, rotation)
             .build()
             .also {
                 val settingsPrefs = getSettingsPreference()

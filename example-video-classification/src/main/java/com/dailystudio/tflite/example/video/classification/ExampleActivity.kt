@@ -7,8 +7,8 @@ import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.video.classification.fragment.VideoClassificationCameraFragment
+import com.dailystudio.tflite.example.video.classification.fragment.VideoClassificationSettingsFragment
 import org.tensorflow.lite.support.label.Category
 import kotlin.math.min
 
@@ -65,7 +65,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Category>>() {
     }
 
     override fun createSettingsFragment(): AbsSettingsDialogFragment? {
-        return InferenceSettingsFragment()
+        return VideoClassificationSettingsFragment()
     }
 
     override fun createBaseFragment(): Fragment {

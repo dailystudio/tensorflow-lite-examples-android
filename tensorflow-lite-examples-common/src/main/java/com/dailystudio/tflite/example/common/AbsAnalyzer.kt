@@ -112,7 +112,10 @@ abstract class AbsTFLiteModelRunner<Model: TFLiteModel, Input, Info: InferenceIn
         results = analyze(model, data, info)
         val end = System.currentTimeMillis()
 
-        info.analysisTime = (end - start)
+        if (info.analysisTime == 0L) {
+            info.analysisTime = (end - start)
+        }
+
         if (info.inferenceTime == 0L) {
             info.inferenceTime = info.analysisTime
         }

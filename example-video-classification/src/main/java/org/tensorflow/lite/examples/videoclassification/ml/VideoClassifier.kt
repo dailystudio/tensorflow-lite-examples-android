@@ -160,11 +160,11 @@ class VideoClassifier(context: Context,
     /**
      * Run classify and return a list include action and score.
      */
-    fun classify(inputBitmap: Bitmap, sensorOrientation: Int): List<Category> {
+    fun classify(inputBitmap: Bitmap): List<Category> {
         // As this model is stateful, ensure there's only one inference going on at once.
         synchronized(lock) {
             // Prepare inputs.
-            val tensorImage = preprocessInputImage(inputBitmap, sensorOrientation)
+            val tensorImage = preprocessInputImage(inputBitmap)
             inputState[IMAGE_INPUT_NAME] = tensorImage.buffer
 
             // Initialize a placeholder to store the output objects.
@@ -201,7 +201,7 @@ class VideoClassifier(context: Context,
     /**
      * Convert input bitmap to TensorImage and normalize.
      */
-    private fun preprocessInputImage(bitmap: Bitmap, sensorOrientation: Int): TensorImage {
+    private fun preprocessInputImage(bitmap: Bitmap): TensorImage {
         val size = min(bitmap.width, bitmap.height)
 
         val imageProcessor = ImageProcessor.Builder().apply {

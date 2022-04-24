@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Video Classification</string>
     <string name="app_desc">Identify human actions in video footages.</string>
+
+    <string name="setting_model">TensorFlow Lite models</string>
+
+    <string name="model_movinet_a0">MoviNet-A0 (Quantized)</string>
+    <string name="model_movinet_a1">MoviNet-A1 (Quantized)</string>
+    <string name="model_movinet_a2">MoviNet-A2 (Quantized)</string>
+
 </resources>
