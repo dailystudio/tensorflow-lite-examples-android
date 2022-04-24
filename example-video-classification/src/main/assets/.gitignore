@@ -1,0 +1,6 @@
+__MACOSX
+*.tflite
+*_info.txt
+*.pb
+*.pbtxt
+*.ckpt*
