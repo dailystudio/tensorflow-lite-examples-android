@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Video Classification</string>
+    <string name="app_desc">Identify human actions in video footages.</string>
+</resources>
