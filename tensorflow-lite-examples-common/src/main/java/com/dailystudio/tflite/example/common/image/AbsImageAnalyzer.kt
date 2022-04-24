@@ -5,6 +5,7 @@ import android.os.Environment
 import android.util.Size
 import androidx.camera.core.ImageProxy
 import com.dailystudio.devbricksx.GlobalContextWrapper
+import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
 import com.dailystudio.tflite.example.common.AbsTFLiteModelRunner
@@ -61,7 +62,9 @@ abstract class AbsImageAnalyzer<Model: TFLiteModel, Info: ImageInferenceInfo, Re
             Environment.DIRECTORY_PICTURES
         )
 
-        ImageUtils.saveBitmap(bitmap, File(dir, filename))
+        val file = File(dir, filename)
+        val ret = ImageUtils.saveBitmap(bitmap, file)
+        Logger.debug("intermediate saved [$ret] in [${file.absolutePath}]")
     }
 
     protected open fun isDumpIntermediatesEnabled(): Boolean {

@@ -55,6 +55,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
     private var inferenceInfoView: InferenceInfoView? = null
 
     private var settingsFragment: AbsSettingsDialogFragment? = null
+    lateinit var exampleFragment: Fragment
 
     private lateinit var uiThread: Thread
 
@@ -101,7 +102,7 @@ abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActiv
 
     protected open fun setupViews() {
         supportFragmentManager.beginTransaction().also {
-            val exampleFragment = createBaseFragment()
+            exampleFragment = createBaseFragment()
 
             it.add(R.id.fragment_stub, exampleFragment, "example-fragment")
             it.show(exampleFragment)

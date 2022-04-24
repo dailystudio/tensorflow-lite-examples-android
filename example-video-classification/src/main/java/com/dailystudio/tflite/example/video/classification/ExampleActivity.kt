@@ -8,10 +8,11 @@ import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
-import org.tensorflow.litex.images.Recognition
+import com.dailystudio.tflite.example.video.classification.fragment.VideoClassificationCameraFragment
+import org.tensorflow.lite.support.label.Category
 import kotlin.math.min
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Recognition>>() {
+class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Category>>() {
 
     companion object {
         const val REPRESENTED_ITEMS_COUNT = 3
@@ -24,9 +25,17 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Recognition>>() {
 
     private fun setupResultView(resultsView: View) {
         for (i in 0 until REPRESENTED_ITEMS_COUNT) {
-            detectItemViews[i] = resultsView.findViewById(
+            detectItemViews[i] = resultsView.findViewById<TextView?>(
                 resources.getIdentifier("detected_item${i + 1}", "id", packageName)
-            )
+            ).apply {
+                setOnClickListener {
+                    val fragment = exampleFragment
+
+                    if (fragment is VideoClassificationCameraFragment) {
+                        fragment.resetModelState()
+                    }
+                }
+            }
 
             detectItemValueViews[i] = resultsView.findViewById(
                 resources.getIdentifier("detected_item${i + 1}_value", "id", packageName)
@@ -34,12 +43,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Recognition>>() {
         }
     }
 
-    override fun onResultsUpdated(results: List<Recognition>) {
+    override fun onResultsUpdated(results: List<Category>) {
         val itemCount = min(results.size, REPRESENTED_ITEMS_COUNT)
 
         for (i in 0 until itemCount) {
-            detectItemViews[i]?.text = results[i].title
-            detectItemValueViews[i]?.text = "%.1f%%".format((results[i].confidence ?: 0f) * 100)
+            detectItemViews[i]?.text = results[i].label
+            detectItemValueViews[i]?.text = "%.1f%%".format((results[i].score ?: 0f) * 100)
         }
     }
 
@@ -60,11 +69,18 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Recognition>>() {
     }
 
     override fun createBaseFragment(): Fragment {
-        return Fragment()
+        return VideoClassificationCameraFragment()
     }
 
     override fun createResultsView(): View? {
-        return null
+        val resultsView = LayoutInflater.from(this).inflate(
+            R.layout.layout_results, null)
+
+        resultsView?.let {
+            setupResultView(it)
+        }
+
+        return resultsView
     }
 
 }
