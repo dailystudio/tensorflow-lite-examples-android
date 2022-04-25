@@ -93,7 +93,7 @@ function alignSourceCodes() {
 }
 
 
-while getopts :n:p:o:hH opt; do
+while getopts :n:p:o:s:hH opt; do
   case ${opt} in
     n)
       app_name=${OPTARG}

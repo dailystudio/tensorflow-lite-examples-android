@@ -1,4 +1,3 @@
-include ':example-super-resolution'
 include ':example-speech-recognition'
 include ':example-gesture'
 include ':example-digit-classifier'
