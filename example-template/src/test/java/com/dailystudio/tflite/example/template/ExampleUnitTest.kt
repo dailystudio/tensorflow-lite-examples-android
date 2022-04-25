@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.image.detection
+package com.dailystudio.tflite.example.template
 
 import org.junit.Test
 

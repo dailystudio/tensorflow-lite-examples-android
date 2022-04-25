@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.image.detection
+package com.dailystudio.tflite.example.template
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.dailystudio.tflite.example.image.detection", appContext.packageName)
+        assertEquals("com.dailystudio.tflite.example.template", appContext.packageName)
     }
 }

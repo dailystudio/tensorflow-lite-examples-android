@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Template</string>
-    <string name="app_desc">Template</string>
+    <string name="app_name">Example Template</string>
+    <string name="app_desc">Example Template\'s Description</string>
 </resources>

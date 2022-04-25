@@ -2,8 +2,8 @@
 
 codebase_dir="com/dailystudio/tflite/example/template"
 codebase_pkg="com.dailystudio.tflite.example.template"
-codebase_name="Template"
-codebase_name_code="Template"
+codebase_name="Example Template"
+codebase_name_code="ExampleTemplate"
 
 tmp_dir="./tmp"
 
@@ -124,9 +124,9 @@ if [ -z "${app_name}" ] || [ -z "${pkg_name}" ]; then
     exit_abnormal
 fi
 
-source_dir="${PWD}/codebase"
+source_dir="${PWD}/example-template"
 if [ ! -d "${source_dir}" ]; then
-    echo "[ERROR] codebase directory does NOT exist."
+    echo "[ERROR] template directory does NOT exist."
     exit 1
 fi
 
@@ -165,14 +165,13 @@ if [ ! -d "${output_dir}" ]; then
     mkdir -p ${output_dir}
 fi 
 #cp -af ${source_dir}/* ${output_dir}/
-rm -rf ${source_dir}/build
 cp -af ${source_dir}/{.[!.],}* ${tmp_dir}/
 
 echo "[STEP 2]: Refactoring package structure ..."
 cd ${tmp_dir}
-renamePackage "app/src/main/java"
-renamePackage "app/src/androidTest/java"
-renamePackage "app/src/test/java"
+renamePackage "src/main/java"
+renamePackage "src/androidTest/java"
+renamePackage "src/test/java"
 renameFiles
 
 echo "[STEP 3]: Aligning source codes to the new structure ..."
@@ -185,3 +184,6 @@ cd ${OLD_PWD}
 echo "[STEP 4]: Finalizing source codes into destination ..."
 cp -af ${tmp_dir}/{.[!.],}* ${output_dir}/
 rm -rf ${tmp_dir}
+
+echo "[STEP 5]: Importing new module to the project ..."
+echo "include ':${output_dir}'" >> settings.gradle
