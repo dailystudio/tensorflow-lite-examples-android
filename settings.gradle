@@ -15,4 +15,6 @@ include ':tensorflow-lite-examples-common'
 include ':app'
 
 include ':example-template'
+include ':example-image-template'
 project(':example-template').projectDir = new File('templates/example-template')
+project(':example-image-template').projectDir = new File('templates/example-image-template')
