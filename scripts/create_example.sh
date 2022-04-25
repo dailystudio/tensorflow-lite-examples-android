@@ -16,6 +16,7 @@ function print_usage {
   echo "    -n APP_NAME:                     the application name"
   echo "    -p PACKAGE_NAME:                 the package name"
   echo "    -o OUTPUT_DIRECTORY:             the target directory of generated module"
+  echo "    -s SOURCE_TEMPLATE:              the source template of module [DEFAULT: example-template]"
   echo "    -h:                              display this message"
   echo
 }
@@ -103,6 +104,9 @@ while getopts :n:p:o:hH opt; do
     o)
       outputs=${OPTARG}
       ;;
+    s)
+      source_template=${OPTARG}
+      ;;
     h|H)
       print_usage
       exit 2
@@ -118,13 +122,16 @@ while getopts :n:p:o:hH opt; do
   esac
 done
 
-
 if [ -z "${app_name}" ] || [ -z "${pkg_name}" ]; then
     echo "[ERROR] required options is missing."
     exit_abnormal
 fi
 
-source_dir="${PWD}/example-template"
+if [ -z "${source_template}" ]; then
+    source_template='example-template'
+fi
+
+source_dir="${PWD}/templates/${source_template}"
 if [ ! -d "${source_dir}" ]; then
     echo "[ERROR] template directory does NOT exist."
     exit 1
@@ -150,6 +157,7 @@ echo
 echo "--------------- Module Generation for Android TensorFlow Lite example ---------------"
 echo "Application name:    [${app_name}, code: ${app_name_code}]"
 echo "Package name:        [${pkg_name}]"
+echo "Source template:     [${source_template}, dir: ${source_dir}]"
 echo "Output directory:    [${output_dir}]"
 echo "-------------------------------------------------------------------------------------"
 
@@ -186,4 +194,8 @@ cp -af ${tmp_dir}/{.[!.],}* ${output_dir}/
 rm -rf ${tmp_dir}
 
 echo "[STEP 5]: Importing new module to the project ..."
-echo "include ':${output_dir}'" >> settings.gradle
+old_settings_file='settings.gradle.orig'
+cp settings.gradle ${old_settings_file}
+echo "include ':${output_dir}'" > settings.gradle
+cat ${old_settings_file} >> settings.gradle
+rm ${old_settings_file}

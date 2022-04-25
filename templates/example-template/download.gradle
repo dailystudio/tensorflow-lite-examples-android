@@ -1,4 +1,4 @@
-apply from:'../buildscripts/network.gradle'
+apply from:"${project.rootDir}/buildscripts/network.gradle"
 
 def targetFolder = "src/main/assets"
 def modelDownloadUrl = "https://tfhub.dev/tensorflow/lite-model/mobilenet_v1_1.0_224/1/metadata/1?lite-format=tflite"
