@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="float_action_button_elevation">6dp</dimen>
+    <dimen name="float_action_button_translation_z">0dp</dimen>
+    <dimen name="float_action_button_margin_h">16dp</dimen>
+    <dimen name="float_action_button_margin_v">16dp</dimen>
+
+</resources>

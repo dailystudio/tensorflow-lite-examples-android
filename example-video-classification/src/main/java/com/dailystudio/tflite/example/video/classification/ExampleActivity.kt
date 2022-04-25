@@ -9,6 +9,7 @@ import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.video.classification.fragment.VideoClassificationCameraFragment
 import com.dailystudio.tflite.example.video.classification.fragment.VideoClassificationSettingsFragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.tensorflow.lite.support.label.Category
 import kotlin.math.min
 
@@ -23,20 +24,27 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Category>>() {
     private var detectItemValueViews: Array<TextView?> =
         Array(REPRESENTED_ITEMS_COUNT) {null}
 
+    private var fabResetState: FloatingActionButton? = null
+
+    override fun setupViews() {
+        super.setupViews()
+
+
+        fabResetState = findViewById(R.id.fab_reset_state)
+        fabResetState?.setOnClickListener {
+            val fragment = exampleFragment
+
+            if (fragment is VideoClassificationCameraFragment) {
+                fragment.resetModelState()
+            }
+        }
+
+    }
     private fun setupResultView(resultsView: View) {
         for (i in 0 until REPRESENTED_ITEMS_COUNT) {
             detectItemViews[i] = resultsView.findViewById<TextView?>(
                 resources.getIdentifier("detected_item${i + 1}", "id", packageName)
-            ).apply {
-                setOnClickListener {
-                    val fragment = exampleFragment
-
-                    if (fragment is VideoClassificationCameraFragment) {
-                        fragment.resetModelState()
-                    }
-                }
-            }
-
+            )
             detectItemValueViews[i] = resultsView.findViewById(
                 resources.getIdentifier("detected_item${i + 1}_value", "id", packageName)
             )
@@ -83,4 +91,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Category>>() {
         return resultsView
     }
 
+    override fun getLayoutResId(): Int {
+        return R.layout.activity_example_video_classification
+    }
 }
