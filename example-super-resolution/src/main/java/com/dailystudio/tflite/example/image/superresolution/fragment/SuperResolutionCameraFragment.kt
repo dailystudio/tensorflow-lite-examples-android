@@ -41,7 +41,7 @@ private class SuperResolutionAnalyzer(rotation: Int,
         var results: SuperRes? = null
 
         val start = System.currentTimeMillis()
-        results = model.analyze(inferenceBitmap)
+        results = model.superResolution(inferenceBitmap)
         val end = System.currentTimeMillis()
 
         info.inferenceTime = (end - start)
@@ -94,6 +94,16 @@ private class SuperResolutionAnalyzer(rotation: Int,
         val mappedArea = RectF(clipArea)
         invertMatrix.mapRect(mappedArea)
         Logger.debug("[CLIP]: mapped clip area: [${mappedArea}]")
+        Logger.debug("[CLIP]: mapped clip w: [${mappedArea.width()}]")
+        Logger.debug("[CLIP]: mapped clip h: [${mappedArea.height()}]")
+
+        val scale = 50f / mappedArea.width()
+        val cx = mappedArea.centerX()
+        val cy = mappedArea.centerY()
+        mappedArea.set(
+            cx - 25f, cy - 25f,
+            cx + 25f, cy + 25f,
+        )
 
         return ImageUtils.createClippedBitmap(rotatedBitmap,
             mappedArea.left.roundToInt(), mappedArea.top.roundToInt(),

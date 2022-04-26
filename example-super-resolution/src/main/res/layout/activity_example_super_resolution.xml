@@ -14,11 +14,21 @@
     <include android:id="@+id/top_bar_layout"
         layout="@layout/layout_top_bar"/>
 
-    <com.dailystudio.tflite.example.image.superresolution.ui.SuperResOverlay
-        android:background="@color/orange"
-        android:id="@+id/super_res_overlay"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+        <com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
+            android:id="@+id/super_res_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
+            android:id="@+id/clip_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
 
     <include layout="@layout/layout_bottom_sheet"/>
 

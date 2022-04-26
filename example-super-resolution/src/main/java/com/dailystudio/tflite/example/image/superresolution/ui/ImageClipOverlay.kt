@@ -8,10 +8,8 @@ import android.util.AttributeSet
 import android.view.View
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
-import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.image.superresolution.R
 
-class SuperResOverlay: View {
+class ImageClipOverlay: View {
 
     companion object {
         const val TARGET_IMAGE_WIDTH = 200
