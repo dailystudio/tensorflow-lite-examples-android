@@ -51,13 +51,15 @@ private data class _TFLiteInterpreter(
 
         tfLiteOptions.setNumThreads(numOfThreads)
 
-        debug("load Tensorflow Lite model: [${modelPath}]", modelPath)
         val modelBuffer = try {
             FileUtil.loadMappedFile(context, modelPath)
         } catch (e: IOException) {
             Logger.error("load mapped model file failed: $e")
             null
         }
+
+        val ret = (modelBuffer != null)
+        debug("[$ret] load Tensorflow Lite model: [${modelPath}]", modelPath)
 
         modelBuffer?.let {
             tfLiteInterpreter = Interpreter(it, tfLiteOptions)

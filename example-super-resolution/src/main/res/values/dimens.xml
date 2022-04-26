@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="preview_round_corner_radius">5dp</dimen>
+    <dimen name="preview_margin_h">16dp</dimen>
+    <dimen name="preview_margin_v">64dp</dimen>
+
+</resources>
