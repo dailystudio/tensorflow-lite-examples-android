@@ -13,8 +13,8 @@ class SuperResolutionModel(
     numOfThreads: Int
 ): TFLiteModel(context, modelPath, device, numOfThreads) {
 
-    fun analyze(bitmap: Bitmap):List<Recognition>? {
-        return null
+    fun analyze(bitmap: Bitmap): SuperRes? {
+        return SuperRes(bitmap, bitmap)
     }
 
 }

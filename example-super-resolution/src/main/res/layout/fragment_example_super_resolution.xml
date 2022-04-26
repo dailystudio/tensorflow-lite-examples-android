@@ -10,7 +10,6 @@
     <include layout="@layout/layout_permission_prompt"/>
 
     <com.dailystudio.tflite.example.image.superresolution.ui.ClickOverlay
-        android:clickable="true"
         android:id="@+id/click_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

@@ -8,10 +8,10 @@ import android.util.AttributeSet
 import android.view.View
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
-import com.dailystudio.devbricksx.utils.MatrixUtils.getTransformationMatrix
+import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.image.superresolution.R
 
-class ZoomOverlay: View {
+class SuperResOverlay: View {
 
     companion object {
         const val TARGET_IMAGE_WIDTH = 200
@@ -35,23 +35,42 @@ class ZoomOverlay: View {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    private var zoomedBitmap: Bitmap? = null
+    private var superResBitmap: Bitmap? = null
 
-    fun setZoomedOverlay(mask: Bitmap?) {
-        this.zoomedBitmap = mask
+    fun setSuperResBitmap(superRes: Bitmap?) {
+        this.superResBitmap = superRes
 
-        setBackgroundColor(Color.BLACK)
         requestLayout()
         invalidate()
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val wSpec = MeasureSpec.makeMeasureSpec(
+            TARGET_IMAGE_WIDTH,
+            MeasureSpec.EXACTLY
+        )
+        val hSpec = MeasureSpec.makeMeasureSpec(
+            TARGET_IMAGE_HEIGHT,
+            MeasureSpec.EXACTLY
+        )
+        super.onMeasure(wSpec, hSpec)
     }
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
 
-        val canvasWidth = width
-        val canvasHeight = height
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
-        canvas.drawColor(Color.BLACK)
+        Logger.debug("super res bitmap: $superResBitmap")
+
+        superResBitmap?.let { bitmap ->
+
+            val roundBitmap =
+                ImageUtils.scaleBitmapRatioLocked(bitmap, TARGET_IMAGE_WIDTH, TARGET_IMAGE_WIDTH)
+
+            canvas.drawBitmap(roundBitmap,
+                0f, 0f, paint)
+        }
 
     }
 

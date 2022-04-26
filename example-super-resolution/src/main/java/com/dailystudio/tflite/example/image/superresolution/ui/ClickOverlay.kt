@@ -7,18 +7,28 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.ui.AbsSurfaceView
-import com.dailystudio.devbricksx.utils.ImageUtils
-import com.dailystudio.devbricksx.utils.MatrixUtils.getTransformationMatrix
-import com.dailystudio.tflite.example.image.superresolution.R
+
+data class ClickInfo(
+    val visibleArea: RectF,
+    val clickedArea: RectF,
+)
 
 class ClickOverlay: View {
+
     companion object {
         const val SELECT_RADIUS = 25
     }
 
-    private var selectArea: RectF = RectF()
+    private var visibleArea: RectF = RectF()
+    private var clickedArea: RectF = RectF()
+    private val _selectedAreaLiveData = MutableLiveData(
+        ClickInfo(visibleArea, clickedArea)
+    )
+
+    val selectedAreaLiveData: LiveData<ClickInfo> = _selectedAreaLiveData
 
     @JvmOverloads
     constructor(
@@ -36,38 +46,56 @@ class ClickOverlay: View {
     ) : super(context, attrs, defStyleAttr, defStyleRes)
 
     init {
+        isClickable = true
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+
+        visibleArea.set(
+            left.toFloat(), top.toFloat(),
+            right.toFloat(), bottom.toFloat()
+        )
+
+        updateClickInfo()
+    }
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event?.action == MotionEvent.ACTION_UP) {
-            selectArea = RectF(
-                event.x - SELECT_RADIUS,
-                event.y - SELECT_RADIUS,
-                event.x + SELECT_RADIUS,
-                event.y + SELECT_RADIUS,
+            clickedArea.set(
+                event.x - SELECT_RADIUS, event.y - SELECT_RADIUS,
+                event.x + SELECT_RADIUS, event.y + SELECT_RADIUS,
             )
+
+            updateClickInfo()
 
             invalidate()
         }
 
         return super.onTouchEvent(event)
     }
+
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
 
-        if (selectArea.isEmpty) {
+        if (clickedArea.isEmpty) {
             return
         }
+
         val canvasWidth = width
         val canvasHeight = height
 
         Logger.debug("[CLICK] canvas: w = $canvasWidth, h = $canvasHeight")
-        Logger.debug("[CLICK] selected: $selectArea")
+        Logger.debug("[CLICK] selected: $clickedArea")
 
         canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
-        canvas.drawRect(selectArea, paint)
+        canvas.drawRect(clickedArea, paint)
+    }
+
+    private fun updateClickInfo() {
+        _selectedAreaLiveData.postValue(ClickInfo(visibleArea, clickedArea))
     }
 
 }
