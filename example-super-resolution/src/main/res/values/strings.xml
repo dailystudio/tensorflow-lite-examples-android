@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Super resolution</string>
+    <string name="app_name">Super Resolution</string>
     <string name="app_desc">Generate a super resolution image from a low resolution image.</string>
 
     <string name="overlay_super">Super</string>
