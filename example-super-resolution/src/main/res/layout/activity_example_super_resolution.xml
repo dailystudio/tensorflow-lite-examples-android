@@ -14,22 +14,41 @@
     <include android:id="@+id/top_bar_layout"
         layout="@layout/layout_top_bar"/>
 
+    <include layout="@layout/layout_bottom_sheet"/>
+
     <LinearLayout
+        app:layout_anchor="@id/bottom_sheet_layout"
+        app:layout_anchorGravity="top|end"
+        android:layout_marginEnd="@dimen/overlay_margin_h"
+        android:translationZ="@dimen/overlay_translation_z"
+        app:elevation="@dimen/overlay_elevation"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
-            android:id="@+id/super_res_overlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
 
-        <com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
-            android:id="@+id/clip_overlay"
+        <androidx.cardview.widget.CardView
+            style="@style/DefaultCardView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content">
 
+            <com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
+                android:id="@+id/super_res_overlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            style="@style/DefaultCardView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
+                android:id="@+id/clip_overlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 
-    <include layout="@layout/layout_bottom_sheet"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
