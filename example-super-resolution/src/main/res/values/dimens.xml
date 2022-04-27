@@ -4,6 +4,7 @@
     <dimen name="overlay_elevation">6dp</dimen>
     <dimen name="overlay_translation_z">20dp</dimen>
     <dimen name="overlay_margin_h">16dp</dimen>
+    <dimen name="overlay_margin_v">64dp</dimen>
     <dimen name="overlay_label_font_size">12dp</dimen>
     <dimen name="overlay_label_padding">4dp</dimen>
     <dimen name="overlay_label_margin">3dp</dimen>

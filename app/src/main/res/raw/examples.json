@@ -82,5 +82,12 @@
     "package": "com.dailystudio.tflite.example.video.classification",
     "description": "Identify human actions in video footages.",
     "image": "assets://model_icons/tile_model_video.png"
+  },
+  {
+    "id": 11,
+    "title": "Super resolution",
+    "package": "com.dailystudio.tflite.example.image.superresolution",
+    "description": "Generate a super resolution image from a low resolution image.",
+    "image": "assets://model_icons/tile_model_super_resolution.png"
   }
 ]

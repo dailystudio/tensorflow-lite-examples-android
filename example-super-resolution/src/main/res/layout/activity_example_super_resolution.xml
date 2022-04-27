@@ -23,6 +23,7 @@
         android:translationZ="@dimen/overlay_translation_z"
         app:elevation="@dimen/overlay_elevation"
         android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/overlay_margin_v"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -37,8 +38,8 @@
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:text="Super"
                     style="@style/OverlayLabel"
+                    android:text="@string/overlay_super"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -57,8 +58,8 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
-                android:text="Normal"
                 style="@style/OverlayLabel"
+                android:text="@string/overlay_normal"
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
