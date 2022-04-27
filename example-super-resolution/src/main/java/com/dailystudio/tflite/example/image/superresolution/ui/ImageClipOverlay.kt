@@ -33,10 +33,10 @@ class ImageClipOverlay: View {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    private var superResBitmap: Bitmap? = null
+    private var clipBitmap: Bitmap? = null
 
-    fun setSuperResBitmap(superRes: Bitmap?) {
-        this.superResBitmap = superRes
+    fun setClipBitmap(superRes: Bitmap?) {
+        this.clipBitmap = superRes
 
         requestLayout()
         invalidate()
@@ -44,32 +44,27 @@ class ImageClipOverlay: View {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val wSpec = MeasureSpec.makeMeasureSpec(
-            TARGET_IMAGE_WIDTH,
-            MeasureSpec.EXACTLY
-        )
+            TARGET_IMAGE_WIDTH, MeasureSpec.EXACTLY)
         val hSpec = MeasureSpec.makeMeasureSpec(
-            TARGET_IMAGE_HEIGHT,
-            MeasureSpec.EXACTLY
-        )
+            TARGET_IMAGE_HEIGHT, MeasureSpec.EXACTLY)
         super.onMeasure(wSpec, hSpec)
     }
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
 
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+        canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
 
-        Logger.debug("super res bitmap: $superResBitmap")
+        Logger.debug("super res bitmap: $clipBitmap")
 
-        superResBitmap?.let { bitmap ->
-
+        clipBitmap?.let { bitmap ->
             val roundBitmap =
-                ImageUtils.scaleBitmapRatioLocked(bitmap, TARGET_IMAGE_WIDTH, TARGET_IMAGE_WIDTH)
+                ImageUtils.scaleBitmapRatioLocked(bitmap,
+                    TARGET_IMAGE_WIDTH, TARGET_IMAGE_WIDTH)
 
             canvas.drawBitmap(roundBitmap,
                 0f, 0f, paint)
         }
-
     }
 
 }

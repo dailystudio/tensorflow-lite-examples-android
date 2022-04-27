@@ -31,10 +31,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
-                android:id="@+id/super_res_overlay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                <com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
+                    android:id="@+id/super_res_overlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:text="Super"
+                    style="@style/OverlayLabel"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
 
         </androidx.cardview.widget.CardView>
 
@@ -47,7 +55,16 @@
                 android:id="@+id/clip_overlay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Normal"
+                style="@style/OverlayLabel"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
         </androidx.cardview.widget.CardView>
+
     </LinearLayout>
 
 

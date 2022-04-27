@@ -6,6 +6,8 @@ import android.graphics.Matrix
 import android.graphics.RectF
 import android.os.Bundle
 import android.view.View
+import androidx.camera.core.ImageProxy
+import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
@@ -16,9 +18,10 @@ import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.superresolution.R
 import com.dailystudio.tflite.example.image.superresolution.model.SuperRes
 import com.dailystudio.tflite.example.image.superresolution.model.SuperResolutionModel
-import com.dailystudio.tflite.example.image.superresolution.ui.ClickOverlay
+import com.dailystudio.tflite.example.image.superresolution.ui.SelectOverlay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.images.Recognition
 import kotlin.math.roundToInt
 
 private class SuperResolutionAnalyzer(rotation: Int,
@@ -29,9 +32,6 @@ private class SuperResolutionAnalyzer(rotation: Int,
     companion object {
         const val TF_MODEL_PATH = "ESRGAN.tflite"
     }
-
-    private var visibleArea: RectF = RectF()
-    private var clipArea: RectF = RectF()
 
     override fun analyzeFrame(
         model: SuperResolutionModel,
@@ -63,57 +63,34 @@ private class SuperResolutionAnalyzer(rotation: Int,
             TF_MODEL_PATH, device, numOfThreads)
     }
 
-    fun setClipInfo(visible: RectF, clip: RectF) {
-        visibleArea = visible
-        clipArea = clip
-    }
-
     override fun preProcessImage(frameBitmap: Bitmap?, info: ImageInferenceInfo): Bitmap? {
         val bitmap = frameBitmap ?: return frameBitmap
         Logger.debug("[CLIP]: original bitmap is [${bitmap.width} x ${bitmap.height}]")
-        Logger.debug("[CLIP]: visible = [${visibleArea}], clip = [${clipArea}]")
-
-        if (clipArea.isEmpty) {
-            return frameBitmap
-        }
 
         val rotatedBitmap = ImageUtils.rotateBitmap(bitmap, info.imageRotation)
 
-        val matrix = MatrixUtils.getTransformationMatrix(
-            rotatedBitmap.width, rotatedBitmap.height,
-            visibleArea.width().roundToInt(),
-            visibleArea.height().roundToInt(),
-            0,
-            maintainAspectRatio = true,
-            fitIn = false
-        )
+        val size = SuperResolutionModel.INPUT_IMAGE_SIZE
+        val x = rotatedBitmap.width / 2f - size / 2f
+        val y = rotatedBitmap.height / 2f - size / 2f
 
-        val invertMatrix = Matrix()
-        matrix.invert(invertMatrix)
-
-        val mappedArea = RectF(clipArea)
-        invertMatrix.mapRect(mappedArea)
-        Logger.debug("[CLIP]: mapped clip area: [${mappedArea}]")
-        Logger.debug("[CLIP]: mapped clip w: [${mappedArea.width()}]")
-        Logger.debug("[CLIP]: mapped clip h: [${mappedArea.height()}]")
-
-        val scale = 50f / mappedArea.width()
-        val cx = mappedArea.centerX()
-        val cy = mappedArea.centerY()
-        mappedArea.set(
-            cx - 25f, cy - 25f,
-            cx + 25f, cy + 25f,
+        val clipArea = RectF(
+            x, y,
+            x + size, y + size
         )
 
         return ImageUtils.createClippedBitmap(rotatedBitmap,
-            mappedArea.left.roundToInt(), mappedArea.top.roundToInt(),
-            mappedArea.width().roundToInt(), mappedArea.height().roundToInt()
+            clipArea.left.roundToInt(), clipArea.top.roundToInt(),
+            clipArea.width().roundToInt(), clipArea.height().roundToInt()
         )
     }
 
 }
 
 class SuperResolutionCameraFragment : AbsExampleCameraFragment<SuperResolutionModel, ImageInferenceInfo, SuperRes>() {
+
+    private var selectedOverlay: SelectOverlay? = null
+    private var oldOverlayWidth: Int = 0
+    private var oldImageWidth: Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -122,17 +99,34 @@ class SuperResolutionCameraFragment : AbsExampleCameraFragment<SuperResolutionMo
     }
 
     private fun setupViews(fragmentView: View) {
-        val clickOverlay: ClickOverlay? = fragmentView.findViewById(R.id.click_overlay)
-        clickOverlay?.selectedAreaLiveData?.observe(viewLifecycleOwner) {
-            Logger.debug("analyze area: $it")
-
-            (analyzer as? SuperResolutionAnalyzer)?.setClipInfo(
-                it.visibleArea, it.clickedArea)
-        }
+        selectedOverlay = fragmentView.findViewById(R.id.selected_overlay)
     }
 
     override fun getLayoutResId(): Int {
         return R.layout.fragment_example_super_resolution
+    }
+
+    override fun runAnalyzer(image: ImageProxy) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            val overlayWidth = selectedOverlay?.width ?: return@launch
+            val imageWidth = image.height
+
+            if (oldOverlayWidth == overlayWidth && oldImageWidth == imageWidth) {
+                return@launch
+            }
+
+            val factor = overlayWidth.toFloat() / imageWidth
+            Logger.debug("[SCALE]: image is [${image.width} x ${image.height}]")
+            Logger.debug("[SCALE]: overlay is [${selectedOverlay?.width ?: 0} x ${selectedOverlay?.height ?: 0}]")
+            Logger.debug("[SCALE]: factor = $factor")
+
+            selectedOverlay?.setScaleFactor(factor)
+
+            oldOverlayWidth = overlayWidth
+            oldImageWidth = imageWidth
+        }
+
+        super.runAnalyzer(image)
     }
 
     override fun createAnalyzer(

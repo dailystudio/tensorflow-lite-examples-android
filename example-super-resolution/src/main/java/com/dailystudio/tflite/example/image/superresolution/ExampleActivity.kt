@@ -47,8 +47,8 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, SuperRes>() {
 
     override fun onResultsUpdated(results: SuperRes) {
         Logger.debug("[RES]: $results")
-        clipOverlay?.setSuperResBitmap(results.originalBitmap)
-        superResOverlay?.setSuperResBitmap(results.superBitmap)
+        clipOverlay?.setClipBitmap(results.originalBitmap)
+        superResOverlay?.setClipBitmap(results.superBitmap)
     }
 
 }

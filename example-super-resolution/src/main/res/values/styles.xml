@@ -8,4 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="OverlayLabel">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/overlay_label_background</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/overlay_label_font_size</item>
+        <item name="android:layout_margin">@dimen/overlay_label_margin</item>
+        <item name="android:padding">@dimen/overlay_label_padding</item>
+    </style>
 </resources>

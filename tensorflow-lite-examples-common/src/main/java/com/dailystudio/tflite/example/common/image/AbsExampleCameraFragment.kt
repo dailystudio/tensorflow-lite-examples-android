@@ -2,6 +2,7 @@ package com.dailystudio.tflite.example.common.image
 
 import android.os.Bundle
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.UseCase
 import androidx.lifecycle.Observer
 import com.dailystudio.devbricksx.camera.CameraFragment
@@ -54,6 +55,10 @@ abstract class AbsExampleCameraFragment<Model:TFLiteModel, Info: ImageInferenceI
         }
     }
 
+    protected open fun runAnalyzer(image: ImageProxy) {
+        this.analyzer?.run(image, getSettingsPreference())
+    }
+
     override fun buildUseCases(screenAspectRatio: Int, rotation: Int): MutableList<UseCase> {
         val cases = super.buildUseCases(screenAspectRatio, rotation)
 
@@ -68,7 +73,7 @@ abstract class AbsExampleCameraFragment<Model:TFLiteModel, Info: ImageInferenceI
                 this.analyzer = analyzer
                 
                 it.setAnalyzer(analyzerExecutor) { image ->
-                    this.analyzer?.run(image, getSettingsPreference())
+                    runAnalyzer(image)
                 }
             }
 

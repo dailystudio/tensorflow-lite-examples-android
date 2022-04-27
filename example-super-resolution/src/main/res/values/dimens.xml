@@ -4,6 +4,12 @@
     <dimen name="overlay_elevation">6dp</dimen>
     <dimen name="overlay_translation_z">20dp</dimen>
     <dimen name="overlay_margin_h">16dp</dimen>
+    <dimen name="overlay_label_font_size">12dp</dimen>
+    <dimen name="overlay_label_padding">4dp</dimen>
+    <dimen name="overlay_label_margin">3dp</dimen>
+    <dimen name="overlay_label_round_corner_radius">5dp</dimen>
+
+    <dimen name="selection_rect_round_corner_radius">5dp</dimen>
 
     <dimen name="preview_round_corner_radius">5dp</dimen>
     <dimen name="preview_margin_h">16dp</dimen>
