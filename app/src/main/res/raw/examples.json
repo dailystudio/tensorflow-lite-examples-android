@@ -89,5 +89,12 @@
     "package": "com.dailystudio.tflite.example.image.superresolution",
     "description": "Generate a super resolution image from a low resolution image.",
     "image": "assets://model_icons/tile_model_super_resolution.png"
+  },
+  {
+    "id": 12,
+    "title": "Optical character recognition",
+    "package": "com.dailystudio.tflite.example.image.ocr",
+    "description": "Extract texts from images using Optical Character Recognition with TensorFlow Lite.",
+    "image": "assets://model_icons/tile_model_optical_character_recognition.png"
   }
 ]

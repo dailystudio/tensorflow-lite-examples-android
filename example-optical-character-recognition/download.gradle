@@ -1,0 +1,31 @@
+apply from:"${project.rootDir}/buildscripts/network.gradle"
+
+def targetFolder = "src/main/assets"
+def detectionModelDownloadUrl = "https://tfhub.dev/sayakpaul/lite-model/east-text-detector/fp16/1?lite-format=tflite"
+def recognitionModelDownloadUrl = "https://tfhub.dev/tulasiram58827/lite-model/keras-ocr/float16/2?lite-format=tflite"
+def detectionModelFile = "text_detection.tflite"
+def recognitionModelFile = "text_recognition.tflite"
+
+task downloadDetectionModel(type: DownloadUrlTask) {
+    sourceUrl = "${detectionModelDownloadUrl}"
+    target = file("${targetFolder}/${detectionModelFile}")
+}
+
+task downloadRecognitionModel(type: DownloadUrlTask) {
+    sourceUrl = "${recognitionModelDownloadUrl}"
+    target = file("${targetFolder}/${recognitionModelFile}")
+}
+
+task cleanUnusedFiles(type: Delete, dependsOn: ['downloadDetectionModel', 'downloadRecognitionModel']) {
+    delete fileTree("${targetFolder}").matching {
+        include "*.pb"
+        include "*.ckpt.*"
+        include "*.pbtxt*"
+        include "*.quant_info.*"
+        include "*.meta"
+    }
+}
+
+preBuild.dependsOn downloadDetectionModel
+preBuild.dependsOn downloadRecognitionModel
+preBuild.dependsOn cleanUnusedFiles

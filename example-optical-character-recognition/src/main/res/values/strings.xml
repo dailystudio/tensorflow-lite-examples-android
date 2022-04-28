@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Optical Character Recognition</string>
+    <string name="app_desc">Extract texts from images using Optical Character Recognition with TensorFlow Lite.</string>
+</resources>
