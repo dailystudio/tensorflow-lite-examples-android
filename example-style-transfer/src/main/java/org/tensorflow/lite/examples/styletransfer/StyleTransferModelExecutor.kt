@@ -44,7 +44,7 @@ class StyleTransferModelExecutor(
   } else {
     arrayOf(STYLE_PREDICT_INT8_MODEL, STYLE_TRANSFER_INT8_MODEL)
   }
-  , device, numOfThreads) {
+  , arrayOf(device, device), arrayOf(numOfThreads, numOfThreads)) {
 
 
   private val interpreterPredict: Interpreter?
@@ -257,7 +257,7 @@ class StyleTransferModelExecutor(
   private fun formatExecutionLog(): String {
     val sb = StringBuilder()
     sb.append("Input Image Size: $CONTENT_IMAGE_SIZE x $CONTENT_IMAGE_SIZE\n")
-    sb.append("GPU enabled: ${device == Model.Device.GPU}\n")
+    sb.append("GPU enabled: ${devices[0] == Model.Device.GPU}\n")
     sb.append("Number of threads: $\n")
     sb.append("Pre-process execution time: $preProcessTime ms\n")
     sb.append("Predicting style execution time: $stylePredictTime ms\n")

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clickable="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/fragment_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <ImageView
+        android:id="@+id/result_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <include android:id="@+id/top_bar_layout"
+        layout="@layout/layout_top_bar"/>
+
+    <include layout="@layout/layout_bottom_sheet"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

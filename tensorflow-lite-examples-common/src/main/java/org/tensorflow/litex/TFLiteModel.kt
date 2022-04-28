@@ -12,7 +12,7 @@ import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.model.Model
 import java.io.IOException
 
-private data class _TFLiteInterpreter(
+data class _TFLiteInterpreter(
     val modelPath: String,
     val device: Model.Device = Model.Device.CPU,
     private val numOfThreads: Int = 1
@@ -39,7 +39,7 @@ private data class _TFLiteInterpreter(
                 }
             }
             Model.Device.CPU -> {
-                tfLiteOptions.setUseXNNPACK(true)
+//                tfLiteOptions.setUseXNNPACK(true)
                 null
             }
             else -> null
@@ -59,7 +59,8 @@ private data class _TFLiteInterpreter(
         }
 
         val ret = (modelBuffer != null)
-        debug("[$ret] load Tensorflow Lite model: [${modelPath}]", modelPath)
+        debug("[$ret] load Tensorflow Lite model: delegate = [${delegate}]")
+        debug("[$ret] load Tensorflow Lite model: model = [${modelPath}], device = $device, threads = $numOfThreads")
 
         modelBuffer?.let {
             tfLiteInterpreter = Interpreter(it, tfLiteOptions)
@@ -86,25 +87,36 @@ private data class _TFLiteInterpreter(
 
 open class TFLiteModel(val context: Context,
                        private val modelPaths: Array<String>,
-                       val device: Model.Device = Model.Device.CPU,
-                       val numOfThreads: Int = 1) {
+                       val devices: Array<Model.Device>,
+                       val numOfThreads: Array<Int>) {
 
     constructor(
         context: Context,
         modelPath: String,
         device: Model.Device = Model.Device.CPU,
         numOfThreads: Int = 1
-    ) : this (context, arrayOf(modelPath), device, numOfThreads)
+    ) : this (context, arrayOf(modelPath),
+        arrayOf(device), arrayOf(numOfThreads))
 
     private val interpreters: MutableList<_TFLiteInterpreter> = mutableListOf()
 
     init {
-        for (p in modelPaths) {
+        createInterpreters()
+    }
+
+    private fun createInterpreters() {
+        for ((i, path) in modelPaths.withIndex()) {
             interpreters.add(
-                _TFLiteInterpreter(p, device, numOfThreads).apply {
-                    open(context)
-                }
+                createInterpreter(path, devices[i], numOfThreads[i])
             )
+        }
+    }
+
+    protected open fun createInterpreter(modelPath: String,
+                                         device: Model.Device,
+                                         numOfThreads: Int): _TFLiteInterpreter {
+        return _TFLiteInterpreter(modelPath, device, numOfThreads).apply {
+            open(context)
         }
     }
 

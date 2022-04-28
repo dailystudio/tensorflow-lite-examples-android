@@ -62,6 +62,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
+    implementation "com.quickbirdstudios:opencv:${project.ext.openCVVersion}"
+    implementation "org.tensorflow:tensorflow-lite-select-tf-ops:${project.ext.tfliteSelectOptsVersion}"
+
     implementation project(":tensorflow-lite-examples-common")
 
     kapt "cn.dailystudio:devbricksx-java-compiler:${DEVBRICKS_X_VERSION}"
