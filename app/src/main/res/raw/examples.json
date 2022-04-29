@@ -96,5 +96,12 @@
     "package": "com.dailystudio.tflite.example.image.ocr",
     "description": "Extract texts from images using Optical Character Recognition with TensorFlow Lite.",
     "image": "assets://model_icons/tile_model_optical_character_recognition.png"
+  },
+  {
+    "id": 13,
+    "title": "Reinforcement learning",
+    "package": "com.dailystudio.tflite.example.reinforcementlearning",
+    "description": "Train a game agent using reinforcement learning and build an Android game using TensorFlow Lite.",
+    "image": "assets://model_icons/tile_model_reinforcement_learning.png"
   }
 ]

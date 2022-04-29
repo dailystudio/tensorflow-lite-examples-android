@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Reinforcement Learning</string>
+    <string name="app_desc">Train a game agent using reinforcement learning and build an Android game using TensorFlow Lite.</string>
+</resources>
