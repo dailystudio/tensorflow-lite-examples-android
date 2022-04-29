@@ -5,7 +5,7 @@ import com.dailystudio.tflite.example.common.text.fragment.ChatRecordsListFragme
 import com.dailystudio.tflite.example.common.text.ui.ChatRecordsAdapter
 import kotlin.math.max
 
-class ChatRecordListFragmentExt: ChatRecordsListFragment() {
+open class ChatRecordListFragmentExt: ChatRecordsListFragment() {
 
     override fun submitData(adapter: ChatRecordsAdapter, data: List<ChatRecord>) {
         super.submitData(adapter, data)

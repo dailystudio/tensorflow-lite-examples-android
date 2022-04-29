@@ -18,6 +18,7 @@ import com.dailystudio.tflite.example.common.ui.fragment.ItemLabelsListFragment
 import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
 import com.dailystudio.tflite.example.common.utils.ResultsUtils
 import org.tensorflow.lite.examples.textclassification.TextClassificationClient
+import org.tensorflow.lite.support.model.Model
 
 class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Result>>() {
 
@@ -36,17 +37,21 @@ class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Res
 
         initItemLabels()
 
-        client = TextClassificationClient(applicationContext)
-
         lifecycleScope.launchWhenStarted {
-            client.load()
+            client = TextClassificationClient(
+                applicationContext,
+                Model.Device.CPU,
+                4
+            ).apply {
+//                load()
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        client.unload()
+        client.close()
     }
 
     override fun createResultsView(): View? {

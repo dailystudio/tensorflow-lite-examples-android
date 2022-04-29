@@ -23,14 +23,16 @@ import android.util.Log;
 
 import androidx.annotation.WorkerThread;
 
-import org.tensorflow.lite.Interpreter;
+import com.dailystudio.devbricksx.development.Logger;
+
+import org.tensorflow.lite.support.model.Model;
+import org.tensorflow.litex.TFLiteModel;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -41,7 +43,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 /** Interface to load TfLite model and provide predictions. */
-public class TextClassificationClient {
+public class TextClassificationClient extends TFLiteModel {
   private static final String TAG = "TextClassificationDemo";
   private static final String MODEL_PATH = "text_classification.tflite";
   private static final String DIC_PATH = "text_classification_vocab.txt";
@@ -63,10 +65,9 @@ public class TextClassificationClient {
   /** Number of results to show in the UI. */
   private static final int MAX_RESULTS = 3;
 
-  private final Context context;
   private final Map<String, Integer> dic = new HashMap<>();
   private final List<String> labels = new ArrayList<>();
-  private Interpreter tflite;
+//  private Interpreter tflite;
 
   /** An immutable result returned by a TextClassifier describing what was classified. */
   public static class Result {
@@ -120,35 +121,28 @@ public class TextClassificationClient {
   }
   ;
 
-  public TextClassificationClient(Context context) {
-    this.context = context;
+  public TextClassificationClient(Context context,
+                                  Model.Device device,
+                                  int threads) {
+    super(context, MODEL_PATH, device, threads);
+
+    loadDictionary();
+    loadLabels();
   }
 
   /** Load the TF Lite model and dictionary so that the client can start classifying text. */
   @WorkerThread
   public void load() {
-    loadModel();
+//    loadModel();
     loadDictionary();
     loadLabels();
-  }
-
-  /** Load TF Lite model. */
-  @WorkerThread
-  private synchronized void loadModel() {
-    try {
-      ByteBuffer buffer = loadModelFile(this.context.getAssets());
-      tflite = new Interpreter(buffer);
-      Log.v(TAG, "TFLite model loaded.");
-    } catch (IOException ex) {
-      Log.e(TAG, ex.getMessage());
-    }
   }
 
   /** Load words dictionary. */
   @WorkerThread
   private synchronized void loadDictionary() {
     try {
-      loadDictionaryFile(this.context.getAssets());
+      loadDictionaryFile(getContext().getAssets());
       Log.v(TAG, "Dictionary loaded.");
     } catch (IOException ex) {
       Log.e(TAG, ex.getMessage());
@@ -159,7 +153,7 @@ public class TextClassificationClient {
   @WorkerThread
   private synchronized void loadLabels() {
     try {
-      loadLabelFile(this.context.getAssets());
+      loadLabelFile(getContext().getAssets());
       Log.v(TAG, "Labels loaded.");
     } catch (IOException ex) {
       Log.e(TAG, ex.getMessage());
@@ -169,7 +163,14 @@ public class TextClassificationClient {
   /** Free up resources as the client is no longer needed. */
   @WorkerThread
   public synchronized void unload() {
-    tflite.close();
+//    tflite.close();
+    dic.clear();
+    labels.clear();
+  }
+
+  @Override
+  public void close() {
+    super.close();
     dic.clear();
     labels.clear();
   }
@@ -182,8 +183,9 @@ public class TextClassificationClient {
 
     // Run inference.
     Log.v(TAG, "Classifying text with TF Lite...");
+    Logger.INSTANCE.debug("labels:" + labels.size());
     float[][] output = new float[1][labels.size()];
-    tflite.run(input, output);
+    getInterpreter().run(input, output);
 
     // Find the best classifications.
     PriorityQueue<Result> pq =
@@ -268,9 +270,11 @@ public class TextClassificationClient {
     return this.dic;
   }
 
+/*
   Interpreter getTflite() {
     return this.tflite;
   }
+*/
 
   List<String> getLabels() {
     return this.labels;
