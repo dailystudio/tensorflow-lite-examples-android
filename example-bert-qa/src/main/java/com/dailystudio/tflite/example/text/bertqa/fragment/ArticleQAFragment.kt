@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.examples.bertqa.ml.QaAnswer
 import org.tensorflow.lite.examples.bertqa.ml.QaClient
+import org.tensorflow.lite.support.model.Model
 
 class ArticleQAFragment : DevBricksFragment() {
 
@@ -51,12 +52,11 @@ class ArticleQAFragment : DevBricksFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        qaClient = QaClient(context)
-
         lifecycleScope.launch(Dispatchers.IO) {
+            qaClient = QaClient(context, Model.Device.CPU, 4)
             val client = qaClient ?: return@launch
 
-            client.loadModel()
+//            client.loadModel()
             client.loadDictionary()
         }
     }

@@ -18,7 +18,7 @@ class QuestionsListFragmentExt : QuestionsListFragment() {
         const val EVENT_QUESTION_SELECTED = "question-selected"
     }
 
-    override fun onCreateLayoutManager(): RecyclerView.LayoutManager {
+    override fun onCreateLayoutManager(): RecyclerView.LayoutManager? {
         val layoutManager = super.onCreateLayoutManager()
         if (layoutManager is LinearLayoutManager) {
             layoutManager.orientation = LinearLayoutManager.HORIZONTAL

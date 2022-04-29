@@ -24,6 +24,8 @@ import androidx.annotation.WorkerThread;
 import com.google.common.base.Joiner;
 
 import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.support.model.Model;
+import org.tensorflow.litex.TFLiteModel;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -40,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Interface to load TfLite model and provide predictions. */
-public class QaClient implements AutoCloseable {
+public class QaClient extends TFLiteModel {
   private static final String TAG = "BertDemo";
   private static final String MODEL_PATH = "model.tflite";
   private static final String DIC_PATH = "vocab.txt";
@@ -55,18 +57,20 @@ public class QaClient implements AutoCloseable {
   // Need to shift 1 for outputs ([CLS]).
   private static final int OUTPUT_OFFSET = 1;
 
-  private final Context context;
   private final Map<String, Integer> dic = new HashMap<>();
   private final FeatureConverter featureConverter;
-  private Interpreter tflite;
 
   private static final Joiner SPACE_JOINER = Joiner.on(" ");
 
-  public QaClient(Context context) {
-    this.context = context;
+  public QaClient(Context context,
+                  Model.Device device,
+                  int threads) {
+    super(context, MODEL_PATH, device, threads);
     this.featureConverter = new FeatureConverter(dic, DO_LOWER_CASE, MAX_QUERY_LEN, MAX_SEQ_LEN);
-  }
 
+    loadDictionary();
+  }
+/*
   @WorkerThread
   public synchronized void loadModel() {
     try {
@@ -79,11 +83,12 @@ public class QaClient implements AutoCloseable {
       Log.e(TAG, ex.getMessage());
     }
   }
+*/
 
   @WorkerThread
   public synchronized void loadDictionary() {
     try {
-      loadDictionaryFile(this.context.getAssets());
+      loadDictionaryFile(this.getContext().getAssets());
       Log.v(TAG, "Dictionary loaded.");
     } catch (IOException ex) {
       Log.e(TAG, ex.getMessage());
@@ -97,10 +102,7 @@ public class QaClient implements AutoCloseable {
 
   @Override
   public void close() {
-    if (tflite != null) {
-      tflite.close();
-      tflite = null;
-    }
+    super.close();
     dic.clear();
   }
 
@@ -156,7 +158,7 @@ public class QaClient implements AutoCloseable {
     output.put(1, startLogits);
 
     Log.v(TAG, "Run inference...");
-    tflite.runForMultipleInputsOutputs(inputs, output);
+    getInterpreter().runForMultipleInputsOutputs(inputs, output);
 
     Log.v(TAG, "Convert answers...");
     List<QaAnswer> answers = getBestAnswers(startLogits[0], endLogits[0], feature);
