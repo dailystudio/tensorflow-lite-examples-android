@@ -22,5 +22,9 @@ data class ModelExecutionResult(
   val bitmapResult: Bitmap,
   val executionLog: String,
   // A map between words and colors of the items found.
-  val itemsFound: Map<String, Int>
-)
+  val itemsFound: Map<String, Int>,
+) {
+  var detectionTime: Long = 0L
+  var recognitionTime: Long = 0L
+
+}

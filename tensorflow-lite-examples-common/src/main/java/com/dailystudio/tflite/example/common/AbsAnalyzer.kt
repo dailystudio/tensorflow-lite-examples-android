@@ -7,7 +7,7 @@ import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.litex.TFLiteModel
 import org.tensorflow.lite.support.model.Model.Device
 
-private class AvgTime(private val capacity: Int = 10) {
+class AvgTime(private val capacity: Int = 10) {
 
     private val timeValues = Array<Long>(capacity) { 0 }
     private var wIndex = 0

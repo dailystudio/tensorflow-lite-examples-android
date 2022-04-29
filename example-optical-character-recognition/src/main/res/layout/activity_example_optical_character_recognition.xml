@@ -15,21 +15,27 @@
 
     <include layout="@layout/layout_bottom_sheet"/>
 
-    <androidx.cardview.widget.CardView
-        style="@style/DefaultCardView"
-        app:layout_anchor="@id/bottom_sheet_layout"
-        app:layout_anchorGravity="top|end"
-        android:translationZ="@dimen/float_action_button_translation_z"
-        app:elevation="@dimen/float_action_button_elevation"
-        android:layout_marginBottom="64dp"
-        android:layout_marginEnd="8dp"
-        android:layout_width="72dp"
-        android:layout_height="108dp">
-        <ImageView
-            android:id="@+id/result_overlay"
-            android:scaleType="centerCrop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </androidx.cardview.widget.CardView>
+    <FrameLayout
+        android:translationZ="@dimen/overlay_translation_z"
+        app:elevation="@dimen/overlay_elevation"
+        android:paddingBottom="@dimen/overlay_padding_v"
+        app:layout_anchor="@id/top_bar_layout"
+        app:layout_anchorGravity="bottom|start"
+        android:layout_marginTop="@dimen/overlay_margin_v"
+        android:layout_marginStart="@dimen/overlay_margin_h"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <androidx.cardview.widget.CardView
+            style="@style/DefaultCardView"
+            android:layout_width="@dimen/overlay_width"
+            android:layout_height="@dimen/overlay_height">
+            <ImageView
+                android:id="@+id/result_overlay"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </androidx.cardview.widget.CardView>
+    </FrameLayout>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

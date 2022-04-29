@@ -94,18 +94,31 @@ class OpticalCharacterRecognitionModel(
             ratioWidth = bitmap.width.toFloat() / detectionImageWidth
             ocrResults.clear()
 
+            var detectTime = 0L
+            var recognizeTime = 0L
+
+            val dStartTime = System.currentTimeMillis()
             detectTexts(bitmap)
+            val dEndTime = System.currentTimeMillis()
 
+            detectTime = dEndTime - dStartTime
+
+            val rStartTime = System.currentTimeMillis()
             val bitmapWithBoundingBoxes = recognizeTexts(bitmap, boundingBoxesMat, indicesMat)
+            val rEndTime = System.currentTimeMillis()
 
-            return ModelExecutionResult(bitmapWithBoundingBoxes, "OCR result", ocrResults)
+            recognizeTime = rEndTime - rStartTime
+
+            return ModelExecutionResult(bitmapWithBoundingBoxes, "OCR result", ocrResults).apply {
+                this.detectionTime = detectTime
+                this.recognitionTime = recognizeTime
+            }
         } catch (e: Exception) {
             val exceptionLog = "something went wrong: ${e.message}"
             e.printStackTrace()
             Logger.error(exceptionLog)
 
-            val emptyBitmap = ImageUtils.createEmptyBitmap(displayImageSize, displayImageSize)
-            return ModelExecutionResult(emptyBitmap, exceptionLog, HashMap<String, Int>())
+            return ModelExecutionResult(bitmap, exceptionLog, HashMap())
         }
     }
 
@@ -306,6 +319,7 @@ class OpticalCharacterRecognitionModel(
                 ocrResults.put(recognizedText, getRandomColor())
             }
         }
+
         return bitmapWithBoundingBoxes
     }
 

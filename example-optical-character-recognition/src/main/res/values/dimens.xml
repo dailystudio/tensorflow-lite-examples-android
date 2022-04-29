@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="float_action_button_elevation">6dp</dimen>
-    <dimen name="float_action_button_translation_z">20dp</dimen>
+    <dimen name="overlay_elevation">6dp</dimen>
+    <dimen name="overlay_translation_z">20dp</dimen>
+    <dimen name="overlay_width">108dp</dimen>
+    <dimen name="overlay_height">192dp</dimen>
+    <dimen name="overlay_margin_h">8dp</dimen>
+    <dimen name="overlay_margin_v">64dp</dimen>
+    <dimen name="overlay_padding_v">45dp</dimen>
 
 
 </resources>

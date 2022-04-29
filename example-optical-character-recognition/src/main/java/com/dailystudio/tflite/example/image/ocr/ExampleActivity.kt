@@ -9,7 +9,7 @@ import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.image.ocr.fragment.OpticalCharacterRecognitionCameraFragment
 import org.tensorflow.lite.examples.ocr.ModelExecutionResult
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, ModelExecutionResult>() {
+class ExampleActivity : AbsExampleActivity<OCRInferenceInfo, ModelExecutionResult>() {
 
     private var resultOverlay: ImageView? = null
 
