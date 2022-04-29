@@ -241,7 +241,7 @@ class ImageSegmentationModelExecutor(
   private fun formatExecutionLog(): String {
     val sb = StringBuilder()
     sb.append("Input Image Size: $imageSize x $imageSize\n")
-    sb.append("GPU enabled: ${device == Model.Device.GPU}\n")
+    sb.append("GPU enabled: ${devices[0] == Model.Device.GPU}\n")
     sb.append("Number of threads: $numberThreads\n")
     sb.append("Pre-process execution time: $preprocessTime ms\n")
     sb.append("Model execution time: $imageSegmentationTime ms\n")

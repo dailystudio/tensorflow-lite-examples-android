@@ -107,4 +107,11 @@ abstract class AbsExampleCameraFragment<Model:TFLiteModel, Info: ImageInferenceI
         analyzer.onInferenceSettingsChange(it.prefKey, getSettingsPreference())
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        analyzer?.destroyModel()
+        analyzer = null
+    }
+
 }

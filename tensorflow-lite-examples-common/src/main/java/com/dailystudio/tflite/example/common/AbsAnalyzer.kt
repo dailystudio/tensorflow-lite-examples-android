@@ -65,33 +65,37 @@ abstract class AbsTFLiteModelRunner<Model: TFLiteModel, Input, Info: InferenceIn
 
     @Synchronized
     open fun run(data: Input, settings: InferenceSettingsPrefs) {
-        prepareModel(settings)
+        if (model == null) {
+            prepareModel(settings)
+        }
 
         model?.let {
             runInference(it, data)
         }
     }
 
+    open fun destroyModel() {
+        model?.close()
+    }
+
     protected open fun prepareModel(settings: InferenceSettingsPrefs) {
-        if (model == null) {
-            val context = GlobalContextWrapper.context
-            context?.let {
-                val deviceStr = settings.device
+        val context = GlobalContextWrapper.context
+        context?.let {
+            val deviceStr = settings.device
 
-                val device = try {
-                    Device.valueOf(deviceStr)
-                } catch (e: Exception) {
-                    Logger.warn("cannot parse device from [$deviceStr]: $e")
+            val device = try {
+                Device.valueOf(deviceStr)
+            } catch (e: Exception) {
+                Logger.warn("cannot parse device from [$deviceStr]: $e")
 
-                    Device.CPU
-                }
-
-                val threads = settings.numberOfThreads
-                Logger.debug("[ANALYZER UPDATE] creating model: device = $device, threads = $threads")
-
-                model = createModel(it, device, threads, settings)
-                Logger.debug("[ANALYZER UPDATE] new model created: $model")
+                Device.CPU
             }
+
+            val threads = settings.numberOfThreads
+            Logger.debug("[ANALYZER UPDATE] creating model: device = $device, threads = $threads")
+
+            model = createModel(it, device, threads, settings)
+            Logger.debug("[ANALYZER UPDATE] new model created: $model")
         }
 
         Logger.debug("using model: $model")
@@ -99,7 +103,8 @@ abstract class AbsTFLiteModelRunner<Model: TFLiteModel, Input, Info: InferenceIn
 
     @Synchronized
     protected open fun invalidateModel() {
-        model?.close()
+        destroyModel()
+
         model = null
         Logger.debug("[ANALYZER UPDATE] model is invalidated")
     }
