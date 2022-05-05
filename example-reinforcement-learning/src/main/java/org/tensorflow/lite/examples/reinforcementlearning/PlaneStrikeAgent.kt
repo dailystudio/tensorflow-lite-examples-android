@@ -16,7 +16,7 @@ abstract class PlaneStrikeAgent(context: Context,
 ) {
 
     /** Predict the next move based on current board state.  */
-    abstract fun predictNextMove(board: Array<Array<BoardCellStatus?>>): Int
+    abstract fun predictNextMove(board: Array<Array<BoardCellStatus>>): Int
 
     /** Run model inference on current board state.  */
     protected abstract fun runInference()

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.lifecycle.lifecycleScope
+import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.DevBricksFragment
 import com.dailystudio.tflite.example.reinforcementlearning.R
 import kotlinx.coroutines.Dispatchers
@@ -21,24 +22,19 @@ class ReinforcementLearningFragment: DevBricksFragment() {
     private var agentHits = 0
     private var playerHits = 0
     private val playerBoard = Array(Constants.BOARD_SIZE) {
-        arrayOfNulls<BoardCellStatus>(
-            Constants.BOARD_SIZE
-        )
+        Array(Constants.BOARD_SIZE) { BoardCellStatus.UNTRIED }
     }
+
     private val playerHiddenBoard = Array(Constants.BOARD_SIZE) {
-        arrayOfNulls<HiddenBoardCellStatus>(
-            Constants.BOARD_SIZE
-        )
+        Array(Constants.BOARD_SIZE) { HiddenBoardCellStatus.UNOCCUPIED }
     }
+
     private val agentBoard = Array(Constants.BOARD_SIZE) {
-        arrayOfNulls<BoardCellStatus>(
-            Constants.BOARD_SIZE
-        )
+        Array(Constants.BOARD_SIZE) { BoardCellStatus.UNTRIED }
     }
+
     private val agentHiddenBoard = Array(Constants.BOARD_SIZE) {
-        arrayOfNulls<HiddenBoardCellStatus>(
-            Constants.BOARD_SIZE
-        )
+        Array(Constants.BOARD_SIZE) { HiddenBoardCellStatus.UNOCCUPIED }
     }
 
     private var agentBoardGridView: GridView? = null
@@ -169,6 +165,8 @@ class ReinforcementLearningFragment: DevBricksFragment() {
     }
 
     private fun initGame() {
+        initBoards()
+
         initBoard(playerBoard)
         placePlaneOnHiddenBoard(playerHiddenBoard)
         initBoard(agentBoard)
@@ -181,19 +179,53 @@ class ReinforcementLearningFragment: DevBricksFragment() {
         playerHitsTextView!!.text = "Agent board:\n0 hits"
     }
 
-    private fun initBoard(board: Array<Array<BoardCellStatus?>>) {
+    private fun initBoards() {
+        val playerHiddenStatus =  Array(Constants.BOARD_SIZE) {
+            Array(Constants.BOARD_SIZE) { HiddenBoardCellStatus.UNOCCUPIED }
+        }
+
+        val agentHiddenStatus =  Array(Constants.BOARD_SIZE) {
+            Array(Constants.BOARD_SIZE) { HiddenBoardCellStatus.UNOCCUPIED }
+        }
+
+        placePlaneOnHiddenBoard(playerHiddenStatus)
+        placePlaneOnHiddenBoard(agentHiddenStatus)
+
+        Logger.debug("PLAYER BOARD: $playerHiddenStatus")
+        Logger.debug("AGENT BOARD: $agentHiddenStatus")
+
+        for (y in 0 until Constants.BOARD_SIZE) {
+            for (x in 0 until Constants.BOARD_SIZE) {
+                AgentBoardCellManager.add(
+                    AgentBoardCell(x, y).apply {
+                        status = BoardCellStatus.UNTRIED
+                        hiddenStatus = agentHiddenStatus[x][y]
+                    }
+                )
+
+                PlayerBoardCellManager.add(
+                    PlayerBoardCell(x, y).apply {
+                        status = BoardCellStatus.UNTRIED
+                        hiddenStatus = playerHiddenStatus[x][y]
+                    }
+                )
+            }
+        }
+
+    }
+    private fun initBoard(board: Array<Array<BoardCellStatus>>) {
         for (i in 0 until Constants.BOARD_SIZE) {
             Arrays.fill(board[i], 0, Constants.BOARD_SIZE, BoardCellStatus.UNTRIED)
         }
     }
 
-    private fun initHiddenBoard(board: Array<Array<HiddenBoardCellStatus?>>) {
+    private fun initHiddenBoard(board: Array<Array<HiddenBoardCellStatus>>) {
         for (i in 0 until Constants.BOARD_SIZE) {
             Arrays.fill(board[i], 0, Constants.BOARD_SIZE, HiddenBoardCellStatus.UNOCCUPIED)
         }
     }
 
-    private fun placePlaneOnHiddenBoard(hiddenBoard: Array<Array<HiddenBoardCellStatus?>>) {
+    private fun placePlaneOnHiddenBoard(hiddenBoard: Array<Array<HiddenBoardCellStatus>>) {
         initHiddenBoard(hiddenBoard)
 
         // Place the plane on the board

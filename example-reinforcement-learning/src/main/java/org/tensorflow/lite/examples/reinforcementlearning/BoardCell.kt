@@ -1,48 +1,112 @@
 package org.tensorflow.lite.examples.reinforcementlearning
 
+import android.graphics.Color
 import android.view.View
-import com.dailystudio.devbricksx.annotations.Adapter
-import com.dailystudio.devbricksx.annotations.DiffUtil
-import com.dailystudio.devbricksx.annotations.InMemoryManager
-import com.dailystudio.devbricksx.annotations.InMemoryRepository
+import com.dailystudio.devbricksx.annotations.*
+import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsViewHolder
+import com.dailystudio.tflite.example.reinforcementlearning.R
 
-open class Cell(val x: Int,
-                val y: Int)
+open class BoardCell(val x: Int,
+                     val y: Int,
+): InMemoryObject<String> {
 
-@Adapter(viewHolder = BoardCellViewHolder::class)
-@DiffUtil
-@InMemoryManager(key = Int::class)
-@InMemoryRepository(key = Int::class)
-class BoardCell(private val id: Int,
-                x: Int,
-                y: Int,
-                val status: BoardCellStatus
-): Cell(x, y), InMemoryObject<Int> {
-    override fun getKey() = id
-}
+    var status: BoardCellStatus = BoardCellStatus.UNTRIED
+    var hiddenStatus: HiddenBoardCellStatus = HiddenBoardCellStatus.UNOCCUPIED
 
-class BoardCellViewHolder(view: View): AbsViewHolder<BoardCell>(view) {
-    override fun bind(item: BoardCell) {
+    companion object {
+
+        fun getIdByPos(x: Int, y: Int) = buildString {
+            append(x)
+            append('_')
+            append(y)
+        }
+
     }
 
+    override fun getKey() = getIdByPos(x, y)
 
+    override fun toString(): String {
+        return buildString {
+            append("${this@BoardCell.javaClass.simpleName}: ")
+            append("[$x, $y], ")
+            append("status: $status ")
+            append("hiddenStatus: $hiddenStatus ")
+        }
+    }
 }
-@Adapter(viewHolder = HiddenBoardCellViewHolder::class)
+
+@ViewModel
+@ListFragment (
+    gridLayout = true,
+    columns = Constants.BOARD_SIZE,
+    layoutByName = "fragment_board"
+)
+@Adapter(
+    viewType = ViewType.Customized,
+    viewHolder = AgentBoardCellViewHolder::class,
+    layoutByName = "layout_cell"
+)
 @DiffUtil
-@InMemoryManager(key = Int::class)
-@InMemoryRepository(key = Int::class)
-class HiddenBoardCell(private val id: Int,
-                      x: Int,
+@InMemoryManager(key = String::class)
+@InMemoryRepository(key = String::class)
+class AgentBoardCell(x: Int,
+                     y: Int,
+): BoardCell(x, y)
+
+@ViewModel
+@ListFragment (
+    gridLayout = true,
+    columns = Constants.BOARD_SIZE,
+    layoutByName = "fragment_board"
+
+)
+@Adapter(
+    viewType = ViewType.Customized,
+    viewHolder = BoardCellViewHolder::class,
+    layoutByName = "layout_cell"
+)
+@DiffUtil
+@InMemoryManager(key = String::class)
+@InMemoryRepository(key = String::class)
+class PlayerBoardCell(x: Int,
                       y: Int,
-                      val status: HiddenBoardCellStatus
-): Cell(x, y), InMemoryObject<Int> {
-    override fun getKey() = id
+): BoardCell(x, y)
+
+open class BoardCellViewHolder(view: View): AbsViewHolder<BoardCell>(view) {
+
+    override fun bind(item: BoardCell) {
+        val cellView: View? = itemView.findViewById(R.id.cell)
+        val color = colorByStatus(item)
+
+        Logger.debug("[COLOR: ${color}] item: $item")
+        cellView?.setBackgroundColor(colorByStatus(item))
+    }
+
+    protected open fun colorByStatus(item: BoardCell): Int {
+        return when (item.status) {
+            BoardCellStatus.UNTRIED -> {
+                if (item.hiddenStatus == HiddenBoardCellStatus.OCCUPIED_BY_PLANE) {
+                    Color.BLUE
+                } else {
+                    Color.WHITE
+                }
+            }
+            BoardCellStatus.HIT -> Color.RED
+            else -> Color.YELLOW
+        }
+    }
+
 }
 
-class HiddenBoardCellViewHolder(view: View): AbsViewHolder<HiddenBoardCell>(view) {
-    override fun bind(item: HiddenBoardCell) {
+class AgentBoardCellViewHolder(view: View): BoardCellViewHolder(view) {
+
+    override fun colorByStatus(item: BoardCell): Int {
+        return when(item.status) {
+            BoardCellStatus.UNTRIED -> Color.WHITE
+            else -> super.colorByStatus(item)
+        }
     }
 
 }

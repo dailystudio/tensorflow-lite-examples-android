@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -48,6 +48,7 @@
                 android:orientation="horizontal">
 
                 <GridView
+                    android:visibility="gone"
                     android:id="@+id/agent_board_gridview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -60,6 +61,12 @@
                     android:horizontalSpacing="1dp"
                     android:verticalSpacing="1dp"
                     android:background="#9ACD32" />
+
+                <fragment
+                    android:name="com.dailystudio.tflite.example.reinforcementlearning.fragment.AgentBoardCellsFragment"
+                    android:id="@+id/fragment_agent_board"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
                 <TextView
                         android:id="@+id/player_hits_textview"
@@ -84,6 +91,7 @@
                 android:paddingLeft="5dp"
                 android:orientation="horizontal">
                 <GridView
+                    android:visibility="gone"
                         android:id="@+id/player_board_gridview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -96,6 +104,12 @@
                         android:horizontalSpacing="1dp"
                         android:verticalSpacing="1dp"
                         android:background="#9ACD32" />
+
+                <fragment
+                    android:name="com.dailystudio.tflite.example.reinforcementlearning.fragment.PlayerBoardCellsFragment"
+                    android:id="@+id/fragment_player_board"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
                 <TextView
                     android:id="@+id/agent_hits_textview"
@@ -122,4 +136,4 @@
             </LinearLayout>
 
   </RelativeLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>
