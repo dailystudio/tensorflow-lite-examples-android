@@ -20,6 +20,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import org.tensorflow.lite.support.model.Model;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,15 +34,18 @@ public class RLAgentFromTFAgents extends PlaneStrikeAgent {
 
   private final Object[] inputs = new Object[4];
 
-  public RLAgentFromTFAgents(Context context) throws IOException {
-    super(context);
+  private int agentStrikePosition = 0;
+
+  public RLAgentFromTFAgents(Context context,
+                             Model.Device device,
+                             int numOfThreads)  {
+    super(context, Constants.TF_AGENTS_TFLITE_MODEL, device, numOfThreads);
   }
 
   /** Predict the next move based on current board state. */
   @Override
   public int predictNextMove(BoardCellStatus[][] board) {
-
-    if (tflite == null) {
+    if (getInterpreter() == null) {
       Log.e(
           Constants.TAG, "Game agent failed to initialize. Please restart the app.");
       return -1;
@@ -59,7 +64,7 @@ public class RLAgentFromTFAgents extends PlaneStrikeAgent {
     // TF Agent directly returns the predicted action
     int[] prediction = new int[1];
     output.put(0, prediction);
-    tflite.runForMultipleInputsOutputs(inputs, output);
+    getInterpreter().runForMultipleInputsOutputs(inputs, output);
     agentStrikePosition = prediction[0];
   }
 

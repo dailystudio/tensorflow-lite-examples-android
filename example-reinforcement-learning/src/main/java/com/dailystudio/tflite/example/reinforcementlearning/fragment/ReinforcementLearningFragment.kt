@@ -12,6 +12,7 @@ import com.dailystudio.tflite.example.reinforcementlearning.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.reinforcementlearning.*
+import org.tensorflow.lite.support.model.Model
 import java.io.IOException
 import java.util.*
 
@@ -71,10 +72,13 @@ class ReinforcementLearningFragment: DevBricksFragment() {
         playerHitsTextView = fragmentView.findViewById<View>(R.id.player_hits_textview) as TextView
         initGame()
         agent = try {
+            val device = Model.Device.CPU
+            val numOfThreads = 4
+
             if (Constants.USE_MODEL_FROM_TF) {
-                RLAgent(context)
+                RLAgent(context, device, numOfThreads)
             } else {
-                RLAgentFromTFAgents(context)
+                RLAgentFromTFAgents(context, device, numOfThreads)
             }
         } catch (e: IOException) {
             Log.e(

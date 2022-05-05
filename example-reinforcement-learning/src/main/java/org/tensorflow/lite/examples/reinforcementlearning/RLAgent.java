@@ -20,6 +20,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import org.tensorflow.lite.support.model.Model;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -34,8 +36,10 @@ public class RLAgent extends PlaneStrikeAgent {
   private final float[][] outputProbArrays =
       new float[1][Constants.BOARD_SIZE * Constants.BOARD_SIZE];
 
-  public RLAgent(Context context) throws IOException {
-    super(context);
+  public RLAgent(Context context,
+                 Model.Device device,
+                 int numOfThreads) {
+    super(context, Constants.TF_TFLITE_MODEL, device, numOfThreads);
 
     boardData = ByteBuffer.allocateDirect(Constants.BOARD_SIZE * Constants.BOARD_SIZE * 4);
     boardData.order(ByteOrder.nativeOrder());
@@ -44,8 +48,7 @@ public class RLAgent extends PlaneStrikeAgent {
   /** Predict the next move based on current board state. */
   @Override
   public int predictNextMove(BoardCellStatus[][] board) {
-
-    if (tflite == null) {
+    if (getInterpreter() == null) {
       Log.e(Constants.TAG, "Game agent failed to initialize. Please restart the app.");
       return -1;
     } else {
@@ -71,7 +74,7 @@ public class RLAgent extends PlaneStrikeAgent {
   /** Run model inference on current board state. */
   @Override
   protected void runInference() {
-    tflite.run(boardData, outputProbArrays);
+    getInterpreter().run(boardData, outputProbArrays);
     boardData.rewind();
   }
 
