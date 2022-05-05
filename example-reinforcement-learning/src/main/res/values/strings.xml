@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Reinforcement Learning</string>
     <string name="app_desc">Train a game agent using reinforcement learning and build an Android game using TensorFlow Lite.</string>
+
+    <string name="text_prompt" translatable="false">Tap any cell in the agent board as your strike.\nRed - hit \t Yellow - miss</string>
+
 </resources>
