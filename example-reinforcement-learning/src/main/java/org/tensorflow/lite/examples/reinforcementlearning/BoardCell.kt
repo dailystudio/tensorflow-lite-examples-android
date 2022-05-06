@@ -8,6 +8,34 @@ import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsViewHolder
 import com.dailystudio.tflite.example.reinforcementlearning.R
 
+
+fun PlayerBoardCellManager.dumpStatus(): Array<Array<BoardCellStatus>> {
+    val status = Array(Constants.BOARD_SIZE) {
+        Array(Constants.BOARD_SIZE) { BoardCellStatus.UNTRIED }
+    }
+
+    val str = buildString {
+        for (x in 0 until Constants.BOARD_SIZE) {
+            append("\n")
+            for (y in 0 until Constants.BOARD_SIZE) {
+                status[x][y] = get(
+                    BoardCell.getIdByPos(x, y)
+                )?.status ?: BoardCellStatus.UNTRIED
+
+                append(when(status[x][y]) {
+                    BoardCellStatus.HIT -> "X"
+                    BoardCellStatus.MISS -> "O"
+                    else-> "_"
+                })
+            }
+        }
+    }
+
+    Logger.debug("status: $str")
+
+    return status
+}
+
 open class BoardCell(val x: Int,
                      val y: Int,
 ): InMemoryObject<String> {
@@ -80,7 +108,7 @@ open class BoardCellViewHolder(view: View): AbsViewHolder<BoardCell>(view) {
         val cellView: View? = itemView.findViewById(R.id.cell)
         val color = colorByStatus(item)
 
-        Logger.debug("[COLOR: ${color}] item: $item")
+//        Logger.debug("[COLOR: ${color}] item: $item")
         cellView?.setBackgroundColor(colorByStatus(item))
     }
 

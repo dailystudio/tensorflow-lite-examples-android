@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="cell_width">35dp</dimen>
+    <dimen name="cell_height">@dimen/cell_width</dimen>
+
+</resources>

@@ -6,7 +6,7 @@ import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.reinforcementlearning.fragment.ReinforcementLearningFragment
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
+class ExampleActivity : AbsExampleActivity<InferenceInfo, Int>() {
 
     override fun createBaseFragment(): Fragment {
         return ReinforcementLearningFragment()
@@ -16,7 +16,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
         return null
     }
 
-    override fun onResultsUpdated(results: Void) {
+    override fun onResultsUpdated(results: Int) {
     }
 
     override fun onInferenceInfoUpdated(info: InferenceInfo) {

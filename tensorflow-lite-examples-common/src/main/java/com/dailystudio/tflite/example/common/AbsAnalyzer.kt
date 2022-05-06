@@ -64,14 +64,14 @@ abstract class AbsTFLiteModelRunner<Model: TFLiteModel, Input, Info: InferenceIn
     }
 
     @Synchronized
-    open fun run(data: Input, settings: InferenceSettingsPrefs) {
+    open fun run(data: Input, settings: InferenceSettingsPrefs): Results? {
         if (model == null) {
             prepareModel(settings)
         }
 
-        model?.let {
+        return model?.let {
             runInference(it, data)
-        }
+        } ?: null
     }
 
     open fun destroyModel() {
@@ -109,7 +109,7 @@ abstract class AbsTFLiteModelRunner<Model: TFLiteModel, Input, Info: InferenceIn
         Logger.debug("[ANALYZER UPDATE] model is invalidated")
     }
 
-    protected open fun runInference(model: Model, data: Input) {
+    protected open fun runInference(model: Model, data: Input): Results? {
         var results: Results? = null
         val info: Info = createInferenceInfo()
 
@@ -137,7 +137,7 @@ abstract class AbsTFLiteModelRunner<Model: TFLiteModel, Input, Info: InferenceIn
 
         inferenceAgent.deliverInferenceInfo(info)
 
-        results?.let {
+        return results?.also {
             inferenceAgent.deliverResults(it)
         }
     }

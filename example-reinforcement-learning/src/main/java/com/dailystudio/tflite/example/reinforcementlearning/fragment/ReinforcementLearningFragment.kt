@@ -191,8 +191,8 @@ class ReinforcementLearningFragment: DevBricksFragment() {
         placePlaneOnHiddenBoard(playerHiddenStatus)
         placePlaneOnHiddenBoard(agentHiddenStatus)
 
-        Logger.debug("PLAYER BOARD: $playerHiddenStatus")
-        Logger.debug("AGENT BOARD: $agentHiddenStatus")
+//        Logger.debug("PLAYER BOARD: $playerHiddenStatus")
+//        Logger.debug("AGENT BOARD: $agentHiddenStatus")
 
         for (y in 0 until Constants.BOARD_SIZE) {
             for (x in 0 until Constants.BOARD_SIZE) {
