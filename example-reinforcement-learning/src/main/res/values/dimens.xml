@@ -4,9 +4,17 @@
     <dimen name="cell_width">35dp</dimen>
     <dimen name="cell_height">@dimen/cell_width</dimen>
 
-    <dimen name="float_action_button_elevation">6dp</dimen>
-    <dimen name="float_action_button_translation_z">0dp</dimen>
-
+    <dimen name="reset_button_elevation">6dp</dimen>
+    <dimen name="reset_button_translation_z">0dp</dimen>
     <dimen name="reset_button_margin_h">16dp</dimen>
+    <dimen name="reset_button_margin_v">16dp</dimen>
+
+    <dimen name="hits_layout_elevation">20dp</dimen>
+    <dimen name="hits_layout_translation_z">6dp</dimen>
+    <dimen name="hits_layout_padding_v">22dp</dimen>
+    <dimen name="hits_layout_margin_v">26dp</dimen>
+    <dimen name="hits_layout_margin_h">16dp</dimen>
+    <dimen name="hits_prompt_font_size">14dp</dimen>
+    <dimen name="hits_prompt_padding">4dp</dimen>
 
 </resources>

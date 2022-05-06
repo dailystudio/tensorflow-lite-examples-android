@@ -8,4 +8,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="HitsPrompt">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/hits_prompt_font_size</item>
+        <item name="android:paddingStart">@dimen/hits_prompt_padding</item>
+        <item name="android:paddingEnd">@dimen/hits_prompt_padding</item>
+
+    </style>
+
 </resources>

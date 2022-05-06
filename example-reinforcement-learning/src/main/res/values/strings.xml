@@ -4,4 +4,7 @@
 
     <string name="text_prompt" translatable="false">Tap any cell in the agent board as your strike.\nRed - hit \t Yellow - miss</string>
 
+    <string name="player_hits_prompt">Player Hits: %1$d</string>
+    <string name="agent_hits_prompt">Agent Hits: %1$d</string>
+
 </resources>

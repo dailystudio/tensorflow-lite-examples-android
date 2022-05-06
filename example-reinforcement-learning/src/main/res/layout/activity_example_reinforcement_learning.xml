@@ -21,13 +21,54 @@
         app:tint="@color/white"
         app:layout_anchor="@id/bottom_sheet_layout"
         app:layout_anchorGravity="top|end"
-        android:translationZ="@dimen/float_action_button_translation_z"
-        app:elevation="@dimen/float_action_button_elevation"
+        android:translationZ="@dimen/reset_button_translation_z"
+        app:elevation="@dimen/reset_button_elevation"
         android:layout_marginEnd="@dimen/reset_button_margin_h"
-        android:layout_marginBottom="@dimen/reset_button_margin_h"
+        android:layout_marginBottom="@dimen/reset_button_margin_v"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <include layout="@layout/layout_bottom_sheet"/>
+
+    <FrameLayout
+        android:translationZ="@dimen/hits_layout_translation_z"
+        app:elevation="@dimen/hits_layout_elevation"
+        app:layout_anchor="@id/bottom_sheet_layout"
+        app:layout_anchorGravity="top|start"
+        android:paddingBottom="@dimen/hits_layout_padding_v"
+        android:paddingStart="@dimen/hits_layout_margin_h"
+        android:layout_marginBottom="@dimen/hits_layout_margin_v"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.cardview.widget.CardView
+            style="@style/DefaultCardView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:padding="@dimen/default_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/player_hits"
+                    style="@style/HitsPrompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+                <TextView
+                    android:id="@+id/agent_hits"
+                    style="@style/HitsPrompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+    </FrameLayout>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
