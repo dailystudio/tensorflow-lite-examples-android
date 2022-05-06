@@ -8,12 +8,30 @@ import com.dailystudio.tflite.example.reinforcementlearning.fragment.Reinforceme
 
 class ExampleActivity : AbsExampleActivity<InferenceInfo, Int>() {
 
+    private var fabResetGame: View? = null
+
+    override fun setupViews() {
+        super.setupViews()
+
+        fabResetGame = findViewById(R.id.fab_reset)
+        fabResetGame?.setOnClickListener {
+            val fragment = exampleFragment
+            if (fragment is ReinforcementLearningFragment) {
+                fragment.resetGame()
+            }
+        }
+
+    }
     override fun createBaseFragment(): Fragment {
         return ReinforcementLearningFragment()
     }
 
     override fun createResultsView(): View? {
         return null
+    }
+
+    override fun getLayoutResId(): Int {
+        return R.layout.activity_example_reinforcement_learning
     }
 
     override fun onResultsUpdated(results: Int) {

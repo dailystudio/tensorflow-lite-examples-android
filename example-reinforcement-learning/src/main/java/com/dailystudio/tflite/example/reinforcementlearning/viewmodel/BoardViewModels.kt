@@ -1,55 +1,43 @@
 package com.dailystudio.tflite.example.reinforcementlearning.viewmodel
 
 import android.app.Application
-import android.content.Context
-import androidx.lifecycle.viewModelScope
-import com.dailystudio.tflite.example.common.AbsTFLiteModelRunner
-import com.dailystudio.tflite.example.common.InferenceInfo
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
+import com.dailystudio.tflite.example.reinforcementlearning.ReinforcementLearningAnalyzer
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.examples.reinforcementlearning.*
 import org.tensorflow.lite.examples.reinforcementlearning.model.AgentBoardCellViewModel
-import org.tensorflow.lite.support.model.Model
+import org.tensorflow.lite.examples.reinforcementlearning.model.PlayerBoardCellViewModel
 
 
-class ReinforcementLearningAnalyzer(useAverageTime: Boolean)
-    : AbsTFLiteModelRunner<PlaneStrikeAgent, Array<Array<BoardCellStatus>>, InferenceInfo, Int>(useAverageTime)
-{
-    override fun createModel(
-        context: Context,
-        device: Model.Device,
-        numOfThreads: Int,
-        settings: InferenceSettingsPrefs
-    ): PlaneStrikeAgent? {
-        return if (Constants.USE_MODEL_FROM_TF) {
-            RLAgent(context, device, numOfThreads)
-        } else {
-            RLAgentFromTFAgents(context, device, numOfThreads)
-        }
+class BoardHits {
+
+    private val _hits = MutableLiveData(0)
+    val value: LiveData<Int> = _hits
+
+    fun getHits(): Int? {
+        return _hits.value
     }
 
-    override fun analyze(
-        model: PlaneStrikeAgent,
-        data: Array<Array<BoardCellStatus>>,
-        info: InferenceInfo
-    ): Int? {
-        return model.predictNextMove(data)
+    fun markHit() {
+        val oldValue = _hits.value ?: 0
+        _hits.postValue(oldValue + 1)
     }
 
-    override fun createInferenceInfo(): InferenceInfo {
-        return InferenceInfo()
+    fun reset() {
+        _hits.postValue(0)
     }
+
 }
 
 class AgentBoardViewModel(application: Application): AgentBoardCellViewModel(application) {
 
+    val hits = BoardHits()
+
     private var analyzer: ReinforcementLearningAnalyzer? = null
     private var lock = Object()
-
-    init {
-    }
 
     suspend fun playerActionOn(x:Int, y: Int):Int {
         val agentCellId = BoardCell.getIdByPos(x, y)
@@ -57,10 +45,9 @@ class AgentBoardViewModel(application: Application): AgentBoardCellViewModel(app
 
         if (agentCell.status == BoardCellStatus.UNTRIED) {
             agentCell.status = if (agentCell.hiddenStatus == HiddenBoardCellStatus.OCCUPIED_BY_PLANE) {
-                BoardCellStatus.HIT
+                hits.markHit()
 
-//                playerHits++
-//                playerHitsTextView?.setText("Agent board:\n$playerHits hits")
+                BoardCellStatus.HIT
             } else {
                 BoardCellStatus.MISS
             }
@@ -92,5 +79,30 @@ class AgentBoardViewModel(application: Application): AgentBoardCellViewModel(app
         }
     }
 
+}
+
+class PlayerBoardViewModel(application: Application): PlayerBoardCellViewModel(application) {
+
+    val hits = BoardHits()
+
+    val _lastAction = MutableLiveData(PlayerBoardCell(0, 0))
+    val lastAction = _lastAction
+
+    fun agentActionOn(x: Int, y: Int) {
+        val playerCellId = BoardCell.getIdByPos(x, y)
+        val playerCell = PlayerBoardCellManager.get(playerCellId) ?: return
+
+        playerCell.status = if (playerCell.hiddenStatus == HiddenBoardCellStatus.OCCUPIED_BY_PLANE) {
+            // Hit
+            hits.markHit()
+            BoardCellStatus.HIT
+        } else {
+            // Miss
+            BoardCellStatus.MISS
+        }
+
+        updatePlayerBoardCell(playerCell)
+        lastAction.postValue(playerCell)
+    }
 
 }

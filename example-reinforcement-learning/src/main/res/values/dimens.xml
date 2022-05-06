@@ -4,4 +4,9 @@
     <dimen name="cell_width">35dp</dimen>
     <dimen name="cell_height">@dimen/cell_width</dimen>
 
+    <dimen name="float_action_button_elevation">6dp</dimen>
+    <dimen name="float_action_button_translation_z">0dp</dimen>
+
+    <dimen name="reset_button_margin_h">16dp</dimen>
+
 </resources>

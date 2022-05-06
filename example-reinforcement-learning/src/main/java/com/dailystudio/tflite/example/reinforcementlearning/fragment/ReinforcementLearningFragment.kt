@@ -1,49 +1,54 @@
 package com.dailystudio.tflite.example.reinforcementlearning.fragment
 
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.DevBricksFragment
 import com.dailystudio.tflite.example.reinforcementlearning.R
-import kotlinx.coroutines.Dispatchers
+import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.AgentBoardViewModel
+import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.PlayerBoardViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.reinforcementlearning.*
-import org.tensorflow.lite.support.model.Model
-import java.io.IOException
 import java.util.*
 
 class ReinforcementLearningFragment: DevBricksFragment() {
 
-    private var agentHits = 0
-    private var playerHits = 0
-    private val playerBoard = Array(Constants.BOARD_SIZE) {
-        Array(Constants.BOARD_SIZE) { BoardCellStatus.UNTRIED }
+    companion object {
+        const val AUTO_RESET_DELAY = 2000L
     }
 
-    private val playerHiddenBoard = Array(Constants.BOARD_SIZE) {
-        Array(Constants.BOARD_SIZE) { HiddenBoardCellStatus.UNOCCUPIED }
+    private lateinit var agentBoardViewModel: AgentBoardViewModel
+    private lateinit var playerBoardViewModel: PlayerBoardViewModel
+
+    private var resetJob: Job? = null
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        agentBoardViewModel = ViewModelProvider(requireActivity())
+            .get(AgentBoardViewModel::class.java)
+        agentBoardViewModel.hits.value.observe(this) {
+            Logger.debug("Agent Board HITS: $it")
+//            playerHitsTextView?.text = "Agent board:\n$it hits"
+        }
+
+        playerBoardViewModel = ViewModelProvider(requireActivity())
+            .get(PlayerBoardViewModel::class.java)
+        playerBoardViewModel.hits.value.observe(this) {
+            Logger.debug("Player Board HITS: $it")
+//            agentHitsTextView?.text = "Player board:\n$it hits"
+        }
+        playerBoardViewModel.lastAction.observe(this) {
+            checkOrEndGame()
+        }
     }
-
-    private val agentBoard = Array(Constants.BOARD_SIZE) {
-        Array(Constants.BOARD_SIZE) { BoardCellStatus.UNTRIED }
-    }
-
-    private val agentHiddenBoard = Array(Constants.BOARD_SIZE) {
-        Array(Constants.BOARD_SIZE) { HiddenBoardCellStatus.UNOCCUPIED }
-    }
-
-    private var agentBoardGridView: GridView? = null
-    private var playerBoardGridView: GridView? = null
-    private var agentHitsTextView: TextView? = null
-    private var playerHitsTextView: TextView? = null
-    private var resetButton: Button? = null
-
-    private var agent: PlaneStrikeAgent? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,124 +64,15 @@ class ReinforcementLearningFragment: DevBricksFragment() {
         setupViews(view)
     }
 
-    fun setupViews(fragmentView: View) {
-        val context = requireContext()
-
-        agentBoardGridView = fragmentView.findViewById<View>(R.id.agent_board_gridview) as GridView
-        playerBoardGridView = fragmentView.findViewById<View>(R.id.player_board_gridview) as GridView
-        agentHitsTextView = fragmentView.findViewById<View>(R.id.agent_hits_textview) as TextView
-        playerHitsTextView = fragmentView.findViewById<View>(R.id.player_hits_textview) as TextView
+    private fun setupViews(fragmentView: View) {
         initGame()
-        agent = try {
-            val device = Model.Device.CPU
-            val numOfThreads = 4
-
-            if (Constants.USE_MODEL_FROM_TF) {
-                RLAgent(context, device, numOfThreads)
-            } else {
-                RLAgentFromTFAgents(context, device, numOfThreads)
-            }
-        } catch (e: IOException) {
-            Log.e(
-                Constants.TAG,
-                e.message!!
-            )
-            return
-        }
-
-        playerBoardGridView?.setAdapter(
-            BoardCellAdapter(context, playerBoard, playerHiddenBoard, false)
-        )
-        agentBoardGridView?.setAdapter(BoardCellAdapter(context, agentBoard, agentHiddenBoard, true))
-        agentBoardGridView?.setOnItemClickListener(
-            AdapterView.OnItemClickListener { adapterView, view, position, l -> // Player action
-                val playerActionX = position / Constants.BOARD_SIZE
-                val playerActionY = position % Constants.BOARD_SIZE
-                if (agentBoard[playerActionX][playerActionY] == BoardCellStatus.UNTRIED) {
-                    if (agentHiddenBoard[playerActionX][playerActionY]
-                        == HiddenBoardCellStatus.OCCUPIED_BY_PLANE
-                    ) {
-                        agentBoard[playerActionX][playerActionY] = BoardCellStatus.HIT
-                        playerHits++
-                        playerHitsTextView?.setText("Agent board:\n$playerHits hits")
-                    } else {
-                        agentBoard[playerActionX][playerActionY] = BoardCellStatus.MISS
-                    }
-                }
-
-                // Agent action
-                val agentStrikePosition = agent?.predictNextMove(playerBoard) ?: -1
-                if (agentStrikePosition == -1) {
-                    Toast.makeText(
-                        context,
-                        "Something went wrong with the RL agent! Please restart the app.",
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
-                    return@OnItemClickListener
-                }
-                val agentStrikePositionX = agentStrikePosition / Constants.BOARD_SIZE
-                val agentStrikePositionY = agentStrikePosition % Constants.BOARD_SIZE
-                if (playerHiddenBoard[agentStrikePositionX][agentStrikePositionY]
-                    == HiddenBoardCellStatus.OCCUPIED_BY_PLANE
-                ) {
-                    // Hit
-                    playerBoard[agentStrikePositionX][agentStrikePositionY] = BoardCellStatus.HIT
-                    agentHits++
-                    agentHitsTextView?.setText("Player board:\n$agentHits hits")
-                } else {
-                    // Miss
-                    playerBoard[agentStrikePositionX][agentStrikePositionY] = BoardCellStatus.MISS
-                }
-                if (agentHits == Constants.PLANE_CELL_COUNT
-                    || playerHits == Constants.PLANE_CELL_COUNT
-                ) {
-                    // Game ends
-                    val gameEndMessage: String
-                    gameEndMessage = if (agentHits == Constants.PLANE_CELL_COUNT
-                        && playerHits == Constants.PLANE_CELL_COUNT
-                    ) {
-                        "Draw game!"
-                    } else if (agentHits == Constants.PLANE_CELL_COUNT) {
-                        "Agent wins!"
-                    } else {
-                        "You win!"
-                    }
-                    Toast.makeText(context, gameEndMessage, Toast.LENGTH_LONG).show()
-                    // Automatically reset game UI after 2 seconds
-                    val resetGameTimer = Timer()
-                    resetGameTimer.schedule(
-                        object : TimerTask() {
-                            override fun run() {
-                                lifecycleScope.launch(Dispatchers.Main) {
-                                    initGame()
-                                }
-                            }
-                        },
-                        2000
-                    )
-                }
-                agentBoardGridView?.invalidateViews()
-                playerBoardGridView?.invalidateViews()
-            })
-        resetButton = fragmentView.findViewById<View>(R.id.reset_button) as Button
-        resetButton?.setOnClickListener(
-            View.OnClickListener { initGame() })
     }
 
     private fun initGame() {
         initBoards()
 
-        initBoard(playerBoard)
-        placePlaneOnHiddenBoard(playerHiddenBoard)
-        initBoard(agentBoard)
-        placePlaneOnHiddenBoard(agentHiddenBoard)
-        agentBoardGridView!!.invalidateViews()
-        playerBoardGridView!!.invalidateViews()
-        agentHits = 0
-        playerHits = 0
-        agentHitsTextView!!.text = "Player board:\n0 hits"
-        playerHitsTextView!!.text = "Agent board:\n0 hits"
+        agentBoardViewModel.hits.reset()
+        playerBoardViewModel.hits.reset()
     }
 
     private fun initBoards() {
@@ -194,6 +90,8 @@ class ReinforcementLearningFragment: DevBricksFragment() {
 //        Logger.debug("PLAYER BOARD: $playerHiddenStatus")
 //        Logger.debug("AGENT BOARD: $agentHiddenStatus")
 
+        AgentBoardCellManager.clear()
+        PlayerBoardCellManager.clear()
         for (y in 0 until Constants.BOARD_SIZE) {
             for (x in 0 until Constants.BOARD_SIZE) {
                 AgentBoardCellManager.add(
@@ -213,21 +111,46 @@ class ReinforcementLearningFragment: DevBricksFragment() {
         }
 
     }
-    private fun initBoard(board: Array<Array<BoardCellStatus>>) {
-        for (i in 0 until Constants.BOARD_SIZE) {
-            Arrays.fill(board[i], 0, Constants.BOARD_SIZE, BoardCellStatus.UNTRIED)
+
+    private fun checkOrEndGame() {
+        val agentHits = playerBoardViewModel.hits.getHits() ?: 0
+        val playerHits = agentBoardViewModel.hits.getHits() ?: 0
+        Logger.debug("Agent HITS: $agentHits, Player HITS: $playerHits")
+
+        if (agentHits == Constants.PLANE_CELL_COUNT
+            || playerHits == Constants.PLANE_CELL_COUNT) {
+            // Game ends
+            val gameEndMessage: String
+            gameEndMessage = if (agentHits == Constants.PLANE_CELL_COUNT
+                && playerHits == Constants.PLANE_CELL_COUNT
+            ) {
+                "Draw game!"
+            } else if (agentHits == Constants.PLANE_CELL_COUNT) {
+                "Agent wins!"
+            } else {
+                "You win!"
+            }
+            Toast.makeText(context, gameEndMessage, Toast.LENGTH_LONG).show()
+            // Automatically reset game UI after 2 seconds
+
+            resetGameScheduled(AUTO_RESET_DELAY)
         }
     }
 
-    private fun initHiddenBoard(board: Array<Array<HiddenBoardCellStatus>>) {
-        for (i in 0 until Constants.BOARD_SIZE) {
-            Arrays.fill(board[i], 0, Constants.BOARD_SIZE, HiddenBoardCellStatus.UNOCCUPIED)
+    fun resetGame() {
+        Logger.debug("RESET GAME")
+        resetGameScheduled()
+    }
+
+    private fun resetGameScheduled(delay: Long = 0L) {
+        resetJob?.cancel()
+        resetJob = lifecycleScope.launch {
+            delay(delay)
+            initGame()
         }
     }
 
     private fun placePlaneOnHiddenBoard(hiddenBoard: Array<Array<HiddenBoardCellStatus>>) {
-        initHiddenBoard(hiddenBoard)
-
         // Place the plane on the board
         // First, decide the plane's orientation
         //   0: heading right

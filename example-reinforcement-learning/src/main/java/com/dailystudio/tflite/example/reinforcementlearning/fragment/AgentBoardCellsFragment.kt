@@ -10,8 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.reinforcementlearning.*
 import org.tensorflow.lite.examples.reinforcementlearning.fragment.AgentBoardCellsListFragment
-import org.tensorflow.lite.examples.reinforcementlearning.fragment.PlayerBoardCellsListFragment
-import org.tensorflow.lite.examples.reinforcementlearning.model.AgentBoardCellViewModel
 
 class AgentBoardCellsFragment: AgentBoardCellsListFragment() {
 
@@ -22,20 +20,21 @@ class AgentBoardCellsFragment: AgentBoardCellsListFragment() {
         item: AgentBoardCell,
         id: Long
     ) {
-        val agentBoardViewModel = ViewModelProvider(this).get(
+        val agentBoardViewModel = ViewModelProvider(requireActivity()).get(
             AgentBoardViewModel::class.java)
-        val playerBoardViewModel = ViewModelProvider(this).get(
+        val playerBoardViewModel = ViewModelProvider(requireActivity()).get(
             PlayerBoardViewModel::class.java)
 
         val playerActionX = position / Constants.BOARD_SIZE
         val playerActionY = position % Constants.BOARD_SIZE
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             val agentStrikePos =
                 agentBoardViewModel.playerActionOn(playerActionX, playerActionY)
 
             val agentActionX = agentStrikePos / Constants.BOARD_SIZE
             val agentActionY = agentStrikePos % Constants.BOARD_SIZE
+
             playerBoardViewModel.agentActionOn(agentActionX, agentActionY)
         }
     }
