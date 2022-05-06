@@ -13,6 +13,12 @@ import org.tensorflow.lite.examples.reinforcementlearning.fragment.AgentBoardCel
 
 class AgentBoardCellsFragment: AgentBoardCellsListFragment() {
 
+    private var blockClicks: Boolean = false
+
+    fun clickEnabled(enabled: Boolean) {
+        blockClicks = !enabled
+    }
+
     override fun onItemClick(
         recyclerView: RecyclerView,
         itemView: View,
@@ -20,6 +26,11 @@ class AgentBoardCellsFragment: AgentBoardCellsListFragment() {
         item: AgentBoardCell,
         id: Long
     ) {
+
+        if (blockClicks) {
+            return
+        }
+
         val agentBoardViewModel = ViewModelProvider(requireActivity()).get(
             AgentBoardViewModel::class.java)
         val playerBoardViewModel = ViewModelProvider(requireActivity()).get(

@@ -29,6 +29,8 @@ class ReinforcementLearningFragment: DevBricksFragment() {
     private lateinit var playerBoardViewModel: PlayerBoardViewModel
 
     private var resetJob: Job? = null
+    private var gameEnded: Boolean = false
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
@@ -73,6 +75,13 @@ class ReinforcementLearningFragment: DevBricksFragment() {
 
         agentBoardViewModel.hits.reset()
         playerBoardViewModel.hits.reset()
+
+        gameEnded = false
+
+        val fragment = findChildFragment(R.id.fragment_agent_board)
+        if (fragment is AgentBoardCellsFragment) {
+            fragment.clickEnabled(true)
+        }
     }
 
     private fun initBoards() {
@@ -113,12 +122,17 @@ class ReinforcementLearningFragment: DevBricksFragment() {
     }
 
     private fun checkOrEndGame() {
+        if (gameEnded) {
+            return
+        }
+
         val agentHits = playerBoardViewModel.hits.getHits() ?: 0
         val playerHits = agentBoardViewModel.hits.getHits() ?: 0
         Logger.debug("Agent HITS: $agentHits, Player HITS: $playerHits")
 
-        if (agentHits == Constants.PLANE_CELL_COUNT
-            || playerHits == Constants.PLANE_CELL_COUNT) {
+        if (agentHits == Constants.PLANE_CELL_COUNT || playerHits == Constants.PLANE_CELL_COUNT) {
+            endGame()
+
             // Game ends
             val gameEndMessage: String
             gameEndMessage = if (agentHits == Constants.PLANE_CELL_COUNT
@@ -134,6 +148,15 @@ class ReinforcementLearningFragment: DevBricksFragment() {
             // Automatically reset game UI after 2 seconds
 
             resetGameScheduled(AUTO_RESET_DELAY)
+        }
+    }
+
+    fun endGame() {
+        gameEnded = true
+
+        val fragment = findChildFragment(R.id.fragment_agent_board)
+        if (fragment is AgentBoardCellsFragment) {
+            fragment.clickEnabled(false)
         }
     }
 
