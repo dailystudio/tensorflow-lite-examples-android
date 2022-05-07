@@ -1,0 +1,23 @@
+apply from:"${project.rootDir}/buildscripts/network.gradle"
+
+def targetFolder = "src/main/assets"
+def modelDownloadUrl = "https://tfhub.dev/tensorflow/lite-model/mobilenet_v1_1.0_224/1/metadata/1?lite-format=tflite"
+def modelFile = "template.tflite"
+
+task downloadModel(type: DownloadUrlTask) {
+    sourceUrl = "${modelDownloadUrl}"
+    target = file("${targetFolder}/${modelFile}")
+}
+
+task cleanUnusedFiles(type: Delete, dependsOn: ['downloadModel']) {
+    delete fileTree("${targetFolder}").matching {
+        include "*.pb"
+        include "*.ckpt.*"
+        include "*.pbtxt*"
+        include "*.quant_info.*"
+        include "*.meta"
+    }
+}
+
+//preBuild.dependsOn downloadModel
+//preBuild.dependsOn cleanUnusedFiles

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">On-device Training</string>
+    <string name="app_desc">Train a TensorFlow Lite model on-device.</string>
+</resources>

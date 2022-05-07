@@ -1,3 +1,4 @@
+include ':example-model-personalization'
 include ':example-reinforcement-learning'
 include ':example-optical-character-recognition'
 include ':example-super-resolution'

@@ -103,5 +103,12 @@
     "package": "com.dailystudio.tflite.example.reinforcementlearning",
     "description": "Train a game agent using reinforcement learning and build an Android game using TensorFlow Lite.",
     "image": "assets://model_icons/tile_model_reinforcement_learning.png"
+  },
+  {
+    "id": 14,
+    "title": "On-device training",
+    "package": "com.dailystudio.tflite.example.transfer",
+    "description": "Train a TensorFlow Lite model on-device.",
+    "image": "assets://model_icons/tile_model_personalization.png"
   }
 ]
