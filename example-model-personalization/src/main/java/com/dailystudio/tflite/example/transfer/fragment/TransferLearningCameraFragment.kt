@@ -6,22 +6,21 @@ import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
-import com.dailystudio.tflite.example.transfer.model.OndeviceLearningModel
+import com.dailystudio.tflite.example.transfer.model.TransferLearningModel
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.images.Recognition
 
 
-private class OndeviceLearningAnalyzer(rotation: Int,
-                                      lensFacing: Int,
-                                      useAverageTime: Boolean,
-) : AbsImageAnalyzer<OndeviceLearningModel, ImageInferenceInfo, List<Recognition>>(rotation, lensFacing, useAverageTime) {
+private class TransferLearningAnalyzer(rotation: Int,
+                                       lensFacing: Int,
+                                       useAverageTime: Boolean,
+) : AbsImageAnalyzer<TransferLearningModel, ImageInferenceInfo, List<Recognition>>(rotation, lensFacing, useAverageTime) {
 
     companion object {
-        const val TF_MODEL_PATH = ""
     }
 
     override fun analyzeFrame(
-        model: OndeviceLearningModel,
+        model: TransferLearningModel,
         inferenceBitmap: Bitmap,
         info: ImageInferenceInfo
     ): List<Recognition>? {
@@ -45,22 +44,21 @@ private class OndeviceLearningAnalyzer(rotation: Int,
         device: Model.Device,
         numOfThreads: Int,
         settings: InferenceSettingsPrefs
-    ): OndeviceLearningModel? {
-        return OndeviceLearningModel(context,
-            TF_MODEL_PATH, device, numOfThreads)
+    ): TransferLearningModel? {
+        return TransferLearningModel(context, device, numOfThreads)
     }
 
 }
 
-class OndeviceLearningCameraFragment : AbsExampleCameraFragment<OndeviceLearningModel, ImageInferenceInfo, List<Recognition>>() {
+class TransferLearningCameraFragment : AbsExampleCameraFragment<TransferLearningModel, ImageInferenceInfo, List<Recognition>>() {
 
     override fun createAnalyzer(
         screenAspectRatio: Int,
         rotation: Int,
         lensFacing: Int,
         useAverageTime: Boolean,
-    ): AbsImageAnalyzer<OndeviceLearningModel, ImageInferenceInfo, List<Recognition>> {
-        return OndeviceLearningAnalyzer(rotation, lensFacing, useAverageTime)
+    ): AbsImageAnalyzer<TransferLearningModel, ImageInferenceInfo, List<Recognition>> {
+        return TransferLearningAnalyzer(rotation, lensFacing, useAverageTime)
     }
 
 }

@@ -64,6 +64,17 @@ dependencies {
 
     implementation project(":tensorflow-lite-examples-common")
 
+/*
+    compileOnly 'org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT'
+    implementation("org.tensorflow:tensorflow-lite:${project.ext.tfliteVersion}") {
+        force = true
+    }
+*/
+    implementation ("org.tensorflow:tensorflow-lite-select-tf-ops:${project.ext.tfliteSelectOptsVersion}") {
+        force = true
+    }
+
+
     kapt "cn.dailystudio:devbricksx-java-compiler:${DEVBRICKS_X_VERSION}"
     kapt "cn.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
 }
