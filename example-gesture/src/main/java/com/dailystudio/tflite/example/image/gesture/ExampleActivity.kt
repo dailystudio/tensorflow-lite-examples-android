@@ -93,7 +93,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
 
     private fun disableClicksOnResultsFragment() {
         val fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_RESULTS)
-        if (fragment is AbsRecyclerViewFragment<*, *, *>) {
+        if (fragment is AbsRecyclerViewFragment<*, *, *, *>) {
             fragment.setRecyclerViewTouchEnabled(false)
         }
     }

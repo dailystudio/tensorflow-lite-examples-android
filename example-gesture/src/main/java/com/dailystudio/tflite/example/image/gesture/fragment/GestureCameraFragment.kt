@@ -1,5 +1,6 @@
 package com.dailystudio.tflite.example.image.gesture.fragment
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.camera.core.CameraSelector
 import com.dailystudio.devbricksx.GlobalContextWrapper
@@ -9,10 +10,12 @@ import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.gesture.Classifier
+import org.tensorflow.lite.support.model.Model
 
 private class GestureAnalyzer(rotation: Int, lensFacing: Int)
-    : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>>(rotation, lensFacing) {
+    : AbsImageAnalyzer<Classifier, ImageInferenceInfo, List<Classifier.Recognition>>(rotation, lensFacing) {
 
     companion object {
         private const val PRE_SCALE_WIDTH = 640
@@ -26,7 +29,11 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
 
     private var classifier: Classifier? = null
 
-    override fun analyzeFrame(inferenceBitmap: Bitmap, info: ImageInferenceInfo): List<Classifier.Recognition>? {
+    override fun analyzeFrame(
+        model: Classifier,
+        inferenceBitmap: Bitmap,
+        info: ImageInferenceInfo
+    ): List<Classifier.Recognition>? {
         var results: List<Classifier.Recognition>? = null
 
         if (classifier == null) {
@@ -34,7 +41,7 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
             context?.let {
                 classifier = Classifier.create(context,
                     Classifier.Model.FLOAT_INCEPTION,
-                    Classifier.Device.CPU,
+                    Model.Device.CPU,
 //                    Classifier.Device.GPU,
                     1
                 )
@@ -106,12 +113,29 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
         return false
     }
 
+    override fun createModel(
+        context: Context,
+        device: Model.Device,
+        numOfThreads: Int,
+        settings: InferenceSettingsPrefs
+    ): Classifier? {
+        return Classifier.create(context,
+            Classifier.Model.FLOAT_INCEPTION,
+            device,
+            numOfThreads
+        )
+    }
+
 }
 
-class GestureCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Classifier.Recognition>>() {
+class GestureCameraFragment : AbsExampleCameraFragment<Classifier, ImageInferenceInfo, List<Classifier.Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
-            : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>> {
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        useAverageTime: Boolean
+    ): AbsImageAnalyzer<Classifier, ImageInferenceInfo, List<Classifier.Recognition>> {
         return GestureAnalyzer(
             rotation,
             lensFacing

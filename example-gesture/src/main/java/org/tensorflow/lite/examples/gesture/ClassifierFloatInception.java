@@ -19,6 +19,7 @@ import android.content.Context;
 
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
+import org.tensorflow.lite.support.model.Model.Device;
 
 import java.io.IOException;
 
@@ -36,6 +37,8 @@ public class ClassifierFloatInception extends Classifier {
 
   private static final float PROBABILITY_STD = 1.0f;
 
+  private static final String MODEL_PATH = "model.tflite";
+
   /**
    * Initializes a {@code ClassifierFloatMobileNet}.
    *
@@ -43,7 +46,7 @@ public class ClassifierFloatInception extends Classifier {
    */
   public ClassifierFloatInception(Context context, Device device, int numThreads)
       throws IOException {
-    super(context, device, numThreads);
+    super(context, MODEL_PATH, device, numThreads);
   }
 
   @Override
@@ -51,7 +54,7 @@ public class ClassifierFloatInception extends Classifier {
     // you can download this file from
     // see build.gradle for where to obtain this file. It should be auto
     // downloaded into assets.
-    return "model.tflite";
+    return MODEL_PATH;
   }
 
   @Override

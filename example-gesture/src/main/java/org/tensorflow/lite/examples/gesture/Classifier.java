@@ -37,10 +37,11 @@ import org.tensorflow.lite.support.image.ops.ResizeOp.ResizeMethod;
 import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp;
 import org.tensorflow.lite.support.image.ops.Rot90Op;
 import org.tensorflow.lite.support.label.TensorLabel;
+import org.tensorflow.lite.support.model.Model.Device;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+import org.tensorflow.litex.TFLiteModel;
 
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -48,43 +49,21 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 /** A classifier specialized to label images using TensorFlow Lite. */
-public abstract class Classifier {
+public abstract class Classifier extends TFLiteModel {
 
   /** The model type used for classification. */
   public enum Model {
     FLOAT_INCEPTION,
   }
 
-  /** The runtime device type used for executing classification. */
-  public enum Device {
-    CPU,
-    NNAPI,
-    GPU
-  }
-
   /** Number of results to show in the UI. */
   private static final int MAX_RESULTS = 3;
-
-  /** The loaded TensorFlow Lite model. */
-  private MappedByteBuffer tfliteModel;
 
   /** Image size along the x axis. */
   private final int imageSizeX;
 
   /** Image size along the y axis. */
   private final int imageSizeY;
-
-  /** Optional GPU delegate for accleration. */
-  private GpuDelegate gpuDelegate = null;
-
-  /** Optional NNAPI delegate for accleration. */
-  private NnApiDelegate nnApiDelegate = null;
-
-  /** An instance of the driver class to run model inference with Tensorflow Lite. */
-  protected Interpreter tflite;
-
-  /** Options for configuring the Interpreter. */
-  private final Interpreter.Options tfliteOptions = new Interpreter.Options();
 
   /** Labels corresponding to the output of the vision model. */
   private List<String> labels;
@@ -110,7 +89,8 @@ public abstract class Classifier {
   public static Classifier create(Context context, Model model, Device device, int numThreads)
       throws IOException {
     if (model == Model.FLOAT_INCEPTION) {
-      return new ClassifierFloatInception(context, device, numThreads);
+      return new ClassifierFloatInception(context,
+              device, numThreads);
     } else {
       throw new UnsupportedOperationException();
     }
@@ -187,27 +167,15 @@ public abstract class Classifier {
   }
 
   /** Initializes a {@code Classifier}. */
-  protected Classifier(Context context, Device device, int numThreads) throws IOException {
-    String modelPath = getModelPath();
+  protected Classifier(Context context, String modelPath, Device device, int numThreads) throws IOException {
+    super(context, modelPath, device, numThreads);
+
     Logger.INSTANCE.debug("model path: %s", modelPath);
-    tfliteModel = FileUtil.loadMappedFile(context, getModelPath());
-    switch (device) {
-      case NNAPI:
-        nnApiDelegate = new NnApiDelegate();
-        tfliteOptions.addDelegate(nnApiDelegate);
-        break;
-      case GPU:
-        gpuDelegate = new GpuDelegate();
-        tfliteOptions.addDelegate(gpuDelegate);
-        break;
-      case CPU:
-        break;
-    }
-    tfliteOptions.setNumThreads(numThreads);
-    tflite = new Interpreter(tfliteModel, tfliteOptions);
 
     // Loads labels out from the label file.
     labels = FileUtil.loadLabels(context, getLabelPath());
+
+    Interpreter tflite = getInterpreter();
 
     // Reads type and shape of input and output tensors, respectively.
     int imageTensorIndex = 0;
@@ -244,6 +212,8 @@ public abstract class Classifier {
     Trace.endSection();
     Logger.INSTANCE.info("Timecost to load the image: " + (endTimeForLoadImage - startTimeForLoadImage));
 
+    Interpreter tflite = getInterpreter();
+
     // Runs the inference call.
     Trace.beginSection("runInference");
     long startTimeForReference = SystemClock.uptimeMillis();
@@ -260,23 +230,6 @@ public abstract class Classifier {
 
     // Gets top-k results.
     return getTopKProbability(labeledProbability);
-  }
-
-  /** Closes the interpreter and model to release resources. */
-  public void close() {
-    if (tflite != null) {
-      tflite.close();
-      tflite = null;
-    }
-    if (gpuDelegate != null) {
-      gpuDelegate.close();
-      gpuDelegate = null;
-    }
-    if (nnApiDelegate != null) {
-      nnApiDelegate.close();
-      nnApiDelegate = null;
-    }
-    tfliteModel = null;
   }
 
   /** Get the image size along the x axis. */
