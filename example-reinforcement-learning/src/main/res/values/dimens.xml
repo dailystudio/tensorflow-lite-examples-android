@@ -17,4 +17,7 @@
     <dimen name="hits_prompt_font_size">14dp</dimen>
     <dimen name="hits_prompt_padding">4dp</dimen>
 
+    <dimen name="prompt_anchor_margin_v">60dp</dimen>
+    <dimen name="prompt_width">150dp</dimen>
+
 </resources>

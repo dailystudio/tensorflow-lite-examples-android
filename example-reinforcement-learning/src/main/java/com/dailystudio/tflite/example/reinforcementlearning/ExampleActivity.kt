@@ -5,18 +5,19 @@ import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.reinforcementlearning.fragment.ReinforcementLearningFragment
-import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.AgentBoardViewModel
-import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.PlayerBoardViewModel
+import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.BoardViewModel
+import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.GameState
+import com.google.android.material.snackbar.Snackbar
 
 class ExampleActivity : AbsExampleActivity<InferenceInfo, Int>() {
 
     private var fabResetGame: View? = null
 
-    private lateinit var agentBoardViewModel: AgentBoardViewModel
-    private lateinit var playerBoardViewModel: PlayerBoardViewModel
+    private lateinit var boardViewModel: BoardViewModel
 
 
     private var agentHitsPrompt: TextView? = null
@@ -25,13 +26,32 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Int>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        agentBoardViewModel = ViewModelProvider(this).get(AgentBoardViewModel::class.java)
-        agentBoardViewModel.hits.value.observe(this) {
+        boardViewModel = ViewModelProvider(this).get(BoardViewModel::class.java)
+        boardViewModel.agentBoardHits.value.observe(this) {
             playerHitsPrompt?.text = getString(R.string.player_hits_prompt, it)
         }
-        playerBoardViewModel = ViewModelProvider(this).get(PlayerBoardViewModel::class.java)
-        playerBoardViewModel.hits.value.observe(this) {
+
+        boardViewModel.playerBoardHits.value.observe(this) {
             agentHitsPrompt?.text = getString(R.string.agent_hits_prompt, it)
+        }
+
+        boardViewModel.gameState.observe(this) {
+            val promptResId = when(it) {
+                GameState.PlayerWin -> R.string.you_win_prompt
+                GameState.AgentWin -> R.string.agent_win_prompt
+                GameState.DrawGame -> R.string.draw_game_prompt
+                else -> -1
+            }
+
+            val view: View? = findViewById(R.id.prompt_anchor)
+            Logger.debug("anchor view: $view")
+            if (promptResId != -1) {
+                showPrompt(
+                    getString(promptResId),
+                    Snackbar.LENGTH_SHORT,
+                    anchorView =view
+                )
+            }
         }
     }
 

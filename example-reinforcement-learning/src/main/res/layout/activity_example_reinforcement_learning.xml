@@ -58,7 +58,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-
                 <TextView
                     android:id="@+id/agent_hits"
                     style="@style/HitsPrompt"
@@ -70,5 +69,12 @@
         </androidx.cardview.widget.CardView>
     </FrameLayout>
 
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/prompt_anchor"
+        app:layout_anchor="@id/top_bar_layout"
+        app:layout_anchorGravity="bottom|center"
+        android:layout_marginTop="@dimen/prompt_anchor_margin_v"
+        android:layout_width="@dimen/prompt_width"
+        android:layout_height="wrap_content"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

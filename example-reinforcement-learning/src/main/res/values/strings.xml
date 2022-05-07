@@ -7,4 +7,8 @@
     <string name="player_hits_prompt">Player Hits: %1$d</string>
     <string name="agent_hits_prompt">Agent Hits: %1$d</string>
 
+    <string name="you_win_prompt">Yon win!</string>
+    <string name="agent_win_prompt">Agent wins!</string>
+    <string name="draw_game_prompt">Draw game!</string>
+
 </resources>
