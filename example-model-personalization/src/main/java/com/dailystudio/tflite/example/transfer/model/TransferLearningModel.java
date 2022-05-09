@@ -46,12 +46,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /** Represents a "partially" trainable model that is based on some other, base model. */
-public final class TransferLearningModel extends LiteMultipleSignatureModel {
-
-  @Nullable
-  public List<Recognition> analyze(@NotNull Bitmap inferenceBitmap) {
-    return null;
-  }
+public class TransferLearningModel extends LiteMultipleSignatureModel {
 
   /**
    * Prediction for a single class produced by the model.
@@ -71,6 +66,14 @@ public final class TransferLearningModel extends LiteMultipleSignatureModel {
 
     public float getConfidence() {
       return confidence;
+    }
+
+    @Override
+    public String toString() {
+      return "Prediction{" +
+              "className='" + className + '\'' +
+              ", confidence=" + confidence +
+              '}';
     }
   }
 
@@ -137,6 +140,7 @@ public final class TransferLearningModel extends LiteMultipleSignatureModel {
       oneHotEncodedClass.put(className, oneHotEncoding(classIdx));
     }
   }
+
 
   /**
    * Adds a new sample for training.
