@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#eee"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/fragment_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <include android:id="@+id/top_bar_layout"
+        layout="@layout/layout_top_bar"/>
+
+    <include layout="@layout/layout_bottom_sheet_mp"/>
+
+    <FrameLayout
+        android:translationZ="@dimen/classes_layout_translation_z"
+        app:elevation="@dimen/classes_layout_elevation"
+        app:layout_anchor="@id/bottom_sheet_layout"
+        app:layout_anchorGravity="top|center_horizontal"
+        app:layout_dodgeInsetEdges="bottom"
+        android:paddingStart="@dimen/classes_layout_padding_h"
+        android:paddingEnd="@dimen/classes_layout_padding_h"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.cardview.widget.CardView
+            style="@style/DefaultCardView"
+            app:cardBackgroundColor="#f0ffffff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioGroup
+                    android:id="@+id/mode_toggle_button_group"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/panel_title_frame"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/capture_mode_button"
+                        style="@style/PanelTitleRadio"
+                        android:checked="true"
+                        android:text="@string/label_training"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/panel_title_height"/>
+
+                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:id="@+id/inference_mode_button"
+                        style="@style/PanelTitleRadio"
+                        android:text="@string/label_inference"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/panel_title_height"/>
+
+                </RadioGroup>
+
+
+                <View
+                    android:id="@+id/panel_divider"
+                    android:background="@drawable/list_divider"
+                    android:layout_below="@id/mode_toggle_button_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_below="@id/panel_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/class_0_btn"
+                        style="@style/ClassButton"
+                        app:icon="@drawable/ic_label_triangle"
+                        android:text="0"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/class_button_height"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/class_1_btn"
+                        style="@style/ClassButton"
+                        app:icon="@drawable/ic_label_circle"
+                        android:text="0"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/class_button_height"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/class_2_btn"
+                        style="@style/ClassButton"
+                        app:icon="@drawable/ic_label_x"
+                        android:text="0"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/class_button_height"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/class_3_btn"
+                        style="@style/ClassButton"
+                        app:icon="@drawable/ic_label_square"
+                        android:text="0"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/class_button_height"/>
+
+                </LinearLayout>
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

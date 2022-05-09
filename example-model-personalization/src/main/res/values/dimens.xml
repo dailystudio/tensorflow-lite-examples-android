@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="classes_layout_elevation">20dp</dimen>
+    <dimen name="classes_layout_translation_z">6dp</dimen>
+    <dimen name="classes_layout_padding_v">0dp</dimen>
+    <dimen name="classes_layout_padding_h">10dp</dimen>
+    <dimen name="classes_layout_margin_v">32dp</dimen>
+    <dimen name="classes_layout_margin_h">16dp</dimen>
+
+    <dimen name="class_button_height">80dp</dimen>
+    <dimen name="class_button_icon_size">24dp</dimen>
+    <dimen name="class_button_icon_padding">12dp</dimen>
+    <dimen name="class_button_font_size">16dp</dimen>
+
+    <dimen name="panel_title_font_size">16dp</dimen>
+    <dimen name="panel_title_padding_h">8dp</dimen>
+    <dimen name="panel_title_padding_v">8dp</dimen>
+    <dimen name="panel_title_height">36dp</dimen>
+
+</resources>

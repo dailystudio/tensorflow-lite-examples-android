@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">On-device Training</string>
     <string name="app_desc">Train a TensorFlow Lite model on-device.</string>
+
+    <string name="label_training">Training\u00A0</string>
+    <string name="label_inference">Inference\u00A0</string>
+    <string name="label_mode">Mode</string>
+
 </resources>

@@ -8,4 +8,31 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ClassButton" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/class_button_font_size</item>
+        <item name="iconPadding">@dimen/class_button_icon_padding</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="strokeColor">@color/colorAccent</item>
+        <item name="iconGravity">textTop</item>
+        <item name="iconSize">@dimen/class_button_icon_size</item>
+        <item name="rippleColor">@color/colorAccent</item>
+        <item name="iconTint">@color/colorAccent</item>
+        <item name="android:layout_margin">@dimen/default_padding</item>
+    </style>
+
+    <style name="PanelTitleRadio" >
+        <item name="android:textSize">@dimen/panel_title_font_size</item>
+        <item name="android:background">@drawable/panel_title_out_line</item>
+        <item name="android:textColor">@color/panel_title_text_color</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/default_padding</item>
+    </style>
+
+    <style name="PanelTitleTextAppearance" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textSize">@dimen/panel_title_font_size</item>
+    </style>
+
 </resources>
