@@ -2,15 +2,22 @@ package com.dailystudio.tflite.example.transfer.fragment
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.os.Bundle
+import androidx.lifecycle.ViewModelProvider
+import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.utils.ImageUtils
+import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
+import com.dailystudio.tflite.example.transfer.ClassTrainingInfoManager
+import com.dailystudio.tflite.example.transfer.R
 import com.dailystudio.tflite.example.transfer.model.TransferLearningModel
 import org.tensorflow.lite.examples.transfer.TransferLearningModelWrapper
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.images.Recognition
 import kotlin.collections.ArrayDeque
 
 private class TransferLearningAnalyzer(
@@ -57,10 +64,27 @@ private class TransferLearningAnalyzer(
 
             info.inferenceTime = (end - start)
         } else {
-            Logger.debug("[ANA TRACK]: add sample for class $sampleClass")
             val data = TransferLearningModel.prepareCameraImage(
                 inferenceBitmap, info.screenRotation)
             model.addSample(data, sampleClass)
+
+            val classInfo = ClassTrainingInfoManager.get(sampleClass)
+            classInfo?.let {
+                val context = GlobalContextWrapper.context ?: return@let
+
+                val iconSize = context.resources.getDimensionPixelSize(R.dimen.class_button_icon_size)
+                val matrix = MatrixUtils.getTransformationMatrix(
+                    inferenceBitmap.width, inferenceBitmap.height,
+                    iconSize, iconSize,
+                    info.imageRotation,
+                    maintainAspectRatio = true,
+                    fitIn = false
+                )
+                val scaled = ImageUtils.createTransformedBitmap(inferenceBitmap, matrix)
+                it.lastSample = scaled
+
+                ClassTrainingInfoManager.add(classInfo)
+            }
         }
 
         return results
@@ -82,6 +106,14 @@ private class TransferLearningAnalyzer(
 }
 
 class TransferLearningCameraFragment : AbsExampleCameraFragment<TransferLearningModelWrapper, ImageInferenceInfo, Array<TransferLearningModel.Prediction>>() {
+
+    private lateinit var viewModel: TransferLearningViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProvider(requireActivity())[TransferLearningViewModel::class.java]
+    }
 
     override fun createAnalyzer(
         screenAspectRatio: Int,

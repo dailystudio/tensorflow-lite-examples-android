@@ -18,8 +18,20 @@
         <item name="iconGravity">textTop</item>
         <item name="iconSize">@dimen/class_button_icon_size</item>
         <item name="rippleColor">@color/colorAccent</item>
-        <item name="iconTint">@color/colorAccent</item>
+        <item name="iconTint">@android:color/transparent</item>
+        <item name="iconTintMode">add</item>
         <item name="android:layout_margin">@dimen/default_padding</item>
+    </style>
+
+    <style name="TrainButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:gravity">center</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="strokeColor">@color/colorAccent</item>
+        <item name="rippleColor">@color/colorAccent</item>
+        <item name="android:layout_marginStart">@dimen/default_padding</item>
+        <item name="android:layout_marginEnd">@dimen/default_padding</item>
+        <item name="android:layout_marginBottom">@dimen/default_padding</item>
     </style>
 
     <style name="PanelTitleRadio" >

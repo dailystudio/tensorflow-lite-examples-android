@@ -117,6 +117,8 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/train_toggle_button"
+                    style="@style/TrainButton"
+                    android:text="@string/label_train"
                     android:layout_below="@id/classes_layout"
                     android:layout_centerHorizontal="true"
                     android:layout_width="wrap_content"
