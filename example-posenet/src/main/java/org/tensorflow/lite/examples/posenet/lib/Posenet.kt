@@ -97,7 +97,8 @@ class Posenet(context: Context,
               modelPath: String,
               device: Model.Device,
               numOfThreads: Int = NUM_LITE_THREADS,
-) : TFLiteModel(context, modelPath, device, numOfThreads) {
+              useXNNPack: Boolean = true,
+) : TFLiteModel(context, modelPath, device, numOfThreads, useXNNPack) {
 
   companion object {
     private const val NUM_LITE_THREADS = 4

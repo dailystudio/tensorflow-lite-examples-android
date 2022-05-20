@@ -205,9 +205,10 @@ class PoseAnalyzer(rotation: Int,
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
-    ): Posenet {
-        return Posenet(context, MODEL_PATH, device, numOfThreads)
+    ): Posenet? {
+        return Posenet(context, MODEL_PATH, device, numOfThreads, useXNNPack)
     }
 
 }
