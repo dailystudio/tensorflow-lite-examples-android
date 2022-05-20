@@ -44,9 +44,9 @@ public class ClassifierQuantizedMobileNet extends Classifier {
    *
    * @param context
    */
-  public ClassifierQuantizedMobileNet(Context context, Device device, int numThreads)
+  public ClassifierQuantizedMobileNet(Context context, Device device, int numThreads, boolean useXNNPack)
       throws IOException {
-    super(context, "mobilenet_v1_1.0_224_quant.tflite", device, numThreads);
+    super(context, "mobilenet_v1_1.0_224_quant.tflite", device, numThreads, useXNNPack);
   }
 
   @Override

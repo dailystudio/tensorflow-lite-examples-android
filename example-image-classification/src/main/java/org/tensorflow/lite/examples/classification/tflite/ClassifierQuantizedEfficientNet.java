@@ -44,9 +44,9 @@ public class ClassifierQuantizedEfficientNet extends Classifier {
    *
    * @param context
    */
-  public ClassifierQuantizedEfficientNet(Context context, Device device, int numThreads)
+  public ClassifierQuantizedEfficientNet(Context context, Device device, int numThreads, boolean useXNNPack)
       throws IOException {
-    super(context, "efficientnet-lite0-int8.tflite", device, numThreads);
+    super(context, "efficientnet-lite0-int8.tflite", device, numThreads, useXNNPack);
   }
 
   @Override

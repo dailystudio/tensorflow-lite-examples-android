@@ -26,6 +26,7 @@
 
     <string name="setting_device">Inference Device</string>
     <string name="setting_threads">Number of threads</string>
-    <string name="setting_use_average">Averaged time analysis</string>
+    <string name="setting_use_average">Averaged time</string>
+    <string name="setting_use_xnnpack">Use XNNPack</string>
 
 </resources>

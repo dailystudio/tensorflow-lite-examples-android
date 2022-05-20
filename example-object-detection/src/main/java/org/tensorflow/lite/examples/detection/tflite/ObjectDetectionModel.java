@@ -48,8 +48,8 @@ public class ObjectDetectionModel extends Detector {
   /**
    * Initializes a {@code Classifier}.
    */
-  public ObjectDetectionModel(Context context, Model.Device device, int numThreads) throws IOException {
-    super(context, TF_OD_API_MODEL_FILE, device, numThreads);
+  public ObjectDetectionModel(Context context, Model.Device device, int numThreads, boolean useXNNPack) throws IOException {
+    super(context, TF_OD_API_MODEL_FILE, device, numThreads, useXNNPack);
   }
 
   @Override

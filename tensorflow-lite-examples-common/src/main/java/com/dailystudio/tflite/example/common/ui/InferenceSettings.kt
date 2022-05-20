@@ -10,7 +10,9 @@ open class InferenceSettings(@PreferenceValue(defaultValueStr = "CPU")
                              @PreferenceValue(defaultValueStr = DEFAULT_NUM_OF_THREADS.toString())
                              val numberOfThreads: Int = 1,
                              @PreferenceValue(defaultValueStr = USE_AVERAGE_TIME.toString())
-                             val userAverageTime: Boolean = true,
+                             val useAverageTime: Boolean = true,
+                             @PreferenceValue(defaultValueStr = USE_XNNPACK.toString())
+                             val useXNNPack: Boolean = true,
 ) {
 
     companion object {
@@ -19,6 +21,7 @@ open class InferenceSettings(@PreferenceValue(defaultValueStr = "CPU")
         const val MAX_NUM_OF_THREADS = 4
         const val NUM_OF_THREADS_STEP = 1
         const val USE_AVERAGE_TIME = true
+        const val USE_XNNPACK = true
     }
 
 }

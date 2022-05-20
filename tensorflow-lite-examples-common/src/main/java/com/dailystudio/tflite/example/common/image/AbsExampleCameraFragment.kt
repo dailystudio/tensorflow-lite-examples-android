@@ -68,7 +68,7 @@ abstract class AbsExampleCameraFragment<Model:TFLiteModel, Info: ImageInferenceI
                 val settingsPrefs = getSettingsPreference()
 
                 val analyzer = createAnalyzer(screenAspectRatio, rotation, lensFacing,
-                        settingsPrefs.userAverageTime)
+                        settingsPrefs.useAverageTime)
 
                 this.analyzer = analyzer
                 

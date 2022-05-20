@@ -18,19 +18,39 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
 
         val useAverageTime = object: SwitchSetting(
             context,
-            InferenceSettingsPrefs.PREF_USER_AVERAGE_TIME,
+            InferenceSettingsPrefs.PREF_USE_AVERAGE_TIME,
             R.drawable.ic_setting_use_avg_time,
             R.string.setting_use_average,
         ) {
 
             override fun isOn(): Boolean {
-                Logger.debug("[${settingsPrefs.hashCode()}] GET PROP: AVG: ${settingsPrefs.userAverageTime}")
-                return settingsPrefs.userAverageTime
+                Logger.debug("[${settingsPrefs.hashCode()}] GET PROP: AVG: ${settingsPrefs.useAverageTime}")
+                return settingsPrefs.useAverageTime
             }
 
             override fun setOn(on: Boolean) {
-                settingsPrefs.userAverageTime = on
-                Logger.debug("[${settingsPrefs.hashCode()}]SET PROP: AVG: ${settingsPrefs.userAverageTime}")
+                settingsPrefs.useAverageTime = on
+                Logger.debug("[${settingsPrefs.hashCode()}]SET PROP: AVG: ${settingsPrefs.useAverageTime}")
+            }
+
+        }
+
+        val useXNNPack = object: SwitchSetting(
+            context,
+            InferenceSettingsPrefs.PREF_USE_X_N_N_PACK,
+            R.drawable.ic_setting_use_xnnpack,
+            R.string.setting_use_xnnpack,
+            enabled = (settingsPrefs.device == Model.Device.CPU.toString())
+        ) {
+
+            override fun isOn(): Boolean {
+                Logger.debug("[${settingsPrefs.hashCode()}] GET PROP: XNNPACK: ${settingsPrefs.useXNNPack}")
+                return settingsPrefs.useXNNPack
+            }
+
+            override fun setOn(on: Boolean) {
+                settingsPrefs.useXNNPack = on
+                Logger.debug("[${settingsPrefs.hashCode()}]SET PROP: XNNPACK: ${settingsPrefs.useXNNPack}")
             }
 
         }
@@ -44,28 +64,14 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
                 Model.Device.NNAPI.toString(), R.string.label_nnapi)
         )
 
-        val deviceSetting = object: RadioSetting<SimpleRadioSettingItem>(
-            context,
-            InferenceSettingsPrefs.PREF_DEVICE,
-            R.drawable.ic_setting_device,
-            R.string.setting_device,
-            devices) {
-            override val selectedId: String?
-                get() = settingsPrefs.device
-
-            override fun setSelected(selectedId: String?) {
-                selectedId?.let {
-                    settingsPrefs.device = it
-                }
-            }
-        }
-
 
         val threadSetting = object: SeekBarSetting(
             context,
             InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS,
             R.drawable.ic_setting_threads,
-            R.string.setting_threads) {
+            R.string.setting_threads,
+            enabled = (settingsPrefs.device != Model.Device.GPU.toString())
+        ) {
             override fun getMaxValue(context: Context): Float {
                 return InferenceSettings.MAX_NUM_OF_THREADS.toFloat()
             }
@@ -88,9 +94,29 @@ open class InferenceSettingsFragment: AbsSettingsDialogFragment() {
 
         }
 
+        val deviceSetting = object: RadioSetting<SimpleRadioSettingItem>(
+            context,
+            InferenceSettingsPrefs.PREF_DEVICE,
+            R.drawable.ic_setting_device,
+            R.string.setting_device,
+            devices) {
+            override val selectedId: String?
+                get() = settingsPrefs.device
+
+            override fun setSelected(selectedId: String?) {
+                selectedId?.let {
+                    settingsPrefs.device = it
+
+                    useXNNPack.enabled = (selectedId == Model.Device.CPU.toString())
+                    threadSetting.enabled = (selectedId != Model.Device.GPU.toString())
+                }
+            }
+        }
+
         val settings = mutableListOf(
             useAverageTime,
             deviceSetting,
+            useXNNPack,
             threadSetting,
         )
 

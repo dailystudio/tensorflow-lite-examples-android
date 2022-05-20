@@ -144,12 +144,14 @@ private class ObjectDetectionAnalyzer(rotation: Int,
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): Detector? {
         return ObjectDetectionModel(
             context,
             device,
-            numOfThreads
+            numOfThreads,
+            useXNNPack
         )
     }
 

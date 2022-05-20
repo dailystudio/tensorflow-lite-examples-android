@@ -70,6 +70,7 @@ private class ImageClassificationAnalyzer(rotation: Int,
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): Classifier? {
         val modelStr = if (settings is ImageClassificationSettingsPrefs) {
@@ -89,7 +90,7 @@ private class ImageClassificationAnalyzer(rotation: Int,
         } ?: Classifier.Model.QUANTIZED_MOBILENET
 
         return Classifier.create(context,
-            model, device, numOfThreads)
+            model, device, numOfThreads, useXNNPack)
     }
 
 }

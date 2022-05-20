@@ -87,24 +87,24 @@ public abstract class Classifier extends TFLiteModel {
    * @param numThreads The number of threads to use for classification.
    * @return A classifier with the desired configuration.
    */
-  public static Classifier create(Context context, Model model, Device device, int numThreads)
+  public static Classifier create(Context context, Model model, Device device, int numThreads, boolean useXNNPack)
       throws IOException {
     if (model == Model.QUANTIZED_MOBILENET) {
-      return new ClassifierQuantizedMobileNet(context, device, numThreads);
+      return new ClassifierQuantizedMobileNet(context, device, numThreads, useXNNPack);
     } else if (model == Model.FLOAT_MOBILENET) {
-      return new ClassifierFloatMobileNet(context, device, numThreads);
+      return new ClassifierFloatMobileNet(context, device, numThreads, useXNNPack);
     } else if (model == Model.FLOAT_EFFICIENTNET) {
-      return new ClassifierFloatEfficientNet(context, device, numThreads);
+      return new ClassifierFloatEfficientNet(context, device, numThreads, useXNNPack);
     } else if (model == Model.QUANTIZED_EFFICIENTNET) {
-      return new ClassifierQuantizedEfficientNet(context, device, numThreads);
+      return new ClassifierQuantizedEfficientNet(context, device, numThreads, useXNNPack);
     } else {
       throw new UnsupportedOperationException();
     }
   }
 
   /** Initializes a {@code Classifier}. */
-  protected Classifier(Context context, String modelPath, Device device, int numThreads) throws IOException {
-    super(context, modelPath, device, numThreads);
+  protected Classifier(Context context, String modelPath, Device device, int numThreads, boolean useXNNPACK) throws IOException {
+    super(context, modelPath, device, numThreads, useXNNPACK);
 
     // Loads labels out from the label file.
     labels = FileUtil.loadLabels(context, getLabelPath());

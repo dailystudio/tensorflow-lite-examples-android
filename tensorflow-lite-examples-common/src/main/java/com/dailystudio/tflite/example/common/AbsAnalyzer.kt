@@ -53,12 +53,13 @@ abstract class AbsTFLiteModelRunner<Model: TFLiteModel, Input, Info: InferenceIn
 
         when (changePrefName) {
             InferenceSettingsPrefs.PREF_DEVICE,
-            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS -> {
+            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS,
+            InferenceSettingsPrefs.PREF_USE_X_N_N_PACK -> {
                 invalidateModel()
             }
 
-            InferenceSettingsPrefs.PREF_USER_AVERAGE_TIME -> {
-                useAverageTime = inferenceSettings.userAverageTime
+            InferenceSettingsPrefs.PREF_USE_AVERAGE_TIME -> {
+                useAverageTime = inferenceSettings.useAverageTime
             }
         }
     }
@@ -92,9 +93,11 @@ abstract class AbsTFLiteModelRunner<Model: TFLiteModel, Input, Info: InferenceIn
             }
 
             val threads = settings.numberOfThreads
-            Logger.debug("[ANALYZER UPDATE] creating model: device = $device, threads = $threads")
 
-            model = createModel(it, device, threads, settings)
+            val useXNNPack = settings.useXNNPack
+            Logger.debug("[ANALYZER UPDATE] creating model: device = $device, threads = $threads, useXNNPack = $useXNNPack")
+
+            model = createModel(it, device, threads, useXNNPack, settings)
             Logger.debug("[ANALYZER UPDATE] new model created: $model")
         }
 
@@ -149,6 +152,7 @@ abstract class AbsTFLiteModelRunner<Model: TFLiteModel, Input, Info: InferenceIn
     protected abstract fun createModel(context: Context,
                                        device: Device,
                                        numOfThreads: Int,
+                                       useXNNPack: Boolean,
                                        settings: InferenceSettingsPrefs): Model?
 
     protected abstract fun analyze(model: Model,

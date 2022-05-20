@@ -42,9 +42,9 @@ public class ClassifierFloatEfficientNet extends Classifier {
    *
    * @param context
    */
-  public ClassifierFloatEfficientNet(Context context, Device device, int numThreads)
+  public ClassifierFloatEfficientNet(Context context, Device device, int numThreads, boolean useXNNPack)
       throws IOException {
-    super(context, "efficientnet-lite0-fp32.tflite", device, numThreads);
+    super(context, "efficientnet-lite0-fp32.tflite", device, numThreads, useXNNPack);
   }
 
   @Override

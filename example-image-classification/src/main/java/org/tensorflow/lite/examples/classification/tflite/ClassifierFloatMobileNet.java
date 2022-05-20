@@ -44,9 +44,9 @@ public class ClassifierFloatMobileNet extends Classifier {
    *
    * @param context
    */
-  public ClassifierFloatMobileNet(Context context, Device device, int numThreads)
+  public ClassifierFloatMobileNet(Context context, Device device, int numThreads, boolean useXNNPack)
       throws IOException {
-    super(context, "mobilenet_v1_1.0_224.tflite", device, numThreads);
+    super(context, "mobilenet_v1_1.0_224.tflite", device, numThreads, useXNNPack);
   }
 
   @Override

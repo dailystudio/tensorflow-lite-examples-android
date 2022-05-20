@@ -69,8 +69,8 @@ abstract public class Detector extends TFLiteModel {
 
   private ByteBuffer imgData;
 
-  public Detector(Context context, String modelPath, Model.Device device, int numOfThreads) throws IOException {
-    super(context, modelPath, device, numOfThreads);
+  public Detector(Context context, String modelPath, Model.Device device, int numOfThreads, boolean useXNNPack) throws IOException {
+    super(context, modelPath, device, numOfThreads, useXNNPack);
 
     labels = FileUtil.loadLabels(context, getLabelPath());
     Interpreter tfLiteInterpreter = getInterpreter();

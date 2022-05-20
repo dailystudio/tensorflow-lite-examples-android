@@ -15,7 +15,8 @@ import java.io.IOException
 data class _TFLiteInterpreter(
     val modelPath: String,
     val device: Model.Device = Model.Device.CPU,
-    private val numOfThreads: Int = 1
+    private val numOfThreads: Int = 1,
+    val useXNNPACK: Boolean = true
 ) {
 
     private var delegate: Delegate? = null
@@ -34,12 +35,12 @@ data class _TFLiteInterpreter(
 
                     GpuDelegate(delegateOptions)
                 } else {
-                    tfLiteOptions.setUseXNNPACK(true)
+                    tfLiteOptions.setUseXNNPACK(useXNNPACK)
                     null
                 }
             }
             Model.Device.CPU -> {
-//                tfLiteOptions.setUseXNNPACK(true)
+                tfLiteOptions.setUseXNNPACK(useXNNPACK)
                 null
             }
             else -> null
@@ -88,15 +89,18 @@ data class _TFLiteInterpreter(
 open class TFLiteModel(val context: Context,
                        private val modelPaths: Array<String>,
                        val devices: Array<Model.Device>,
-                       val numOfThreads: Array<Int>) {
+                       val numOfThreads: Array<Int>,
+                       val useXNNPACK: Boolean = true
+) {
 
     constructor(
         context: Context,
         modelPath: String,
         device: Model.Device = Model.Device.CPU,
-        numOfThreads: Int = 1
+        numOfThreads: Int = 1,
+        useXNNPACK: Boolean = true
     ) : this (context, arrayOf(modelPath),
-        arrayOf(device), arrayOf(numOfThreads))
+        arrayOf(device), arrayOf(numOfThreads), useXNNPACK)
 
     private val interpreters: MutableList<_TFLiteInterpreter> = mutableListOf()
 
@@ -107,15 +111,17 @@ open class TFLiteModel(val context: Context,
     private fun createInterpreters() {
         for ((i, path) in modelPaths.withIndex()) {
             interpreters.add(
-                createInterpreter(path, devices[i], numOfThreads[i])
+                createInterpreter(path, devices[i], numOfThreads[i], useXNNPACK)
             )
         }
     }
 
     protected open fun createInterpreter(modelPath: String,
                                          device: Model.Device,
-                                         numOfThreads: Int): _TFLiteInterpreter {
-        return _TFLiteInterpreter(modelPath, device, numOfThreads).apply {
+                                         numOfThreads: Int,
+                                         useXNNPACK: Boolean,
+    ): _TFLiteInterpreter {
+        return _TFLiteInterpreter(modelPath, device, numOfThreads, useXNNPACK).apply {
             open(context)
         }
     }
