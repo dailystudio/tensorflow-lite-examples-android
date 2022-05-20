@@ -96,9 +96,10 @@ private class ImageSegmentationAnalyzer(rotation: Int,
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): ImageSegmentationModelExecutor? {
-        return ImageSegmentationModelExecutor(context, device, numOfThreads)
+        return ImageSegmentationModelExecutor(context, device, numOfThreads, useXNNPack)
     }
 
 }

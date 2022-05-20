@@ -72,7 +72,7 @@ class ImageClassificationSettingsFragment : InferenceSettingsFragment() {
                 get() = settingsPrefs.tfLiteModel
 
             override fun setSelected(selectedId: String?) {
-                settingsPrefs.tfLiteModel = selectedId
+                settingsPrefs.tfLiteModel = selectedId ?: Classifier.Model.QUANTIZED_MOBILENET.toString()
             }
         }
 

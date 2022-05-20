@@ -18,6 +18,9 @@ import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.styletransfer.StyleTransferPrefs
+import com.dailystudio.tflite.example.image.styletransfer.StyleTransferSettings
+import com.dailystudio.tflite.example.image.styletransfer.StyleTransferSettingsPrefs
+import org.tensorflow.lite.examples.styletransfer.FSTModel
 import org.tensorflow.lite.examples.styletransfer.StyleTransferModelExecutor
 import org.tensorflow.lite.examples.styletransfer.StyleTransferResult
 import org.tensorflow.lite.support.model.Model
@@ -118,10 +121,38 @@ private class StyleTransferAnalyzer(rotation: Int,
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): StyleTransferModelExecutor? {
-        return StyleTransferModelExecutor(context, device, numOfThreads)
+        val liteModelStr = if (settings is StyleTransferSettingsPrefs) {
+            settings.tfLiteModel
+        } else {
+            FSTModel.FastStyleTransferInt8.toString()
+        }
+
+        val liteModel =  try {
+            FSTModel.valueOf(liteModelStr)
+        } catch (e: Exception) {
+            Logger.warn("cannot parse TensorFlow Lite model from [$liteModelStr]: $e")
+
+            FSTModel.FastStyleTransferInt8
+        }
+
+        return StyleTransferModelExecutor(context, liteModel, device, numOfThreads, useXNNPack)
     }
+
+    override fun onInferenceSettingsChange(
+        changePrefName: String,
+        inferenceSettings: InferenceSettingsPrefs
+    ) {
+        super.onInferenceSettingsChange(changePrefName, inferenceSettings)
+        Logger.debug("new settings: $changePrefName")
+
+        when (changePrefName) {
+            StyleTransferSettingsPrefs.PREF_TF_LITE_MODEL -> invalidateModel()
+        }
+    }
+
 
 }
 
@@ -150,4 +181,7 @@ class StyleTransferCameraFragment : AbsExampleCameraFragment<StyleTransferModelE
         return StyleTransferAnalyzer(rotation, lensFacing, useAverageTime)
     }
 
+    override fun getSettingsPreference(): InferenceSettingsPrefs {
+        return StyleTransferSettingsPrefs.instance
+    }
 }

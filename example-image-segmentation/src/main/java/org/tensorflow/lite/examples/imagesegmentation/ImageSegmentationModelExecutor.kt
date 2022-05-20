@@ -53,8 +53,9 @@ import org.tensorflow.litex.TFLiteModel
 class ImageSegmentationModelExecutor(
   context: Context,
   device: Model.Device,
-  numOfThreads: Int
-): TFLiteModel(context, imageSegmentationModel, device, numOfThreads) {
+  numOfThreads: Int,
+  useXNNPack: Boolean
+): TFLiteModel(context, imageSegmentationModel, device, numOfThreads, useXNNPack) {
   private val segmentationMasks: ByteBuffer =
     ByteBuffer.allocateDirect(1 * imageSize * imageSize * NUM_CLASSES * 4)
 

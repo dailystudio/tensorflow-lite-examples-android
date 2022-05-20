@@ -13,6 +13,7 @@ import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.PickStyleDialogFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.StyleTransferCameraFragment
+import com.dailystudio.tflite.example.image.styletransfer.fragment.StyleTransferSettingsFragment
 import com.dailystudio.tflite.example.image.styletransfer.model.StyleImageViewModel
 import com.dailystudio.tflite.example.image.styletransfer.ui.StyledOverlay
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -132,6 +133,10 @@ class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferRes
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun createSettingsFragment(): AbsSettingsDialogFragment? {
+        return StyleTransferSettingsFragment()
     }
 
 }

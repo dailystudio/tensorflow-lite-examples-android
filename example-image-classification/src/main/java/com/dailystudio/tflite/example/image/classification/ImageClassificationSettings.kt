@@ -8,7 +8,7 @@ import org.tensorflow.lite.support.model.Model
 
 @SharedPreference
 class ImageClassificationSettings(@PreferenceValue(defaultValueStr = "QUANTIZED_MOBILENET")
-                                  val tfLiteModel: String? = Classifier.Model.QUANTIZED_MOBILENET.toString(),
+                                  val tfLiteModel: String = Classifier.Model.QUANTIZED_MOBILENET.toString(),
                                   @PreferenceValue(defaultValueStr = IMAGE_PRE_SCALE_ENABLED.toString())
                                   val enableImagePreScale: Boolean = true,
                                   device: String = Model.Device.CPU.toString(),

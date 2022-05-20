@@ -33,18 +33,27 @@ import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.TFLiteModel
 
+
+enum class FSTModel {
+  FastStyleTransferInt8,
+  FastStyleTransferFloat16
+}
+
 @SuppressWarnings("GoodTime")
 class StyleTransferModelExecutor(
   context: Context,
+  model: FSTModel,
   device: Model.Device,
-  numOfThreads: Int
+  numOfThreads: Int,
+  userXNNPack: Boolean
 ): TFLiteModel(context,
-  if (device == Model.Device.GPU) {
+  if (model == FSTModel.FastStyleTransferFloat16) {
     arrayOf(STYLE_PREDICT_FLOAT16_MODEL, STYLE_TRANSFER_FLOAT16_MODEL)
   } else {
     arrayOf(STYLE_PREDICT_INT8_MODEL, STYLE_TRANSFER_INT8_MODEL)
   }
-  , arrayOf(device, device), arrayOf(numOfThreads, numOfThreads)) {
+
+  , arrayOf(device, device), arrayOf(numOfThreads, numOfThreads), userXNNPack) {
 
 
   private val interpreterPredict: Interpreter?
