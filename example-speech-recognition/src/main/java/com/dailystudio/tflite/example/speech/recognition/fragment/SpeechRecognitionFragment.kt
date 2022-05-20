@@ -1,119 +1,90 @@
 package com.dailystudio.tflite.example.speech.recognition.fragment
 
-import android.content.res.AssetManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.*
 import com.dailystudio.devbricksx.audio.AudioConfig
 import com.dailystudio.devbricksx.audio.AudioProcessFragment
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.common.InferenceAgent
-import com.dailystudio.tflite.example.common.InferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.speech.recognition.AudioInferenceInfo
 import com.dailystudio.tflite.example.speech.recognition.R
-import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.examples.speech.RecognizeCommands
 import org.tensorflow.lite.examples.speech.RecognizeCommands.RecognitionResult
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.InputStreamReader
-import java.nio.MappedByteBuffer
-import java.nio.channels.FileChannel
+import org.tensorflow.lite.examples.speech.CommandRecognizer
+import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.MLUseCase
 import java.util.*
 
-class SpeechRecognitionFragment : AudioProcessFragment() {
+class SpeechRecognitionUseCase(lifecycleOwner: LifecycleOwner,
+                               useAverageTime: Boolean
+): MLUseCase<CommandRecognizer, ShortArray, RecognitionResult, AudioInferenceInfo>(lifecycleOwner, useAverageTime) {
 
-    companion object {
-        // you are running your own model.
-        private const val SAMPLE_RATE = 16000
-        private const val SAMPLE_DURATION_MS = 1000
-        private const val RECORDING_LENGTH = (SAMPLE_RATE * SAMPLE_DURATION_MS / 1000)
-        private const val AVERAGE_WINDOW_DURATION_MS: Long = 1000
-        private const val DETECTION_THRESHOLD = 0.50f
-        private const val SUPPRESSION_MS = 1500
-        private const val MINIMUM_COUNT = 3
-        private const val MINIMUM_TIME_BETWEEN_SAMPLES_MS: Long = 30
+    override fun runInference(
+        model: CommandRecognizer,
+        data: ShortArray,
+        info: AudioInferenceInfo
+    ): RecognitionResult? {
+        val floatInputBuffer = Array(CommandRecognizer.RECORDING_LENGTH) { FloatArray(1) }
 
-        private const val LABEL_FILENAME = "conv_actions_labels.txt"
-        private const val MODEL_FILENAME = "conv_actions_frozen.tflite"
+        val startTime = Date().time
+
+        // We need to feed in float values between -1.0f and 1.0f, so divide the
+        // signed 16-bit inputs.
+        for (i in 0 until CommandRecognizer.RECORDING_LENGTH) {
+            floatInputBuffer[i][0] = data[i] / 32767.0f
+        }
+
+        val inferenceStartTime = Date().time
+        // Run the model.
+        val result = try {
+            model.recognizeCommand(floatInputBuffer)
+        } catch (e: Exception) {
+            Logger.error("inference failed: $e")
+            null
+        }
+
+        Logger.debug("result: $result")
+
+        val endTime = Date().time
+
+        info.sampleRate = CommandRecognizer.SAMPLE_RATE
+        info.bufferSize = data.size
+        info.inferenceTime = endTime - inferenceStartTime
+        info.analysisTime = endTime - startTime
+
+        return result
     }
 
-    private val labels: MutableList<String> = mutableListOf()
-    private val displayedLabels: MutableList<String> = mutableListOf()
-    private var recognizeCommands: RecognizeCommands? = null
-    private var tfLite: Interpreter? = null
-    private val tfliteOptions =
-        Interpreter.Options()
-    private var lastProcessingTimeMs: Long = 0
+    override fun getSettingsPreference(): InferenceSettingsPrefs {
+        return InferenceSettingsPrefs.instance
+    }
 
-    private var inferenceAgent: InferenceAgent<InferenceInfo, RecognitionResult> =
-        InferenceAgent()
+    override fun createModel(
+        context: Context,
+        device: Model.Device,
+        threads: Int,
+        useXNNPack: Boolean,
+        settings: InferenceSettingsPrefs
+    ): CommandRecognizer? {
+        return CommandRecognizer(context, Model.Device.CPU, 4, true)
+    }
+
+    override fun createInferenceInfo(): AudioInferenceInfo {
+        return AudioInferenceInfo()
+    }
+
+}
+class SpeechRecognitionFragment : AudioProcessFragment() {
+
+    private var useCase: SpeechRecognitionUseCase? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        initTflite()
-    }
-
-    private fun initTflite() {
-        // Load the labels for the model, but only display those that don't start
-        // with an underscore.
-        val actualLabelFilename: String = LABEL_FILENAME
-        Logger.debug("reading labels from: $actualLabelFilename")
-        var br: BufferedReader? = null
-        try {
-            val stream = requireContext().assets.open(actualLabelFilename)
-            Logger.debug("stream: $stream")
-            val reader = InputStreamReader(stream)
-            Logger.debug("reader: $reader")
-            br = BufferedReader(reader)
-            Logger.debug("br: $br")
-
-            synchronized(labels) {
-                var line: String?
-                while (br.readLine().also { line = it } != null) {
-                    Logger.debug("line: $line")
-                    line?.let {
-                        labels.add(it)
-                        if (it[0] != '_') {
-                            displayedLabels.add(it.substring(0, 1).toUpperCase() + it.substring(1))
-                        }
-                    }
-                }
-            }
-            br.close()
-        } catch (e: IOException) {
-            throw RuntimeException("Problem reading label file!", e)
-        }
-
-        // Set up an object to smooth recognition results to increase accuracy.
-
-        // Set up an object to smooth recognition results to increase accuracy.
-        recognizeCommands = RecognizeCommands(
-            labels,
-            AVERAGE_WINDOW_DURATION_MS,
-            DETECTION_THRESHOLD,
-            SUPPRESSION_MS,
-            MINIMUM_COUNT,
-            MINIMUM_TIME_BETWEEN_SAMPLES_MS
-        )
-
-        val actualModelFilename: String = MODEL_FILENAME
-        try {
-            val buffer = loadModelFile(requireContext().assets,
-                actualModelFilename)
-
-            buffer?.let {
-                tfLite = Interpreter(it, tfliteOptions)
-            }
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
-
-        tfLite?.resizeInput(0, intArrayOf(RECORDING_LENGTH, 1))
-        tfLite?.resizeInput(1, intArrayOf(1))
+        useCase = SpeechRecognitionUseCase(this, true)
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -122,70 +93,7 @@ class SpeechRecognitionFragment : AudioProcessFragment() {
         inflater.inflate(R.layout.fragment_speech_recognition, container, false)
 
     override fun onProcessAudioData(audioConfig: AudioConfig, audioData: ShortArray) {
-        val inferenceInfo = AudioInferenceInfo()
-        val floatInputBuffer = Array(RECORDING_LENGTH) { FloatArray(1) }
-        val sampleRateList = intArrayOf(SAMPLE_RATE)
-
-        val startTime = Date().time
-
-        // We need to feed in float values between -1.0f and 1.0f, so divide the
-        // signed 16-bit inputs.
-        for (i in 0 until RECORDING_LENGTH) {
-            floatInputBuffer[i][0] = audioData[i] / 32767.0f
-        }
-
-        val inputArray = arrayOf<Any>(floatInputBuffer, sampleRateList)
-        val outputMap: MutableMap<Int, Any> = HashMap()
-        var outputScores: Array<FloatArray>
-        synchronized(labels) {
-//                    Logger.debug("labels = $labels")
-            outputScores = Array(1) { kotlin.FloatArray(labels.size) }
-        }
-        outputMap[0] = outputScores
-
-        val inferenceStartTime = Date().time
-        // Run the model.
-        try {
-            tfLite?.runForMultipleInputsOutputs(inputArray, outputMap)
-        } catch (e: Exception) {
-            Logger.error("inference failed: $e")
-        }
-
-        // Use the smoother to figure out if we've had a real recognition event.
-        val currentTime = System.currentTimeMillis()
-        val result: RecognitionResult? =
-            recognizeCommands?.processLatestResults(outputScores[0], currentTime)
-//                Logger.debug("result: $result")
-
-        val endTime = Date().time
-
-        lastProcessingTimeMs = endTime - startTime
-
-        inferenceInfo.sampleRate = SAMPLE_RATE
-        inferenceInfo.bufferSize = audioData.size
-        inferenceInfo.inferenceTime = endTime - inferenceStartTime
-        inferenceInfo.analysisTime = lastProcessingTimeMs
-        inferenceAgent.deliverInferenceInfo(inferenceInfo)
-
-        result?.let {
-            inferenceAgent.deliverResults(result)
-        }
-    }
-
-    @Throws(IOException::class)
-    private fun loadModelFile(assets: AssetManager,
-                              modelFilename: String): MappedByteBuffer? {
-        val fileDescriptor = assets.openFd(modelFilename)
-        val inputStream =
-            FileInputStream(fileDescriptor.fileDescriptor)
-        val fileChannel = inputStream.channel
-        val startOffset = fileDescriptor.startOffset
-        val declaredLength = fileDescriptor.declaredLength
-        return fileChannel.map(
-            FileChannel.MapMode.READ_ONLY,
-            startOffset,
-            declaredLength
-        )
+        useCase?.run(audioData)
     }
 
 }
