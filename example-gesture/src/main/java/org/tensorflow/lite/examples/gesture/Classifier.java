@@ -86,11 +86,11 @@ public abstract class Classifier extends TFLiteModel {
    * @param numThreads The number of threads to use for classification.
    * @return A classifier with the desired configuration.
    */
-  public static Classifier create(Context context, Model model, Device device, int numThreads)
+  public static Classifier create(Context context, Model model, Device device, int numThreads, boolean useXNNPack)
       throws IOException {
     if (model == Model.FLOAT_INCEPTION) {
       return new ClassifierFloatInception(context,
-              device, numThreads);
+              device, numThreads, useXNNPack);
     } else {
       throw new UnsupportedOperationException();
     }
@@ -167,8 +167,8 @@ public abstract class Classifier extends TFLiteModel {
   }
 
   /** Initializes a {@code Classifier}. */
-  protected Classifier(Context context, String modelPath, Device device, int numThreads) throws IOException {
-    super(context, modelPath, device, numThreads);
+  protected Classifier(Context context, String modelPath, Device device, int numThreads, boolean useXNNPack) throws IOException {
+    super(context, modelPath, device, numThreads, useXNNPack);
 
     Logger.INSTANCE.debug("model path: %s", modelPath);
 

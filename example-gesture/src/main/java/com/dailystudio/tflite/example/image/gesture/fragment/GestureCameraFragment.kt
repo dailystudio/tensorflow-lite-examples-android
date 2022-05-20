@@ -36,20 +36,6 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
     ): List<Classifier.Recognition>? {
         var results: List<Classifier.Recognition>? = null
 
-        if (classifier == null) {
-            val context = GlobalContextWrapper.context
-            context?.let {
-                classifier = Classifier.create(context,
-                    Classifier.Model.FLOAT_INCEPTION,
-                    Model.Device.CPU,
-//                    Classifier.Device.GPU,
-                    1
-                )
-            }
-
-            Logger.debug("classifier created: $classifier")
-        }
-
         classifier?.let { classifier ->
             val start = System.currentTimeMillis()
 
@@ -117,12 +103,14 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): Classifier? {
         return Classifier.create(context,
             Classifier.Model.FLOAT_INCEPTION,
             device,
-            numOfThreads
+            numOfThreads,
+            useXNNPack
         )
     }
 

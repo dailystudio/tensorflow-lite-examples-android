@@ -44,9 +44,9 @@ public class ClassifierFloatInception extends Classifier {
    *
    * @param context
    */
-  public ClassifierFloatInception(Context context, Device device, int numThreads)
+  public ClassifierFloatInception(Context context, Device device, int numThreads, boolean useXNNPack)
       throws IOException {
-    super(context, MODEL_PATH, device, numThreads);
+    super(context, MODEL_PATH, device, numThreads, useXNNPack);
   }
 
   @Override
