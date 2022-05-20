@@ -76,9 +76,10 @@ private class OpticalCharacterRecognitionAnalyzer(rotation: Int,
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): OpticalCharacterRecognitionModel? {
-        return OpticalCharacterRecognitionModel(context, device, numOfThreads)
+        return OpticalCharacterRecognitionModel(context, device, numOfThreads, useXNNPack)
     }
 
 }

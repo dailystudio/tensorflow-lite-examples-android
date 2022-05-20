@@ -2,7 +2,7 @@
     <string name="app_name">Optical Character Recognition</string>
     <string name="app_desc">Extract texts from images using Optical Character Recognition with TensorFlow Lite.</string>
 
-    <string name="label_info_detection_time">Detection Time</string>
-    <string name="label_info_recognition_time">Recognition Time</string>
+    <string name="label_info_detection_time">Detection</string>
+    <string name="label_info_recognition_time">Recognition</string>
     <string name="label_last_recognized">Last recognized</string>
 </resources>

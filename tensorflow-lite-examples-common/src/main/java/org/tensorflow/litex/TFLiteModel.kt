@@ -90,7 +90,7 @@ open class TFLiteModel(val context: Context,
                        private val modelPaths: Array<String>,
                        val devices: Array<Model.Device>,
                        val numOfThreads: Array<Int>,
-                       val useXNNPACK: Boolean = true
+                       val useXNNPACK: Array<Boolean>
 ) {
 
     constructor(
@@ -100,7 +100,7 @@ open class TFLiteModel(val context: Context,
         numOfThreads: Int = 1,
         useXNNPACK: Boolean = true
     ) : this (context, arrayOf(modelPath),
-        arrayOf(device), arrayOf(numOfThreads), useXNNPACK)
+        arrayOf(device), arrayOf(numOfThreads), arrayOf(useXNNPACK))
 
     private val interpreters: MutableList<_TFLiteInterpreter> = mutableListOf()
 
@@ -111,7 +111,7 @@ open class TFLiteModel(val context: Context,
     private fun createInterpreters() {
         for ((i, path) in modelPaths.withIndex()) {
             interpreters.add(
-                createInterpreter(path, devices[i], numOfThreads[i], useXNNPACK)
+                createInterpreter(path, devices[i], numOfThreads[i], useXNNPACK[i])
             )
         }
     }

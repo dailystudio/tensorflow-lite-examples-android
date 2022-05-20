@@ -27,9 +27,10 @@ import kotlin.collections.HashMap
 class OpticalCharacterRecognitionModel(
     context: Context,
     device: Model.Device,
-    numOfThreads: Int
+    numOfThreads: Int,
+    useXNNPack: Boolean
 ): TFLiteModel(context, arrayOf(DETECTION_TF_MODEL_PATH, RECOGNITION_TF_MODEL_PATH)
-    , arrayOf(Model.Device.GPU, Model.Device.CPU), arrayOf(4, 4)) {
+    , arrayOf(device, Model.Device.CPU), arrayOf(numOfThreads, 4), arrayOf(useXNNPack, false)) {
 
     companion object {
         const val DETECTION_TF_MODEL_PATH = "text_detection.tflite"
@@ -58,7 +59,6 @@ class OpticalCharacterRecognitionModel(
     private var ratioWidth = 0.toFloat()
     private var indicesMat: MatOfInt
     private var boundingBoxesMat: MatOfRotatedRect
-    private var ocrResults: HashMap<String, Int> = HashMap()
 
 
     private val detectionInterpreter: Interpreter?
@@ -85,14 +85,14 @@ class OpticalCharacterRecognitionModel(
         recognitionResult.order(ByteOrder.nativeOrder())
         indicesMat = MatOfInt()
         boundingBoxesMat = MatOfRotatedRect()
-        ocrResults = HashMap()
     }
 
     fun analyze(bitmap: Bitmap): ModelExecutionResult? {
         try {
             ratioHeight = bitmap.height.toFloat() / detectionImageHeight
             ratioWidth = bitmap.width.toFloat() / detectionImageWidth
-            ocrResults.clear()
+            val ocrResults: HashMap<String, Int> = HashMap()
+
 
             var detectTime = 0L
             var recognizeTime = 0L
@@ -104,7 +104,7 @@ class OpticalCharacterRecognitionModel(
             detectTime = dEndTime - dStartTime
 
             val rStartTime = System.currentTimeMillis()
-            val bitmapWithBoundingBoxes = recognizeTexts(bitmap, boundingBoxesMat, indicesMat)
+            val bitmapWithBoundingBoxes = recognizeTexts(bitmap, boundingBoxesMat, indicesMat, ocrResults)
             val rEndTime = System.currentTimeMillis()
 
             recognizeTime = rEndTime - rStartTime
@@ -224,7 +224,8 @@ class OpticalCharacterRecognitionModel(
     private fun recognizeTexts(
         data: Bitmap,
         boundingBoxesMat: MatOfRotatedRect,
-        indicesMat: MatOfInt
+        indicesMat: MatOfInt,
+        ocrResults: HashMap<String, Int>
     ): Bitmap {
         val bitmapWithBoundingBoxes = data.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(bitmapWithBoundingBoxes)
