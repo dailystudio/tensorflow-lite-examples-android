@@ -115,6 +115,7 @@ private class VideoClassificationAnalyzer(rotation: Int,
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): VideoClassifier? {
         val modelStr = if (settings is VideoClassificationSettingsPrefs) {
@@ -123,18 +124,16 @@ private class VideoClassificationAnalyzer(rotation: Int,
             VideoClassifier.ClassifierModel.MOVINET_A0.toString()
         }
 
-        val model = modelStr?.let {str ->
-            try {
-                VideoClassifier.ClassifierModel.valueOf(str)
-            } catch (e: Exception) {
-                Logger.warn("cannot parse model from [$str]: $e")
+        val model = try {
+            VideoClassifier.ClassifierModel.valueOf(modelStr)
+        } catch (e: Exception) {
+            Logger.warn("cannot parse model from [$modelStr]: $e")
 
-                VideoClassifier.ClassifierModel.MOVINET_A0
-            }
-        } ?: VideoClassifier.ClassifierModel.MOVINET_A0
+            VideoClassifier.ClassifierModel.MOVINET_A0
+        }
 
         return VideoClassifier.create(context,
-            model, device, numOfThreads)
+            model, device, numOfThreads, useXNNPack)
     }
 
     override fun invalidateModel() {
@@ -179,7 +178,7 @@ class VideoClassificationCameraFragment : AbsExampleCameraFragment<VideoClassifi
     }
 
     override fun getSettingsPreference(): InferenceSettingsPrefs {
-        return InferenceSettingsPrefs.instance
+        return VideoClassificationSettingsPrefs.instance
     }
 
     override fun createAnalyzer(

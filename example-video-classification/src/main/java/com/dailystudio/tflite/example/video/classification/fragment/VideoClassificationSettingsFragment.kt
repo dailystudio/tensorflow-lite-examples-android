@@ -43,7 +43,7 @@ class VideoClassificationSettingsFragment : InferenceSettingsFragment() {
                 get() = settingsPrefs.classifierModel
 
             override fun setSelected(selectedId: String?) {
-                settingsPrefs.classifierModel = selectedId
+                settingsPrefs.classifierModel = selectedId ?: VideoClassifier.ClassifierModel.MOVINET_A0.toString()
             }
         }
 

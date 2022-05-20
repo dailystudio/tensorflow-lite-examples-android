@@ -40,8 +40,9 @@ import kotlin.math.min
 class VideoClassifier(context: Context,
                       modelPath: String,
                       device: Model.Device = Model.Device.CPU,
-                      numOfThreads: Int = 1
-) : TFLiteModel(context, modelPath, device, numOfThreads){
+                      numOfThreads: Int = 1,
+                      useXNNPack: Boolean = true
+) : TFLiteModel(context, modelPath, device, numOfThreads, useXNNPack){
 
     enum class ClassifierModel {
         MOVINET_A0,
@@ -67,14 +68,16 @@ class VideoClassifier(context: Context,
         fun create(context: Context,
                    model: ClassifierModel = ClassifierModel.MOVINET_A0,
                    device: Model.Device,
-                   numOfThreads: Int): VideoClassifier {
+                   numOfThreads: Int,
+                   useXNNPack: Boolean
+        ): VideoClassifier {
             val modelPath = when (model) {
                 ClassifierModel.MOVINET_A0 -> { MODEL_MOVINET_A0_FILE }
                 ClassifierModel.MOVINET_A1 -> { MODEL_MOVINET_A1_FILE }
                 ClassifierModel.MOVINET_A2 -> { MODEL_MOVINET_A2_FILE }
             }
 
-            return VideoClassifier(context, modelPath, device, numOfThreads)
+            return VideoClassifier(context, modelPath, device, numOfThreads, useXNNPack)
         }
     }
 
