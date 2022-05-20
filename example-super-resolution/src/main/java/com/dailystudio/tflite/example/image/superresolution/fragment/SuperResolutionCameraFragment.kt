@@ -57,10 +57,11 @@ private class SuperResolutionAnalyzer(rotation: Int,
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): SuperResolutionModel? {
         return SuperResolutionModel(context,
-            TF_MODEL_PATH, device, numOfThreads)
+            TF_MODEL_PATH, device, numOfThreads, useXNNPack)
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?, info: ImageInferenceInfo): Bitmap? {

@@ -10,19 +10,24 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.GlobalContextWrapper
+import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.preference.PrefsChange
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.digitclassifier.R
 import com.divyanshu.draw.widget.DrawView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.digitclassifier.DigitClassifier
+import org.tensorflow.lite.support.model.Model
 import java.io.File
 
 data class RecognizedDigit(val digitBitmap: Bitmap? = null,
@@ -90,18 +95,89 @@ class DigitClassifierFragment : Fragment() {
         }
     }
 
+
+    override fun onResume() {
+        super.onResume()
+
+        val settingsPrefs = getSettingsPreference()
+        Logger.debug("[SETTINGS UPDATE]: prefs = $settingsPrefs")
+        settingsPrefs.prefsChange.observe(viewLifecycleOwner,
+            settingsObserver)
+    }
+
+    private fun getSettingsPreference(): InferenceSettingsPrefs {
+        return InferenceSettingsPrefs.instance
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val settingsPrefs = getSettingsPreference()
+        Logger.debug("[SETTINGS UPDATE]: prefs = $settingsPrefs")
+
+        settingsPrefs.prefsChange.removeObserver(settingsObserver)
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            digitClassifier = DigitClassifier(context).also {
-                it.initialize()
-            }
+//            digitClassifier = prepareModel(getSettingsPreference())
 
             inferenceAgent.deliverInferenceInfo(ImageInferenceInfo())
             inferenceAgent.deliverResults(RecognizedDigit())
         }
     }
+
+    @Synchronized
+    private fun prepareModel(settings: InferenceSettingsPrefs): DigitClassifier? {
+        val context = GlobalContextWrapper.context
+        val model = context?.let {
+            val deviceStr = settings.device
+
+            val device = try {
+                Model.Device.valueOf(deviceStr)
+            } catch (e: Exception) {
+                Logger.warn("cannot parse device from [$deviceStr]: $e")
+
+                Model.Device.CPU
+            }
+
+            val threads = settings.numberOfThreads
+
+            val useXNNPack = settings.useXNNPack
+            Logger.debug("[ANALYZER UPDATE] creating model: device = $device, threads = $threads, useXNNPack = $useXNNPack")
+
+            DigitClassifier(it, device, threads, useXNNPack)
+        }
+
+        Logger.debug("[ANALYZER UPDATE] new model created: $model")
+
+        return model
+    }
+
+    private fun destroyModel() {
+        digitClassifier?.close()
+    }
+
+    @Synchronized
+    private fun invalidateModel() {
+        destroyModel()
+
+        digitClassifier = null
+        Logger.debug("[ANALYZER UPDATE] model is invalidated")
+    }
+
+    private val settingsObserver = Observer<PrefsChange> {
+        when (it.prefKey) {
+            InferenceSettingsPrefs.PREF_DEVICE,
+            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS,
+            InferenceSettingsPrefs.PREF_USE_X_N_N_PACK -> {
+                invalidateModel()
+            }
+        }
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -112,32 +188,41 @@ class DigitClassifierFragment : Fragment() {
     }
 
     private fun classifyDrawing(bitmap: Bitmap) {
-        lifecycleScope.launch {
-            val classifier = digitClassifier ?: return@launch
-
-            val info = ImageInferenceInfo()
-            info.imageSize = Size(bitmap.width, bitmap.height)
-            info.inferenceImageSize = classifier.getInferenceSize()
-
-            val start = System.currentTimeMillis()
-            val inferenceBitmap = preProcessBitmap(bitmap, info)
-            dumpIntermediateBitmap(inferenceBitmap, INFERENCE_IMAGE_FILE)
-
-            val inferenceStart = System.currentTimeMillis()
-            val result = classifier.classify(inferenceBitmap)
-            val end = System.currentTimeMillis()
-
-            info.inferenceTime = end - inferenceStart
-            info.analysisTime = end - start
-
-            val digit = RecognizedDigit(inferenceBitmap,
-                result.first,
-                result.second
-            )
-
-            inferenceAgent.deliverInferenceInfo(info)
-            inferenceAgent.deliverResults(digit)
+        lifecycleScope.launch(Dispatchers.IO) {
+            doAnalysis(bitmap)
         }
+    }
+
+    @Synchronized
+    private fun doAnalysis(bitmap: Bitmap) {
+        if (digitClassifier == null) {
+            digitClassifier = prepareModel(getSettingsPreference())
+        }
+
+        val classifier = digitClassifier
+
+        val info = ImageInferenceInfo()
+        info.imageSize = Size(bitmap.width, bitmap.height)
+        info.inferenceImageSize = classifier?.getInferenceSize() ?: Size (0, 0)
+
+        val start = System.currentTimeMillis()
+        val inferenceBitmap = preProcessBitmap(bitmap, info)
+        dumpIntermediateBitmap(inferenceBitmap, INFERENCE_IMAGE_FILE)
+
+        val inferenceStart = System.currentTimeMillis()
+        val result = classifier?.classify(inferenceBitmap)
+        val end = System.currentTimeMillis()
+
+        info.inferenceTime = end - inferenceStart
+        info.analysisTime = end - start
+
+        val digit = RecognizedDigit(inferenceBitmap,
+            result?.first ?: -1,
+            result?.second ?: 0f
+        )
+
+        inferenceAgent.deliverInferenceInfo(info)
+        inferenceAgent.deliverResults(digit)
     }
 
     private fun preProcessBitmap(frameBitmap: Bitmap,

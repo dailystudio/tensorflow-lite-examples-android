@@ -61,7 +61,7 @@ data class _TFLiteInterpreter(
 
         val ret = (modelBuffer != null)
         debug("[$ret] load Tensorflow Lite model: delegate = [${delegate}]")
-        debug("[$ret] load Tensorflow Lite model: model = [${modelPath}], device = $device, threads = $numOfThreads")
+        debug("[$ret] load Tensorflow Lite model: model = [${modelPath}], device = $device, threads = $numOfThreads, xnnpack = $useXNNPACK")
 
         modelBuffer?.let {
             tfLiteInterpreter = Interpreter(it, tfLiteOptions)

@@ -15,10 +15,15 @@ import java.nio.channels.FileChannel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import org.tensorflow.lite.Interpreter
+import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.TFLiteModel
 import java.lang.Exception
 
-class DigitClassifier(private val context: Context) {
-  private var interpreter: Interpreter? = null
+class DigitClassifier(context: Context,
+                      device: Model.Device,
+                      numOfThreads: Int,
+                      useXNNPACK: Boolean = true
+) : TFLiteModel(context, MODEL_FILE, device, numOfThreads, useXNNPACK){
   var isInitialized = false
     private set
 
@@ -29,52 +34,23 @@ class DigitClassifier(private val context: Context) {
   private var inputImageHeight: Int = 0 // will be inferred from TF Lite model
   private var modelInputSize: Int = 0 // will be inferred from TF Lite model
 
-  fun initialize(): Boolean {
-    return try {
-      initializeInterpreter()
+  init{
 
-      true
-    } catch (e: Exception) {
-      Logger.error("failed to initialize the model: $e")
+    val interpreter = getInterpreter()
+    interpreter?.let {
+      // Read input shape from model file
+      val inputShape = it.getInputTensor(0).shape()
+      inputImageWidth = inputShape[1]
+      inputImageHeight = inputShape[2]
+      modelInputSize = FLOAT_TYPE_SIZE * inputImageWidth * inputImageHeight * PIXEL_SIZE
 
-      false
+      Logger.debug("inputImageWidth = $inputImageWidth, inputImageHeight = $inputImageHeight")
+
+
+      // Finish interpreter initialization
+      isInitialized = true
+      Log.d(TAG, "Initialized TFLite interpreter.")
     }
-  }
-
-  @Throws(IOException::class)
-  private fun initializeInterpreter() {
-    // Load the TF Lite model
-    val assetManager = context.assets
-    val model = loadModelFile(assetManager)
-
-    // Initialize TF Lite Interpreter with NNAPI enabled
-    val options = Interpreter.Options()
-    options.setUseNNAPI(true)
-    val interpreter = Interpreter(model, options)
-
-    // Read input shape from model file
-    val inputShape = interpreter.getInputTensor(0).shape()
-    inputImageWidth = inputShape[1]
-    inputImageHeight = inputShape[2]
-    modelInputSize = FLOAT_TYPE_SIZE * inputImageWidth * inputImageHeight * PIXEL_SIZE
-
-    Logger.debug("inputImageWidth = $inputImageWidth, inputImageHeight = $inputImageHeight")
-
-
-    // Finish interpreter initialization
-    this.interpreter = interpreter
-    isInitialized = true
-    Log.d(TAG, "Initialized TFLite interpreter.")
-  }
-
-  @Throws(IOException::class)
-  private fun loadModelFile(assetManager: AssetManager): ByteBuffer {
-    val fileDescriptor = assetManager.openFd(MODEL_FILE)
-    val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-    val fileChannel = inputStream.channel
-    val startOffset = fileDescriptor.startOffset
-    val declaredLength = fileDescriptor.declaredLength
-    return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
   }
 
   fun classify(bitmap: Bitmap): Pair<Int, Float> {
@@ -94,7 +70,7 @@ class DigitClassifier(private val context: Context) {
 
     startTime = System.nanoTime()
     val result = Array(1) { FloatArray(OUTPUT_CLASSES_COUNT) }
-    interpreter?.run(byteBuffer, result)
+    getInterpreter()?.run(byteBuffer, result)
     elapsedTime = (System.nanoTime() - startTime) / 1000000
     Log.d(TAG, "Inference time = " + elapsedTime + "ms")
 
@@ -102,8 +78,8 @@ class DigitClassifier(private val context: Context) {
     return getOutput(result[0])
   }
 
-  fun close() {
-    interpreter?.close()
+  override fun close() {
+    super.close()
     Log.d(TAG, "Closed TFLite interpreter.")
   }
 

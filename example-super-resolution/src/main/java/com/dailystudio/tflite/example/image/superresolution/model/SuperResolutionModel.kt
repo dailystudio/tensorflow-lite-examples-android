@@ -16,8 +16,9 @@ class SuperResolutionModel(
     context: Context,
     modelPath: String,
     device: Model.Device,
-    numOfThreads: Int
-): TFLiteModel(context, modelPath, device, numOfThreads) {
+    numOfThreads: Int,
+    useXNNPACK: Boolean
+): TFLiteModel(context, modelPath, device, numOfThreads, useXNNPACK) {
     companion object {
         const val INPUT_IMAGE_SIZE = 50
         const val OUT_IMAGE_SIZE = 200
