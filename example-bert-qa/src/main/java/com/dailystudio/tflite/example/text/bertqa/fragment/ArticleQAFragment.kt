@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
+import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.DevBricksFragment
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 import com.dailystudio.tflite.example.common.InferenceAgent
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.examples.bertqa.ml.QaAnswer
 import org.tensorflow.lite.examples.bertqa.ml.QaClient
+import org.tensorflow.lite.examples.bertqa.ml.QaUseCase
 import org.tensorflow.lite.support.model.Model
 
 class ArticleQAFragment : DevBricksFragment() {
@@ -30,8 +32,9 @@ class ArticleQAFragment : DevBricksFragment() {
 
     private var contentView: TextView? = null
 
-    private var qaClient: QaClient? = null
-    private val inferenceAgent = InferenceAgent<InferenceInfo, List<QaAnswer>>()
+//    private var qaClient: QaClient? = null
+
+    private var useCase: QaUseCase? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,28 +48,14 @@ class ArticleQAFragment : DevBricksFragment() {
         return view
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        useCase = QaUseCase(this)
+    }
+
     private fun setupViews(fragmentView: View) {
         contentView = fragmentView.findViewById(R.id.article_content)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            qaClient = QaClient(context, Model.Device.CPU, 4)
-            val client = qaClient ?: return@launch
-
-//            client.loadModel()
-            client.loadDictionary()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            qaClient?.unload()
-        }
     }
 
     override fun onResume() {
@@ -88,13 +77,7 @@ class ArticleQAFragment : DevBricksFragment() {
             contentView?.text = content
         }
 
-        val info = InferenceInfo()
-
-        val start = System.currentTimeMillis()
-        val answers = qaClient?.predict(question, content)
-        val end = System.currentTimeMillis()
-        info.inferenceTime = end - start
-        info.analysisTime = info.inferenceTime
+        val answers = useCase?.run(Pair(question, content))
 
         answers?.let {
             if (answers.isNotEmpty()) {
@@ -104,11 +87,7 @@ class ArticleQAFragment : DevBricksFragment() {
                     presentAnswer(topAnswer)
                 }
             }
-
-            inferenceAgent.deliverResults(it)
         }
-
-        inferenceAgent.deliverInferenceInfo(info)
     }
 
     private fun presentAnswer(answer: QaAnswer) {

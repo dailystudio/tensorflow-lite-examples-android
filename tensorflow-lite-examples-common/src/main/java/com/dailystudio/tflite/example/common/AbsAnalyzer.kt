@@ -6,20 +6,23 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.litex.TFLiteModel
 import org.tensorflow.lite.support.model.Model.Device
+import kotlin.math.min
 
 class AvgTime(private val capacity: Int = 10) {
 
     private val timeValues = Array<Long>(capacity) { 0 }
     private var wIndex = 0
+    private var count = 0
 
     val value: Long
         get() {
-            val len = timeValues.size
+            val len = min(timeValues.size, count)
             var sum = 0L
 
             for (i in 0 until len) {
                 sum += timeValues[i]
             }
+
             return sum / len
         }
 
@@ -27,6 +30,7 @@ class AvgTime(private val capacity: Int = 10) {
     fun record(newValue: Long) {
         timeValues[wIndex] = newValue
         wIndex = (wIndex + 1) % capacity
+        count++
     }
 
 }

@@ -64,8 +64,10 @@ public class QaClient extends TFLiteModel {
 
   public QaClient(Context context,
                   Model.Device device,
-                  int threads) {
-    super(context, MODEL_PATH, device, threads);
+                  int threads,
+                  boolean useXNNPack
+  ) {
+    super(context, MODEL_PATH, device, threads, useXNNPack);
     this.featureConverter = new FeatureConverter(dic, DO_LOWER_CASE, MAX_QUERY_LEN, MAX_SEQ_LEN);
 
     loadDictionary();

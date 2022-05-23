@@ -92,10 +92,10 @@ abstract class MLUseCase<LiteModel: TFLiteModel, Input, Result, Info: InferenceI
 
     @Synchronized
     protected open fun invalidateModel() {
+        Logger.debug("[MODEL_CREATION]: model is invalidated")
         destroyModel()
 
         model = null
-        Logger.debug("[ANALYZER UPDATE] model is invalidated")
     }
 
     protected open fun prepareModel(settings: InferenceSettingsPrefs) {
@@ -114,10 +114,10 @@ abstract class MLUseCase<LiteModel: TFLiteModel, Input, Result, Info: InferenceI
             val threads = settings.numberOfThreads
 
             val useXNNPack = settings.useXNNPack
-            Logger.debug("[ANALYZER UPDATE] creating model: device = $device, threads = $threads, useXNNPack = $useXNNPack")
+            Logger.debug("[MODEL_CREATION] creating model: device = $device, threads = $threads, useXNNPack = $useXNNPack")
 
             model = createModel(it, device, threads, useXNNPack, settings)
-            Logger.debug("[ANALYZER UPDATE] new model created: $model")
+            Logger.debug("[MODEL_CREATION] new model created: $model")
         }
 
         Logger.debug("using model: $model")
@@ -135,7 +135,6 @@ abstract class MLUseCase<LiteModel: TFLiteModel, Input, Result, Info: InferenceI
 
     open fun destroyModel() {
         model?.close()
-        model = null
     }
 
     @Synchronized
@@ -168,14 +167,12 @@ abstract class MLUseCase<LiteModel: TFLiteModel, Input, Result, Info: InferenceI
 
     private fun watchOnSettingsChange(owner: LifecycleOwner) {
         val settingsPrefs = getSettingsPreference()
-        Logger.debug("[SETTINGS UPDATE]: prefs = $settingsPrefs")
         settingsPrefs.prefsChange.observe(owner,
             settingsObserver)
     }
 
     private fun watchOffSettingsChange(owner: LifecycleOwner) {
         val settingsPrefs = getSettingsPreference()
-        Logger.debug("[SETTINGS UPDATE]: prefs = $settingsPrefs")
         settingsPrefs.prefsChange.observe(owner,
             settingsObserver)
     }
