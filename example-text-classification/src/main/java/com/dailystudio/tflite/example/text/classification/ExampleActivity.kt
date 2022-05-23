@@ -1,8 +1,10 @@
 package com.dailystudio.tflite.example.text.classification
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
@@ -13,12 +15,54 @@ import com.dailystudio.tflite.example.common.text.AbsChatActivity
 import com.dailystudio.tflite.example.common.text.ChatRecord
 import com.dailystudio.tflite.example.common.text.MessageType
 import com.dailystudio.tflite.example.common.text.model.ChatRecordViewModel
+import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.common.ui.ItemLabel
 import com.dailystudio.tflite.example.common.ui.fragment.ItemLabelsListFragment
 import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
 import com.dailystudio.tflite.example.common.utils.ResultsUtils
 import org.tensorflow.lite.examples.textclassification.TextClassificationClient
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.MLUseCase
+
+class TextClassificationUseCase(
+    lifecycleOwner: LifecycleOwner
+): MLUseCase<TextClassificationClient, String, Map<String, TextClassificationClient.Result>, InferenceInfo>(lifecycleOwner) {
+    override fun runInference(
+        model: TextClassificationClient,
+        data: String,
+        info: InferenceInfo
+    ): Map<String, TextClassificationClient.Result>? {
+        val results = model.classify(data)
+
+        val map = mutableMapOf<String, TextClassificationClient.Result>()
+        results?.let {
+            for (r in it) {
+                map[r.title.toLowerCase()] = r
+            }
+        }
+
+        return map
+    }
+
+    override fun getSettingsPreference(): InferenceSettingsPrefs {
+       return InferenceSettingsPrefs.instance
+    }
+
+    override fun createModel(
+        context: Context,
+        device: Model.Device,
+        threads: Int,
+        useXNNPack: Boolean,
+        settings: InferenceSettingsPrefs
+    ): TextClassificationClient? {
+        return TextClassificationClient(context, device, threads, useXNNPack)
+    }
+
+    override fun createInferenceInfo(): InferenceInfo {
+        return InferenceInfo()
+    }
+
+}
 
 class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Result>>() {
 
@@ -30,7 +74,7 @@ class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Res
         const val LABEL_NEGATIVE = "negative"
     }
 
-    private lateinit var client: TextClassificationClient
+    private var useCase: TextClassificationUseCase? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,20 +82,8 @@ class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Res
         initItemLabels()
 
         lifecycleScope.launchWhenStarted {
-            client = TextClassificationClient(
-                applicationContext,
-                Model.Device.CPU,
-                4
-            ).apply {
-//                load()
-            }
+            useCase = TextClassificationUseCase(this@ExampleActivity)
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        client.close()
     }
 
     override fun createResultsView(): View? {
@@ -92,15 +124,7 @@ class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Res
 
     override fun generateResults(text: String,
                                  info: InferenceInfo): Map<String, TextClassificationClient.Result>? {
-        val results = client.classify(text)
-        Logger.debug("results of [$text]: ${ResultsUtils.safeToPrintableLog(results)}")
-
-        val map = mutableMapOf<String, TextClassificationClient.Result>()
-        for (r in results) {
-            map[r.title.toLowerCase()] = r
-        }
-
-        return map
+        return useCase?.run(text)
     }
 
     override fun convertResultsToReplyText(results: Map<String, TextClassificationClient.Result>?,

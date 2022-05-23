@@ -123,8 +123,9 @@ public class TextClassificationClient extends TFLiteModel {
 
   public TextClassificationClient(Context context,
                                   Model.Device device,
-                                  int threads) {
-    super(context, MODEL_PATH, device, threads);
+                                  int threads,
+                                  boolean useXNNPack) {
+    super(context, MODEL_PATH, device, threads, useXNNPack);
 
     loadDictionary();
     loadLabels();
