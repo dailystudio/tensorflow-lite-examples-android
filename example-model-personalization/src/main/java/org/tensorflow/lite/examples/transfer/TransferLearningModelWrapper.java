@@ -39,8 +39,10 @@ public class TransferLearningModelWrapper extends TransferLearningModel {
 
   public TransferLearningModelWrapper(Context context,
                                       Model.Device device,
-                                      int numOfThreads) {
-    super(context, device, numOfThreads, Arrays.asList("1", "2", "3", "4"));
+                                      int numOfThreads,
+                                      boolean useXNNPack
+  ) {
+    super(context, device, numOfThreads, useXNNPack, Arrays.asList("1", "2", "3", "4"));
 
     new Thread(() -> {
       while (!Thread.interrupted()) {

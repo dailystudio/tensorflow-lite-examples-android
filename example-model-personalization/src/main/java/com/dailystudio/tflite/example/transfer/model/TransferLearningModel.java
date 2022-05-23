@@ -103,8 +103,6 @@ public class TransferLearningModel extends LiteMultipleSignatureModel {
   private final String[] classesByIdx;
   private final Map<String, float[]> oneHotEncodedClass;
 
-  private org.tensorflow.lite.examples.transfer.api.LiteMultipleSignatureModel model;
-
   private final List<TrainingSample> trainingSamples = new ArrayList<>();
 
   // Where to store training inputs.
@@ -128,8 +126,9 @@ public class TransferLearningModel extends LiteMultipleSignatureModel {
   public TransferLearningModel(Context context,
                                Model.Device device,
                                int numOfThreads,
+                               boolean useXNNPack,
                                Collection<String> classes) {
-    super(context, "model.tflite", device, numOfThreads, classes.size());
+    super(context, "model.tflite", device, numOfThreads, useXNNPack, classes.size());
 
     classesByIdx = classes.toArray(new String[0]);
     this.classes = new TreeMap<>();
@@ -341,6 +340,7 @@ public class TransferLearningModel extends LiteMultipleSignatureModel {
    */
   @Override
   public void close() {
+    super.close();
     isTerminating = true;
     executor.shutdownNow();
 
@@ -353,7 +353,6 @@ public class TransferLearningModel extends LiteMultipleSignatureModel {
         throw new RuntimeException("Model thread pool failed to terminate");
       }
 
-      this.model.close();
     } catch (InterruptedException e) {
       // no-op
     } finally {

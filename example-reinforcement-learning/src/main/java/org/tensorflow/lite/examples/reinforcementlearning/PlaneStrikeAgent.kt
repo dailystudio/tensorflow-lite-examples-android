@@ -7,12 +7,14 @@ import org.tensorflow.litex.TFLiteModel
 abstract class PlaneStrikeAgent(context: Context,
                                 model: String,
                                 device: Model.Device,
-                                numOfThreads: Int = 4
+                                numOfThreads: Int = 4,
+                                useXNNPack: Boolean,
 ): TFLiteModel(
     context,
     model,
     device,
-    numOfThreads
+    numOfThreads,
+    useXNNPack
 ) {
 
     /** Predict the next move based on current board state.  */

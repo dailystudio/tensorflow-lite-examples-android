@@ -38,8 +38,10 @@ public class RLAgentFromTFAgents extends PlaneStrikeAgent {
 
   public RLAgentFromTFAgents(Context context,
                              Model.Device device,
-                             int numOfThreads)  {
-    super(context, Constants.TF_AGENTS_TFLITE_MODEL, device, numOfThreads);
+                             int numOfThreads,
+                             boolean useXNNPack
+  )  {
+    super(context, Constants.TF_AGENTS_TFLITE_MODEL, device, numOfThreads, useXNNPack);
   }
 
   /** Predict the next move based on current board state. */

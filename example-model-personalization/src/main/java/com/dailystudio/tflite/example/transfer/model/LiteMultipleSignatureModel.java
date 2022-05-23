@@ -37,8 +37,9 @@ public class LiteMultipleSignatureModel extends TFLiteModel {
                              String modelPath,
                              Model.Device device,
                              int numOfThreads,
+                             boolean useXNNPack,
                              int numOfClasses) {
-    super(context, modelPath, device, numOfThreads);
+    super(context, modelPath, device, numOfThreads, useXNNPack);
     this.numClasses = numOfClasses;
   }
 

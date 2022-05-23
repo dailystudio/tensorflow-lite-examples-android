@@ -98,9 +98,10 @@ private class TransferLearningAnalyzer(
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): TransferLearningModelWrapper? {
-        return TransferLearningModelWrapper(context, device, numOfThreads)
+        return TransferLearningModelWrapper(context, device, numOfThreads, false)
     }
 
 }

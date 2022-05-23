@@ -14,12 +14,13 @@ class ReinforcementLearningAnalyzer(useAverageTime: Boolean)
         context: Context,
         device: Model.Device,
         numOfThreads: Int,
+        useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
     ): PlaneStrikeAgent? {
         return if (Constants.USE_MODEL_FROM_TF) {
-            RLAgent(context, device, numOfThreads)
+            RLAgent(context, device, numOfThreads, useXNNPack)
         } else {
-            RLAgentFromTFAgents(context, device, numOfThreads)
+            RLAgentFromTFAgents(context, device, numOfThreads, useXNNPack)
         }
     }
 

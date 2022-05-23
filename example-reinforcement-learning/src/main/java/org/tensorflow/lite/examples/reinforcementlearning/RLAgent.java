@@ -38,8 +38,9 @@ public class RLAgent extends PlaneStrikeAgent {
 
   public RLAgent(Context context,
                  Model.Device device,
-                 int numOfThreads) {
-    super(context, Constants.TF_TFLITE_MODEL, device, numOfThreads);
+                 int numOfThreads,
+                 boolean useXNNPack) {
+    super(context, Constants.TF_TFLITE_MODEL, device, numOfThreads, useXNNPack);
 
     boardData = ByteBuffer.allocateDirect(Constants.BOARD_SIZE * Constants.BOARD_SIZE * 4);
     boardData.order(ByteOrder.nativeOrder());
