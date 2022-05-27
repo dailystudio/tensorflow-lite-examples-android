@@ -52,8 +52,8 @@ class StyleTransferModelExecutor(
   } else {
     arrayOf(STYLE_PREDICT_INT8_MODEL, STYLE_TRANSFER_INT8_MODEL)
   }
-
-  , arrayOf(device, device), arrayOf(numOfThreads, numOfThreads), userXNNPack) {
+  , arrayOf(device, device), arrayOf(numOfThreads, numOfThreads),
+  arrayOf(userXNNPack, userXNNPack)) {
 
 
   private val interpreterPredict: Interpreter?
@@ -72,6 +72,8 @@ class StyleTransferModelExecutor(
   private var styleTransferTime = 0L
   private var postProcessTime = 0L
 
+  private var cachedOutputsForPredict: HashMap<Int, Any>? = null
+
   companion object {
     private const val TAG = "StyleTransferMExec"
     private const val STYLE_IMAGE_SIZE = 256
@@ -85,10 +87,11 @@ class StyleTransferModelExecutor(
 
   fun fastExecute(contentBitmap: Bitmap,
                   styleBitmap: Bitmap,
-                  info: AdvanceInferenceInfo
+                  info: AdvanceInferenceInfo,
+                  skipPredict: Boolean = false
   ): Bitmap {
     try {
-      Log.i(TAG, "running models")
+      Log.i(TAG, "running models: $skipPredict")
 
       fullExecutionTime = SystemClock.uptimeMillis()
       preProcessTime = SystemClock.uptimeMillis()
@@ -98,20 +101,25 @@ class StyleTransferModelExecutor(
       val input = ImageUtils.bitmapToByteBuffer(styleBitmap, STYLE_IMAGE_SIZE, STYLE_IMAGE_SIZE)
 
       val inputsForPredict = arrayOf<Any>(input)
-      val outputsForPredict = HashMap<Int, Any>()
+      var outputsForPredict = HashMap<Int, Any>()
       val styleBottleneck = Array(1) { Array(1) { Array(1) { FloatArray(BOTTLENECK_SIZE) } } }
       outputsForPredict[0] = styleBottleneck
-      preProcessTime = SystemClock.uptimeMillis() - preProcessTime
 
       stylePredictTime = SystemClock.uptimeMillis()
       // The results of this inference could be reused given the style does not change
       // That would be a good practice in case this was applied to a video stream.
-      interpreterPredict?.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
+      if (!skipPredict) {
+        interpreterPredict?.runForMultipleInputsOutputs(inputsForPredict, outputsForPredict)
+        cachedOutputsForPredict = outputsForPredict
+      } else {
+        outputsForPredict = cachedOutputsForPredict ?: HashMap()
+      }
+
       stylePredictTime = SystemClock.uptimeMillis() - stylePredictTime
       Log.d(TAG, "Style Predict Time to run: $stylePredictTime")
       info.preProcessTime = stylePredictTime
 
-      val inputsForStyleTransfer = arrayOf(contentArray, styleBottleneck)
+      val inputsForStyleTransfer = arrayOf(contentArray, outputsForPredict[0])
       val outputsForStyleTransfer = HashMap<Int, Any>()
       val outputImage =
         Array(1) { Array(CONTENT_IMAGE_SIZE) { Array(CONTENT_IMAGE_SIZE) { FloatArray(3) } } }

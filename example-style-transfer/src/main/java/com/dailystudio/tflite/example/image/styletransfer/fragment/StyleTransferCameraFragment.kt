@@ -1,8 +1,6 @@
 package com.dailystudio.tflite.example.image.styletransfer.fragment
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.util.Size
@@ -18,7 +16,6 @@ import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.styletransfer.StyleTransferPrefs
-import com.dailystudio.tflite.example.image.styletransfer.StyleTransferSettings
 import com.dailystudio.tflite.example.image.styletransfer.StyleTransferSettingsPrefs
 import org.tensorflow.lite.examples.styletransfer.FSTModel
 import org.tensorflow.lite.examples.styletransfer.StyleTransferModelExecutor
@@ -38,7 +35,6 @@ private class StyleTransferAnalyzer(rotation: Int,
         private const val STYLED_IMAGE_FILE = "styled.png"
     }
 
-    private var styleTransferModelExecutor: StyleTransferModelExecutor? = null
     private var styleBitmap: Bitmap? = null
     private var styleName: String? = null
 
@@ -60,15 +56,16 @@ private class StyleTransferAnalyzer(rotation: Int,
             styleName = StyleTransferPrefs.getSelectedStyle(context)
         }
 
-        if (styleBitmap == null) {
-            context?.let {
-                styleBitmap = ImageUtils.loadAssetBitmap(it,
+        val skipPredict = if (styleBitmap == null) {
+            styleBitmap = ImageUtils.loadAssetBitmap(context,
                     "thumbnails/${this.styleName}")
-            }
+            false
+        } else {
+            true
         }
 
         val styledBitmap = styleBitmap?.let {
-            model.fastExecute(inferenceBitmap, it , info)
+            model.fastExecute(inferenceBitmap, it , info, skipPredict)
         } ?: inferenceBitmap
 
         val trimmed = ImageUtils.trimBitmap(
