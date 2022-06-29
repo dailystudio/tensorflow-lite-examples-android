@@ -7,84 +7,100 @@ import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.tensorflow.lite.support.model.Model
+import java.lang.RuntimeException
+import java.lang.reflect.InvocationTargetException
 
-abstract class LiteUseCaseViewModel<Input, Output, Info: InferenceInfo>(
-    application: Application
+class LiteUseCaseViewModelFactory(private val application: Application,
+                                  private val useCase: LiteUseCase<*, *, *>)
+    : ViewModelProvider.NewInstanceFactory() {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return if (LiteUseCaseViewModel::class.java.isAssignableFrom(modelClass)) {
+            try {
+                modelClass.getConstructor(Application::class.java,
+                    LiteUseCase::class.java).newInstance(application, useCase)
+            } catch (e: NoSuchMethodException) {
+                throw RuntimeException("Cannot create an instance of $modelClass", e)
+            } catch (e: IllegalAccessException) {
+                throw RuntimeException("Cannot create an instance of $modelClass", e)
+            } catch (e: InstantiationException) {
+                throw RuntimeException("Cannot create an instance of $modelClass", e)
+            } catch (e: InvocationTargetException) {
+                throw RuntimeException("Cannot create an instance of $modelClass", e)
+            }
+        } else super.create(modelClass)
+    }
+}
+
+open class LiteUseCaseViewModel(
+    application: Application,
+    private val useCase: LiteUseCase<Any, Any, InferenceInfo>
 ): AndroidViewModel(application) {
 
-    private var useCase: LiteUseCase<Input, Output, Info>? = null
-
-    private val _inferenceInfo: MutableLiveData<Info> by lazy {
-        MutableLiveData(createInferenceInfo())
+    private val _inferenceInfo: MutableLiveData<InferenceInfo> by lazy {
+        MutableLiveData(InferenceInfo())
     }
+    val inferenceInfo: LiveData<InferenceInfo> = _inferenceInfo
 
-    private val inferenceInfo: LiveData<Info> = _inferenceInfo
+    private val _output: MutableLiveData<Any?> = MutableLiveData(null)
+    val output: LiveData<Any?> = _output
 
-    private val _output: MutableLiveData<Output?> = MutableLiveData(null)
-    private val output: LiveData<Output?> = _output
-
-    private val settingsChanges by lazy {
-        getSettingsPreference().prefsChanges.asLiveData()
+    val settingsChanges by lazy {
+        useCase.getInferenceSettings().prefsChanges.asLiveData()
     }
 
     init {
         viewModelScope.launch {
-            getSettingsPreference().prefsChanges.collect {
+            val settings = useCase.getInferenceSettings()
+            settings.prefsChanges.collect {
                 val changePrefName = it.prefKey
-                val settings = getSettingsPreference()
-                Logger.debug("[WATCH CHANGE]: changed preference: $changePrefName")
-
-                when (changePrefName) {
-                    InferenceSettingsPrefs.PREF_DEVICE,
-                    InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS,
-                    InferenceSettingsPrefs.PREF_USE_X_N_N_PACK -> {
-                        invalidateUseCase()
-                    }
-                }
-
-                onInferenceSettingsChange(it.prefKey, settings)
+                onInferenceSettingsChange(changePrefName, settings)
             }
         }
     }
 
     @Synchronized
-    open fun performUseCase(data: Input): Output? {
-        if (useCase == null) {
-            useCase = createUseCase(getSettingsPreference())?.apply {
-                prepare()
-            }
+    open fun performUseCase(input: Any): Any? {
+        val results = useCase.runModels(input)
 
-        }
+        _inferenceInfo.postValue(results.second)
+        _output.postValue(results.first)
 
-        val info = createInferenceInfo()
-
-        return useCase?.perform(data, info).also { output ->
-            _inferenceInfo.postValue(info)
-            _output.postValue(output)
-        }
-    }
-
-    @Synchronized
-    protected open fun invalidateUseCase() {
-        Logger.debug("[USE_CASE_CREATION]: model is invalidated")
-        destroyUseCase()
-
-        useCase = null
-    }
-
-    open fun destroyUseCase() {
-        useCase?.destroy()
+        return output
     }
 
     override fun onCleared() {
-        destroyUseCase()
+        useCase.destroyModels()
     }
 
-    protected open fun onInferenceSettingsChange(changePrefName: String, inferenceSettings: InferenceSettingsPrefs) {
+    protected open fun onInferenceSettingsChange(changePrefName: String,
+                                                 inferenceSettings: InferenceSettingsPrefs) {
+        Logger.debug("[WATCH CHANGE]: changed preference: $changePrefName")
+
+        when (changePrefName) {
+            InferenceSettingsPrefs.PREF_DEVICE,
+            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS,
+            InferenceSettingsPrefs.PREF_USE_X_N_N_PACK -> {
+                useCase.invalidateModels()
+            }
+
+            InferenceSettingsPrefs.PREF_USE_AVERAGE_TIME -> {
+                useCase.useAverageTime = inferenceSettings.useAverageTime
+            }
+        }
     }
 
-    abstract fun createUseCase(settings: InferenceSettingsPrefs): LiteUseCase<Input, Output, Info>?
-    abstract fun createInferenceInfo(): Info
-    abstract fun getSettingsPreference(): InferenceSettingsPrefs
+}
 
+fun InferenceSettingsPrefs.getDevice(): Model.Device {
+    val deviceStr = device
+
+    return try {
+        Model.Device.valueOf(deviceStr)
+    } catch (e: Exception) {
+        Logger.warn("cannot parse device from [$deviceStr]: $e")
+
+        Model.Device.CPU
+    }
 }

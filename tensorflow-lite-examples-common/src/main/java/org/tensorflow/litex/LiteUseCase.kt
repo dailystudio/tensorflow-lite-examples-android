@@ -1,43 +1,76 @@
 package org.tensorflow.litex
 
+import androidx.annotation.WorkerThread
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.AvgTime
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.support.model.Model
 
-abstract class LiteUseCase<Input, Output, Info: InferenceInfo>(
-    settings: InferenceSettingsPrefs
-) {
+abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 
-    private val liteModels: Array<LiteModel> by lazy {
-        createModels(
-            settings.getDevice(),
-            settings.numberOfThreads,
-            settings.useXNNPack,
-            settings
-        )
+    companion object {
+        private val useCases: MutableMap<String, LiteUseCase<*, *, *>> =
+            mutableMapOf()
+
+        fun registerUseCase(name: String, useCase: LiteUseCase<*, *, *>) {
+            useCases[name] = useCase
+        }
+
+        fun getLiteUseCase(name: String): LiteUseCase<*, *, *>? = useCases[name]
+
     }
 
-    protected val defaultModel: LiteModel? = liteModels.getOrNull(0)
+    private var liteModels: Array<LiteModel>?  = null
+    protected val defaultModel: LiteModel? = liteModels?.getOrNull(0)
 
-    protected open val useAverageTime: Boolean = true
+    var useAverageTime: Boolean = true
     private val avgInferenceTime = AvgTime(20)
     private val avgAnalyzeTime = AvgTime(20)
 
-    open fun prepare() {
-        liteModels.forEach {
-            it.open()
+    @WorkerThread
+    @Synchronized
+    open fun checkAndPrepareModels(): Boolean {
+        if (liteModels == null) {
+            val settings = getInferenceSettings()
+
+            liteModels = createModels(
+                settings.getDevice(),
+                settings.numberOfThreads,
+                settings.useXNNPack,
+                settings
+            )
+
+            liteModels?.forEach { model ->
+                model.open()
+            }
         }
+
+        return !liteModels.isNullOrEmpty()
     }
 
-    open fun destroy() {
-        liteModels.forEach {
+    @Synchronized
+    @WorkerThread
+    open fun destroyModels() {
+        liteModels?.forEach {
             it.close()
         }
+
+        liteModels = null
     }
 
-    open fun perform(input: Input, info: Info): Output? {
+    open fun invalidateModels() {
+        Logger.debug("[USE_CASE_CREATION]: model is invalidated")
+        destroyModels()
+    }
+
+    open fun runModels(input: Input): Pair<Output?, Info> {
+        val info = createInferenceInfo()
+
         val start = System.currentTimeMillis()
         val output = runInference(input, info)
         val end = System.currentTimeMillis()
@@ -60,9 +93,10 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo>(
 
         Logger.debug("[AVG: ${useAverageTime}] analysis [in ${info.analysisTime} ms (inference: ${info.inferenceTime} ms)]: result = ${output.toString().replace("%", "%%")}")
 
-        return output
+        return Pair(output, info)
     }
 
+    @WorkerThread
     protected abstract fun createModels(
         device: Model.Device = Model.Device.CPU,
         numOfThreads: Int = 1,
@@ -70,17 +104,50 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo>(
         settings: InferenceSettingsPrefs
     ): Array<LiteModel>
 
-    protected abstract fun runInference(data: Input, info: InferenceInfo): Output?
+    protected abstract fun createInferenceInfo(): Info
+    abstract fun getInferenceSettings(): InferenceSettingsPrefs
+
+    @WorkerThread
+    protected abstract fun runInference(input: Input, info: Info): Output?
 }
 
-fun InferenceSettingsPrefs.getDevice(): Model.Device {
-    val deviceStr = device
+fun Fragment.getLiteUseCaseViewModel(name: String): LiteUseCaseViewModel? {
+    val activity = requireActivity()
+    val application = activity.application
+    val useCase = LiteUseCase.getLiteUseCase(name) ?: return null
 
-    return try {
-        Model.Device.valueOf(deviceStr)
-    } catch (e: Exception) {
-        Logger.warn("cannot parse device from [$deviceStr]: $e")
+    return ViewModelProvider(
+        activity,
+        LiteUseCaseViewModelFactory(application, useCase)
+    )[LiteUseCaseViewModel::class.java]
+}
 
-        Model.Device.CPU
-    }
+fun Fragment.observeUseCaseOutput(name: String, observer: Observer<in Any?>) {
+    val viewModel = getLiteUseCaseViewModel(name) ?: return
+    viewModel.output.observe(this, observer)
+}
+
+fun Fragment.observeUseCaseInfo(name: String, observer: Observer<in InferenceInfo>) {
+    val viewModel = getLiteUseCaseViewModel(name) ?: return
+    viewModel.inferenceInfo.observe(this, observer)
+}
+
+fun AppCompatActivity.getLiteUseCaseViewModel(name: String): LiteUseCaseViewModel? {
+    val application = this.application
+    val useCase = LiteUseCase.getLiteUseCase(name) ?: return null
+
+    return ViewModelProvider(
+        this,
+        LiteUseCaseViewModelFactory(application, useCase)
+    )[LiteUseCaseViewModel::class.java]
+}
+
+fun AppCompatActivity.observeUseCaseOutput(name: String, observer: Observer<in Any?>) {
+    val viewModel = getLiteUseCaseViewModel(name) ?: return
+    viewModel.output.observe(this, observer)
+}
+
+fun AppCompatActivity.observeUseCaseInfo(name: String, observer: Observer<in InferenceInfo>) {
+    val viewModel = getLiteUseCaseViewModel(name) ?: return
+    viewModel.inferenceInfo.observe(this, observer)
 }
