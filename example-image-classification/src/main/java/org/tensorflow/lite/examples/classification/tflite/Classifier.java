@@ -106,14 +106,18 @@ public abstract class Classifier extends AssetFileLiteModel {
   /** Initializes a {@code Classifier}. */
   protected Classifier(Context context, String modelPath, Device device, int numThreads, boolean useXNNPACK) throws IOException {
     super(context, modelPath, device, numThreads, useXNNPACK);
-
-    labels = FileUtil.loadLabels(context, getLabelPath());
   }
 
   @Override
   public void open() {
     super.open();
     // Loads labels out from the label file.
+    try {
+      labels = FileUtil.loadLabels(getContext(), getLabelPath());
+    } catch (IOException e) {
+      Logger.INSTANCE.error("failed to load labels from ["
+                      + getLabelPath() + "]: " + e);
+    }
 
     InterpreterApi tfLiteInterpreter = getInterpreter();
 
