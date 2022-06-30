@@ -4,6 +4,7 @@ codebase_dir="com/dailystudio/tflite/example/template"
 codebase_pkg="com.dailystudio.tflite.example.template"
 codebase_name="Example Template"
 codebase_name_code="ExampleTemplate"
+codebase_name_code_lowercase="exampletemplate"
 
 tmp_dir="./tmp"
 
@@ -152,10 +153,11 @@ if [ ! -z "${outputs}" ]; then
 fi
 
 app_name_code=$(squeezeAndCapitalizeString ${app_name})
+app_name_code_lowercase=`echo ${app_name_code} | tr "[:upper:]" "[:lower:]"`
 
 echo
 echo "--------------- Module Generation for Android TensorFlow Lite example ---------------"
-echo "Application name:    [${app_name}, code: ${app_name_code}]"
+echo "Application name:    [${app_name}, code: ${app_name_code}, code(lowercase): ${app_name_code_lowercase}]"
 echo "Package name:        [${pkg_name}]"
 echo "Source template:     [${source_template}, dir: ${source_dir}]"
 echo "Output directory:    [${output_dir}]"
@@ -185,6 +187,7 @@ renameFiles
 echo "[STEP 3]: Aligning source codes to the new structure ..."
 alignSourceCodes "${codebase_pkg}" "${pkg_name}"
 alignSourceCodes "${codebase_name_code}" "${app_name_code}"
+alignSourceCodes "${codebase_name_code_lowercase}" "${app_name_code_lowercase}"
 alignSourceCodes "${codebase_name}" "${app_name}"
 
 cd ${OLD_PWD}

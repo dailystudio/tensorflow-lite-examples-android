@@ -9,10 +9,10 @@ import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.fragment.ImageLiteUseCase
 
-class ExampleUseCase: ImageLiteUseCase<Void, ImageInferenceInfo>() {
+class ExampleTemplateUseCase: ImageLiteUseCase<Void, ImageInferenceInfo>() {
 
     companion object {
-        const val UC_NAME = "example"
+        const val UC_NAME = "exampletemplate"
         const val TF_MODEL_PATH = ""
     }
 
