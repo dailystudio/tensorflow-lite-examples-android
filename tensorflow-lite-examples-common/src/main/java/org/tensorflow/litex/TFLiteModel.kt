@@ -86,6 +86,7 @@ data class _TFLiteInterpreter(
 
 }
 
+@Deprecated("Using LiteModel series instead")
 open class TFLiteModel(val context: Context,
                        private val modelPaths: Array<String>,
                        val devices: Array<Model.Device>,
