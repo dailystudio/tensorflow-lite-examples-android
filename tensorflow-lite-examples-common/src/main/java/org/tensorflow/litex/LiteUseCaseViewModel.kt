@@ -55,14 +55,15 @@ open class LiteUseCaseViewModel(
             val settings = useCase.getInferenceSettings()
             settings.prefsChanges.collect {
                 val changePrefName = it.prefKey
-                onInferenceSettingsChange(changePrefName, settings)
+
+                useCase.applySettingsChange(changePrefName, settings)
             }
         }
     }
 
     @Synchronized
     open fun performUseCase(input: Any): Any? {
-        val results = useCase.runModels(input)
+        val results = useCase.runModels(getApplication(), input)
 
         _inferenceInfo.postValue(results.second)
         _output.postValue(results.first)
@@ -72,23 +73,6 @@ open class LiteUseCaseViewModel(
 
     override fun onCleared() {
         useCase.destroyModels()
-    }
-
-    protected open fun onInferenceSettingsChange(changePrefName: String,
-                                                 inferenceSettings: InferenceSettingsPrefs) {
-        Logger.debug("[WATCH CHANGE]: changed preference: $changePrefName")
-
-        when (changePrefName) {
-            InferenceSettingsPrefs.PREF_DEVICE,
-            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS,
-            InferenceSettingsPrefs.PREF_USE_X_N_N_PACK -> {
-                useCase.invalidateModels()
-            }
-
-            InferenceSettingsPrefs.PREF_USE_AVERAGE_TIME -> {
-                useCase.useAverageTime = inferenceSettings.useAverageTime
-            }
-        }
     }
 
 }

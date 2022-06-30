@@ -10,10 +10,12 @@ import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationCameraFragment
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationSettingsFragment
 import org.tensorflow.lite.examples.classification.tflite.Classifier
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 import org.tensorflow.litex.images.Recognition
 import kotlin.math.min
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Recognition>>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     companion object {
         const val REPRESENTED_ITEMS_COUNT = 3
@@ -39,6 +41,23 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Recognition>>() {
         return resultsView
     }
 
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when (nameOfUseCase) {
+            ClassifierUseCase.UC_NAME -> {
+                val list = results as List<*>
+
+                val itemCount = min(list.size, REPRESENTED_ITEMS_COUNT)
+
+                for (i in 0 until itemCount) {
+                    val recognition = list[i] as Recognition
+                    detectItemViews[i]?.text = recognition.title
+                    detectItemValueViews[i]?.text = "%.1f%%".format((recognition.confidence ?: 0f) * 100)
+                }
+            }
+        }
+
+    }
+
     private fun setupResultView(resultsView: View) {
         for (i in 0 until REPRESENTED_ITEMS_COUNT) {
             detectItemViews[i] = resultsView.findViewById(
@@ -48,15 +67,6 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Recognition>>() {
             detectItemValueViews[i] = resultsView.findViewById(
                 resources.getIdentifier("detected_item${i + 1}_value", "id", packageName)
             )
-        }
-    }
-
-    override fun onResultsUpdated(results: List<Recognition>) {
-        val itemCount = min(results.size, REPRESENTED_ITEMS_COUNT)
-
-        for (i in 0 until itemCount) {
-            detectItemViews[i]?.text = results[i].title
-            detectItemValueViews[i]?.text = "%.1f%%".format((results[i].confidence ?: 0f) * 100)
         }
     }
 
@@ -74,6 +84,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Recognition>>() {
 
     override fun createSettingsFragment(): AbsSettingsDialogFragment? {
         return ImageClassificationSettingsFragment()
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            ClassifierUseCase.UC_NAME to ClassifierUseCase()
+        )
     }
 
 }

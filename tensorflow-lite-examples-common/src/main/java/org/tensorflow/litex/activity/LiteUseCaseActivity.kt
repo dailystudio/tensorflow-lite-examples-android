@@ -1,14 +1,13 @@
 package org.tensorflow.litex.activity
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.*
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.app.activity.DevBricksActivity
 import com.dailystudio.devbricksx.fragment.AbsAboutFragment
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
@@ -18,6 +17,8 @@ import com.dailystudio.tflite.example.common.ui.InferenceInfoView
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.observeUseCaseInfo
 import org.tensorflow.litex.observeUseCaseOutput
@@ -51,7 +52,7 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
     private var titleView: TextView? = null
 
     private var resultsView: View? = null
-    private var inferenceInfoView: InferenceInfoView? = null
+    private var inferenceInfoViews: MutableMap<String, InferenceInfoView> = mutableMapOf()
 
     private var settingsFragment: AbsSettingsDialogFragment? = null
     lateinit var exampleFragment: Fragment
@@ -108,25 +109,29 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
             it.commitAllowingStateLoss()
         }
 
-        applyBottomSheetFeatures()
-        applyOverflowMenus()
+        val nameOfUseCases = prepareLiteUseCase()
 
-        prepareLiteUseCase()
+        applyBottomSheetFeatures(nameOfUseCases)
+        applyOverflowMenus()
     }
 
-    private fun prepareLiteUseCase() {
+    private fun prepareLiteUseCase(): Array<String> {
         val useCases = buildLiteUseCase()
         useCases.forEach { entry ->
-            LiteUseCase.registerUseCase(entry.key, entry.value)
-            observeUseCaseOutput(entry.key) { output ->
+            val name = entry.key
+            val useCase = entry.value
+            LiteUseCase.registerUseCase(name, useCase)
+            observeUseCaseOutput(name) { output ->
                 output?.let {
-                    updateResultsOnUiThread(it)
+                    updateResultsOnUiThread(name, it)
                 }
             }
-            observeUseCaseInfo(entry.key) { info ->
-                updateInferenceInfoToUiThread(info)
+            observeUseCaseInfo(name) { info ->
+                updateInferenceInfoToUiThread(name, info)
             }
         }
+
+        return useCases.keys.toTypedArray()
     }
 
     private fun applyOverflowMenus() {
@@ -145,7 +150,7 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
         }
     }
 
-    private fun applyBottomSheetFeatures() {
+    private fun applyBottomSheetFeatures(namesOfUseCases: Array<String>) {
         bottomSheetLayout = findViewById(R.id.bottom_sheet_layout)
         bottomSheetLayout?.let {
             sheetBehavior = BottomSheetBehavior.from(it)
@@ -211,12 +216,15 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
 
         hiddenLayout = findViewById(R.id.hidden_layout)
         hiddenLayout?.let {
-            inferenceInfoView = createInferenceInfoView()
-            if (inferenceInfoView != null) {
-                it.addView(inferenceInfoView)
+            for (name in namesOfUseCases) {
+                val inferenceInfoView = createInferenceInfoView(name)
+                if (inferenceInfoView != null) {
+                    it.addView(inferenceInfoView)
+                    inferenceInfoViews[name] = inferenceInfoView
+                }
             }
 
-            if (inferenceInfoView == null) {
+            if (inferenceInfoViews.isEmpty()) {
                 it.visibility = View.GONE
             } else {
                 it.visibility = View.VISIBLE
@@ -225,7 +233,7 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
 
         divider?.let {
             it.visibility = if (resultsView == null
-                && inferenceInfoView == null) {
+                && inferenceInfoViews.isEmpty()) {
                 View.GONE
             } else {
                 View.VISIBLE
@@ -234,7 +242,7 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
 
         expandIndicator = findViewById(R.id.bottom_sheet_expand_indicator)
         expandIndicator?.let {
-            if (inferenceInfoView == null) {
+            if (inferenceInfoViews.isEmpty()) {
                 it.visibility = View.GONE
             } else {
                 it.visibility = View.VISIBLE
@@ -246,12 +254,12 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
         return R.layout.activity_example
     }
 
-    protected open fun createInferenceInfoView(): InferenceInfoView? {
+    protected open fun createInferenceInfoView(nameOfUseCase: String): InferenceInfoView? {
         return InferenceInfoView(this)
     }
 
-    protected open fun onInferenceInfoUpdated(info: InferenceInfo) {
-        inferenceInfoView?.setInferenceInfo(info)
+    protected open fun onInferenceInfoUpdated(nameOfUseCase: String, info: InferenceInfo) {
+        inferenceInfoViews[nameOfUseCase]?.setInferenceInfo(info)
     }
 
     protected open fun shouldKeepScreenOn(): Boolean {
@@ -297,28 +305,18 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
     abstract fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>>
     abstract fun createBaseFragment(): Fragment
     abstract fun createResultsView(): View?
-    abstract fun onResultsUpdated(results: Any)
+    abstract fun onResultsUpdated(nameOfUseCase: String, results: Any)
 
-    private fun updateInferenceInfoToUiThread(info: InferenceInfo) {
-        if (Thread.currentThread() !== uiThread) {
-            handler.post{
-                onInferenceInfoUpdated(info)
-            }
-        } else {
-            onInferenceInfoUpdated(info)
+    private fun updateInferenceInfoToUiThread(nameOfUseCase: String, info: InferenceInfo) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            onInferenceInfoUpdated(nameOfUseCase, info)
         }
     }
 
-    private fun updateResultsOnUiThread(results: Any) {
-        if (Thread.currentThread() !== uiThread) {
-            handler.post{
-                onResultsUpdated(results)
-            }
-        } else {
-            onResultsUpdated(results)
+    private fun updateResultsOnUiThread(nameOfUseCase: String, results: Any) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            onResultsUpdated(nameOfUseCase, results)
         }
     }
-
-    private val handler = Handler(Looper.getMainLooper())
 
 }

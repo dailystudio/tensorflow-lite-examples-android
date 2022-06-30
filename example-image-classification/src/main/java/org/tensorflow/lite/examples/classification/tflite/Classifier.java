@@ -23,7 +23,7 @@ import android.os.Trace;
 import com.dailystudio.devbricksx.development.Logger;
 
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.InterpreterApi;
 import org.tensorflow.lite.support.common.FileUtil;
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.TensorProcessor;
@@ -36,7 +36,8 @@ import org.tensorflow.lite.support.image.ops.Rot90Op;
 import org.tensorflow.lite.support.label.TensorLabel;
 import org.tensorflow.lite.support.model.Model.Device;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
-import org.tensorflow.litex.TFLiteModel;
+import org.tensorflow.litex.AssetFileLiteModel;
+import org.tensorflow.litex.ByteBufferLiteModel;
 import org.tensorflow.litex.images.Recognition;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 /** A classifier specialized to label images using TensorFlow Lite. */
-public abstract class Classifier extends TFLiteModel {
+public abstract class Classifier extends AssetFileLiteModel {
 
   /** The model type used for classification. */
   public enum Model {
@@ -61,10 +62,10 @@ public abstract class Classifier extends TFLiteModel {
   private static final int MAX_RESULTS = 3;
 
   /** Image size along the x axis. */
-  private final int imageSizeX;
+  private int imageSizeX = 0;
 
   /** Image size along the y axis. */
-  private final int imageSizeY;
+  private int imageSizeY = 0;
 
   /** Labels corresponding to the output of the vision model. */
   private List<String> labels;
@@ -73,10 +74,10 @@ public abstract class Classifier extends TFLiteModel {
   private TensorImage inputImageBuffer;
 
   /** Output probability TensorBuffer. */
-  private final TensorBuffer outputProbabilityBuffer;
+  private TensorBuffer outputProbabilityBuffer;
 
   /** Processer to apply post processing of the output probability. */
-  private final TensorProcessor probabilityProcessor;
+  private TensorProcessor probabilityProcessor;
 
   /**
    * Creates a classifier with the provided configuration.
@@ -106,10 +107,15 @@ public abstract class Classifier extends TFLiteModel {
   protected Classifier(Context context, String modelPath, Device device, int numThreads, boolean useXNNPACK) throws IOException {
     super(context, modelPath, device, numThreads, useXNNPACK);
 
-    // Loads labels out from the label file.
     labels = FileUtil.loadLabels(context, getLabelPath());
+  }
 
-    Interpreter tfLiteInterpreter = getInterpreter();
+  @Override
+  public void open() {
+    super.open();
+    // Loads labels out from the label file.
+
+    InterpreterApi tfLiteInterpreter = getInterpreter();
 
     // Reads type and shape of input and output tensors, respectively.
     int imageTensorIndex = 0;
@@ -133,6 +139,7 @@ public abstract class Classifier extends TFLiteModel {
 
     Logger.INSTANCE.debug("Created a Tensorflow Lite Image Classifier.");
   }
+
 
   /** Runs inference and returns the classification results. */
   public List<Recognition> recognizeImage(final Bitmap bitmap, int sensorOrientation) {

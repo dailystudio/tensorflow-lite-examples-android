@@ -9,12 +9,15 @@ import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
+import com.dailystudio.tflite.example.image.classification.ClassifierUseCase
 import com.dailystudio.tflite.example.image.classification.ImageClassificationSettingsPrefs
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
 import org.tensorflow.litex.images.Recognition
 import java.lang.Exception
 
+/*
 private class ImageClassificationAnalyzer(rotation: Int,
                                           lensFacing: Int,
                                           useAverageTime: Boolean,
@@ -94,20 +97,10 @@ private class ImageClassificationAnalyzer(rotation: Int,
     }
 
 }
+*/
 
-class ImageClassificationCameraFragment : AbsExampleCameraFragment<Classifier, ImageInferenceInfo, List<Recognition>>() {
-
-    override fun getSettingsPreference(): InferenceSettingsPrefs {
-        return ImageClassificationSettingsPrefs.instance
-    }
-
-    override fun createAnalyzer(
-        screenAspectRatio: Int,
-        rotation: Int,
-        lensFacing: Int,
-        useAverageTime: Boolean,
-    ): AbsImageAnalyzer<Classifier, ImageInferenceInfo, List<Recognition>> {
-        return ImageClassificationAnalyzer(rotation, lensFacing, useAverageTime)
-    }
+class ImageClassificationCameraFragment : LiteCameraUseCaseFragment() {
+    override val namesOfLiteUseCase: Array<String>
+        get() = arrayOf(ClassifierUseCase.UC_NAME)
 
 }

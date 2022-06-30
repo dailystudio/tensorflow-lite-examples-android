@@ -1,5 +1,6 @@
 package org.tensorflow.litex
 
+import android.content.Context
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -22,11 +23,13 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
         }
 
         fun getLiteUseCase(name: String): LiteUseCase<*, *, *>? = useCases[name]
-
     }
 
-    private var liteModels: Array<LiteModel>?  = null
-    protected val defaultModel: LiteModel? = liteModels?.getOrNull(0)
+    protected var liteModels: Array<LiteModel>?  = null
+    protected val defaultModel: LiteModel?
+        get() {
+            return liteModels?.getOrNull(0)
+        }
 
     var useAverageTime: Boolean = true
     private val avgInferenceTime = AvgTime(20)
@@ -34,16 +37,19 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 
     @WorkerThread
     @Synchronized
-    open fun checkAndPrepareModels(): Boolean {
+    protected open fun checkAndPrepareModels(context: Context): Boolean {
         if (liteModels == null) {
             val settings = getInferenceSettings()
 
             liteModels = createModels(
+                context,
                 settings.getDevice(),
                 settings.numberOfThreads,
                 settings.useXNNPack,
                 settings
             )
+
+            Logger.debug("[MODEL CREATE]: new created models = $liteModels")
 
             liteModels?.forEach { model ->
                 model.open()
@@ -56,7 +62,9 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
     @Synchronized
     @WorkerThread
     open fun destroyModels() {
+        Logger.debug("destroy models: $liteModels")
         liteModels?.forEach {
+            Logger.debug("models [$it] is closing")
             it.close()
         }
 
@@ -64,12 +72,16 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
     }
 
     open fun invalidateModels() {
-        Logger.debug("[USE_CASE_CREATION]: model is invalidated")
         destroyModels()
     }
 
-    open fun runModels(input: Input): Pair<Output?, Info> {
+    open fun runModels(context: Context, input: Input): Pair<Output?, Info> {
         val info = createInferenceInfo()
+
+        if (!checkAndPrepareModels(context)) {
+            Logger.warn("models fro use-case are NOT ready yet. skip inference")
+            return Pair(null, info)
+        }
 
         val start = System.currentTimeMillis()
         val output = runInference(input, info)
@@ -96,8 +108,26 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
         return Pair(output, info)
     }
 
+    open fun applySettingsChange(changePrefName: String,
+                                 inferenceSettings: InferenceSettingsPrefs) {
+        Logger.debug("applying changed preference: $changePrefName")
+
+        when (changePrefName) {
+            InferenceSettingsPrefs.PREF_DEVICE,
+            InferenceSettingsPrefs.PREF_NUMBER_OF_THREADS,
+            InferenceSettingsPrefs.PREF_USE_X_N_N_PACK -> {
+                invalidateModels()
+            }
+
+            InferenceSettingsPrefs.PREF_USE_AVERAGE_TIME -> {
+                useAverageTime = inferenceSettings.useAverageTime
+            }
+        }
+    }
+
     @WorkerThread
     protected abstract fun createModels(
+        context: Context,
         device: Model.Device = Model.Device.CPU,
         numOfThreads: Int = 1,
         useXNNPack: Boolean = true,

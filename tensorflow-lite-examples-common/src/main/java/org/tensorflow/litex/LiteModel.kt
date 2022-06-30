@@ -27,25 +27,26 @@ abstract class LiteModel protected constructor(
                        device: Model.Device = Model.Device.CPU,
                        numOfThreads: Int = 1,
                        useXNNPack: Boolean = true): LiteModel {
-            return BaseLiteModelImpl.Builder(modelBuffer, device, numOfThreads, useXNNPack).build()
+            Logger.debug("create model form buffer: [${modelBuffer}]")
+            return ByteBufferLiteModel.Builder(
+                modelBuffer, device, numOfThreads, useXNNPack).build()
         }
 
         @WorkerThread
-        fun fromFile(context: Context,
-                     modelPath: String,
-                     device: Model.Device = Model.Device.CPU,
-                     numOfThreads: Int = 1,
-                     useXNNPack: Boolean = true): LiteModel? {
+        fun fromAssetFile(context: Context,
+                          modelPath: String,
+                          device: Model.Device = Model.Device.CPU,
+                          numOfThreads: Int = 1,
+                          useXNNPack: Boolean = true): LiteModel? {
             Logger.debug("create model form file: [${modelPath}]")
 
-            val modelBuffer = try {
-                FileUtil.loadMappedFile(context, modelPath)
-            } catch (e: IOException) {
-                Logger.error("load mapped model file failed: $e")
+            return try {
+                AssetFileLiteModel.Builder(
+                    context, modelPath, device, numOfThreads, useXNNPack).build()
+            }  catch (e: IOException) {
+                Logger.error("failed to load model from asset [$modelPath]: $e")
                 null
-            } ?: return null
-
-            return fromBuffer(modelBuffer, device, numOfThreads, useXNNPack)
+            }
         }
     }
 
@@ -93,7 +94,7 @@ abstract class LiteModel protected constructor(
 
 }
 
-open class BaseLiteModelImpl private constructor(
+open class ByteBufferLiteModel protected constructor(
     private val modelBuffer: MappedByteBuffer,
     device: Model.Device = Model.Device.CPU,
     numOfThreads: Int = 1,
@@ -106,7 +107,7 @@ open class BaseLiteModelImpl private constructor(
         numOfThreads: Int = 1,
         useXNNPack: Boolean = true
     ): LiteModel.Builder(device, numOfThreads, useXNNPack) {
-        override fun build() = BaseLiteModelImpl(buffer, device, numOfThreads, useXNNPack)
+        override fun build() = ByteBufferLiteModel(buffer, device, numOfThreads, useXNNPack)
     }
 
     override fun open() {
@@ -143,3 +144,30 @@ open class BaseLiteModelImpl private constructor(
         Logger.debug("[NEW MODEL]: device = $device [delegate: $delegate], threads = $numOfThreads, XNNPack = $useXNNPack")
     }
 }
+
+open class AssetFileLiteModel
+@Throws(IOException::class)
+protected constructor(
+    protected val context: Context,
+    protected val modelPath: String,
+    device: Model.Device = Model.Device.CPU,
+    numOfThreads: Int = 1,
+    useXNNPack: Boolean = true
+): ByteBufferLiteModel(
+    FileUtil.loadMappedFile(context, modelPath),
+    device,
+    numOfThreads,
+    useXNNPack) {
+
+    class Builder(
+        private val context: Context,
+        private val modelPath: String,
+        device: Model.Device = Model.Device.CPU,
+        numOfThreads: Int = 1,
+        useXNNPack: Boolean = true
+    ): LiteModel.Builder(device, numOfThreads, useXNNPack) {
+        override fun build() = AssetFileLiteModel(context, modelPath, device, numOfThreads, useXNNPack)
+    }
+
+}
+

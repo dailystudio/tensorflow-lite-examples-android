@@ -24,7 +24,7 @@ import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-abstract class LiteImageUseCase<Output, Info: ImageInferenceInfo>
+abstract class ImageLiteUseCase<Output, Info: ImageInferenceInfo>
     : LiteUseCase<ImageProxy, Output, Info>() {
 
     var rotation: Int = 0
@@ -124,7 +124,7 @@ abstract class LiteCameraUseCaseFragment: CameraFragment() {
             .build()
             .also {
                 namesOfLiteUseCase.forEach { name ->
-                    (LiteUseCase.getLiteUseCase(name) as? LiteImageUseCase<*, *>)?.updateImageInfo(
+                    (LiteUseCase.getLiteUseCase(name) as? ImageLiteUseCase<*, *>)?.updateImageInfo(
                         rotation, lensFacing)
                 }
 
@@ -154,6 +154,6 @@ abstract class LiteCameraUseCaseFragment: CameraFragment() {
         setCameraLens(lensFacing)
     }
 
-    protected val namesOfLiteUseCase = arrayOf<String>()
+    abstract val namesOfLiteUseCase: Array<String>
 
 }
