@@ -26,9 +26,11 @@ import androidx.annotation.NonNull;
 import com.dailystudio.devbricksx.development.Logger;
 
 import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.InterpreterApi;
 import org.tensorflow.lite.support.common.FileUtil;
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.model.Model;
+import org.tensorflow.litex.AssetFileLiteModel;
 import org.tensorflow.litex.TFLiteModel;
 import org.tensorflow.litex.images.Recognition;
 
@@ -45,7 +47,7 @@ import java.util.Map;
 import java.util.Vector;
 
 /** Generic interface for interacting with different recognition engines. */
-abstract public class Detector extends TFLiteModel {
+abstract public class Detector extends AssetFileLiteModel {
   /** Labels corresponding to the output of the vision model. */
   private List<String> labels;
 
@@ -71,9 +73,20 @@ abstract public class Detector extends TFLiteModel {
 
   public Detector(Context context, String modelPath, Model.Device device, int numOfThreads, boolean useXNNPack) throws IOException {
     super(context, modelPath, device, numOfThreads, useXNNPack);
+  }
 
-    labels = FileUtil.loadLabels(context, getLabelPath());
-    Interpreter tfLiteInterpreter = getInterpreter();
+  @Override
+  public void open() {
+    super.open();
+
+    try {
+      labels = FileUtil.loadLabels(getContext(), getLabelPath());
+    } catch (IOException e) {
+      Logger.INSTANCE.error("failed to load labels from ["
+              + getLabelPath() + "]: " + e);
+    }
+
+    InterpreterApi tfLiteInterpreter = getInterpreter();
 
     int imageTensorIndex = 0;
     int[] imageShape = tfLiteInterpreter.getInputTensor(imageTensorIndex).shape(); // {1, height, width, 3}

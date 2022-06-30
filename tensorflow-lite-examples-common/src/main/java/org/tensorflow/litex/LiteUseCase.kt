@@ -132,6 +132,10 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
         }
     }
 
+    open fun getInferenceSettings(): InferenceSettingsPrefs {
+        return InferenceSettingsPrefs.instance
+    }
+
     @WorkerThread
     protected abstract fun createModels(
         context: Context,
@@ -141,8 +145,7 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
         settings: InferenceSettingsPrefs
     ): Array<LiteModel>
 
-    protected abstract fun createInferenceInfo(): Info
-    abstract fun getInferenceSettings(): InferenceSettingsPrefs
+    abstract fun createInferenceInfo(): Info
 
     @WorkerThread
     protected abstract fun runInference(input: Input, info: Info): Output?

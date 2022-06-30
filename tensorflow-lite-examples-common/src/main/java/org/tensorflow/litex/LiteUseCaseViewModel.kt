@@ -39,7 +39,7 @@ open class LiteUseCaseViewModel(
 ): AndroidViewModel(application) {
 
     private val _inferenceInfo: MutableLiveData<InferenceInfo> by lazy {
-        MutableLiveData(InferenceInfo())
+        MutableLiveData(useCase.createInferenceInfo())
     }
     val inferenceInfo: LiveData<InferenceInfo> = _inferenceInfo
 

@@ -3,15 +3,16 @@ package com.dailystudio.tflite.example.image.detection
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
-import com.dailystudio.tflite.example.common.AbsExampleActivity
+import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
 import org.tensorflow.lite.examples.detection.customview.OverlayView
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 import org.tensorflow.litex.images.Recognition
 
-class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Recognition>>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     private lateinit var tracker: MultiBoxTracker
     private var trackingOverlay: OverlayView? = null
@@ -39,17 +40,28 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Recognition>
         return null
     }
 
-    override fun onResultsUpdated(results: List<Recognition>) {
-        tracker.trackResults(results, System.currentTimeMillis())
-        trackingOverlay?.postInvalidate()
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when (nameOfUseCase) {
+            DetectorUseCase.UC_NAME -> {
+                val recognitions = results as List<Recognition>
+
+                tracker.trackResults(recognitions, System.currentTimeMillis())
+                trackingOverlay?.postInvalidate()
+            }
+        }
     }
 
-    override fun onInferenceInfoUpdated(info: ImageInferenceInfo) {
-        super.onInferenceInfoUpdated(info)
+    override fun onInferenceInfoUpdated(nameOfUseCase: String, info: InferenceInfo) {
+        super.onInferenceInfoUpdated(nameOfUseCase, info)
 
-        tracker.setFrameConfiguration(
-            info.imageSize.width, info.imageSize.height,
-            info.imageRotation)
+        when (nameOfUseCase) {
+            DetectorUseCase.UC_NAME -> {
+                val imageInferenceInfo = info as ImageInferenceInfo
+                tracker.setFrameConfiguration(
+                    imageInferenceInfo.imageSize.width, imageInferenceInfo.imageSize.height,
+                    imageInferenceInfo.imageRotation)
+            }
+        }
     }
 
     override fun getExampleName(): CharSequence? {
@@ -62,6 +74,12 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, List<Recognition>
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            DetectorUseCase.UC_NAME to DetectorUseCase()
+        )
     }
 
 }

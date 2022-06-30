@@ -7,7 +7,6 @@ import androidx.camera.core.UseCase
 import androidx.lifecycle.Observer
 import com.dailystudio.devbricksx.camera.CameraFragment
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.preference.AbsPrefs
 import com.dailystudio.devbricksx.preference.PrefsChange
 import com.dailystudio.tflite.example.common.R
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
@@ -15,6 +14,7 @@ import org.tensorflow.litex.TFLiteModel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+@Deprecated("Use LiteCameraUseCaseFragment instead")
 abstract class AbsExampleCameraFragment<Model:TFLiteModel, Info: ImageInferenceInfo, Results> : CameraFragment() {
 
     private lateinit var analyzerExecutor: ExecutorService

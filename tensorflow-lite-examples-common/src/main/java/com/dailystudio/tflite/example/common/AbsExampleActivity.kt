@@ -23,6 +23,7 @@ import com.rasalexman.kdispatcher.Notification
 import com.rasalexman.kdispatcher.subscribe
 import com.rasalexman.kdispatcher.unsubscribe
 
+@Deprecated("Use Lite LiteUseCaseActivity instead")
 abstract class AbsExampleActivity<Info: InferenceInfo, Results> : DevBricksActivity() {
 
     class AboutFragment(private val exampleName: CharSequence?,
