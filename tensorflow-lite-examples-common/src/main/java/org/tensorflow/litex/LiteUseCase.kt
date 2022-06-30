@@ -30,48 +30,53 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
         get() {
             return liteModels?.getOrNull(0)
         }
+    private val lock = Object()
 
     var useAverageTime: Boolean = true
     private val avgInferenceTime = AvgTime(20)
     private val avgAnalyzeTime = AvgTime(20)
 
     @WorkerThread
-    @Synchronized
     protected open fun checkAndPrepareModels(context: Context): Boolean {
-        if (liteModels == null) {
-            val settings = getInferenceSettings()
+        return synchronized(lock) {
+            if (liteModels == null) {
+                val settings = getInferenceSettings()
 
-            liteModels = createModels(
-                context,
-                settings.getDevice(),
-                settings.numberOfThreads,
-                settings.useXNNPack,
-                settings
-            )
+                liteModels = createModels(
+                    context,
+                    settings.getDevice(),
+                    settings.numberOfThreads,
+                    settings.useXNNPack,
+                    settings
+                )
 
-            Logger.debug("[MODEL CREATE]: new created models = $liteModels")
+                Logger.debug("[MODELS INSTANCE]: new created models = $liteModels")
 
-            liteModels?.forEach { model ->
-                model.open()
+                liteModels?.forEach { model ->
+                    model.open()
+                }
             }
+
+            !liteModels.isNullOrEmpty()
         }
 
-        return !liteModels.isNullOrEmpty()
     }
 
-    @Synchronized
     @WorkerThread
     open fun destroyModels() {
-        Logger.debug("destroy models: $liteModels")
-        liteModels?.forEach {
-            Logger.debug("models [$it] is closing")
-            it.close()
-        }
+        synchronized(lock) {
+            Logger.debug("[MODELS INSTANCE]: models to destroy = $liteModels")
+            liteModels?.forEach {
+                Logger.debug("models [$it] is closing")
+                it.close()
+            }
 
-        liteModels = null
+            liteModels = null
+        }
     }
 
     open fun invalidateModels() {
+        Logger.debug("[MODELS INSTANCE]: models to invalidate = $liteModels")
         destroyModels()
     }
 
@@ -84,7 +89,9 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
         }
 
         val start = System.currentTimeMillis()
-        val output = runInference(input, info)
+        val output = synchronized(lock) {
+            runInference(input, info)
+        }
         val end = System.currentTimeMillis()
 
         if (info.analysisTime == 0L) {
