@@ -5,6 +5,7 @@
     <string name="label_back">Back</string>
 
     <string name="setting_model">TensorFlow Lite models</string>
+    <string name="setting_reuse_predict">Reuse Style Prediction</string>
 
     <string name="model_fst_int8">FastStyleTransfer (Int8)</string>
     <string name="model_fst_float16">FastStyleTransfer (Float16)</string>

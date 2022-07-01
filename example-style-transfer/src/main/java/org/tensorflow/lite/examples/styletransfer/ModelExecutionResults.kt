@@ -18,14 +18,22 @@ package org.tensorflow.lite.examples.styletransfer
 
 import android.graphics.Bitmap
 
+typealias StyleBottleneck = Array<Array<Array<FloatArray>>>
+
 @SuppressWarnings("GoodTime")
-data class ModelExecutionResult(
-  val styledImage: Bitmap,
+data class PredictModelExecutionResult(
+  val styleBottleneck: StyleBottleneck,
   val preProcessTime: Long = 0L,
   val stylePredictTime: Long = 0L,
+  val executionLog: String = "",
+  val errorMessage: String = ""
+)
+
+@SuppressWarnings("GoodTime")
+data class TransformModelExecutionResult(
+  val styledImage: Bitmap,
   val styleTransferTime: Long = 0L,
   val postProcessTime: Long = 0L,
-  val totalExecutionTime: Long = 0L,
   val executionLog: String = "",
   val errorMessage: String = ""
 )

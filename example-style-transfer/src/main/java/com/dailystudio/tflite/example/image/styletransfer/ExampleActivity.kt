@@ -20,9 +20,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.styletransfer.StyleTransferResult
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
 
-class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferResult>() {
+class ExampleActivity: LiteUseCaseActivity() {
 
     companion object {
         const val STYLES_DIRECTORY = "thumbnails"
@@ -99,8 +101,14 @@ class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferRes
         return null
     }
 
-    override fun onResultsUpdated(results: StyleTransferResult) {
-        styledOverlay?.setStyledOverlay(results.styledBitmap)
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when(nameOfUseCase) {
+            StyleTransferUseCase.UC_NAME -> {
+                if (results is StyleTransferResult) {
+                    styledOverlay?.setStyledOverlay(results.styledBitmap)
+                }
+            }
+        }
     }
 
     private fun loadStyleImages() {
@@ -137,6 +145,12 @@ class ExampleActivity: AbsExampleActivity<AdvanceInferenceInfo, StyleTransferRes
 
     override fun createSettingsFragment(): AbsSettingsDialogFragment? {
         return StyleTransferSettingsFragment()
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            StyleTransferUseCase.UC_NAME to StyleTransferUseCase()
+        )
     }
 
 }

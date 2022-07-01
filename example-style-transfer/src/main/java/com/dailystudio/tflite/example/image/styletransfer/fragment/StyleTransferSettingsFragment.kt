@@ -1,14 +1,17 @@
 package com.dailystudio.tflite.example.image.styletransfer.fragment
 
 import android.content.Context
+import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.settings.AbsSetting
 import com.dailystudio.devbricksx.settings.RadioSetting
 import com.dailystudio.devbricksx.settings.SimpleRadioSettingItem
+import com.dailystudio.devbricksx.settings.SwitchSetting
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.styletransfer.R
 import com.dailystudio.tflite.example.image.styletransfer.StyleTransferSettingsPrefs
 import org.tensorflow.lite.examples.styletransfer.FSTModel
+import org.tensorflow.lite.support.model.Model
 
 class StyleTransferSettingsFragment : InferenceSettingsFragment() {
 
@@ -44,6 +47,23 @@ class StyleTransferSettingsFragment : InferenceSettingsFragment() {
             }
         }
 
+        val reusePredict = object: SwitchSetting(
+            context,
+            StyleTransferSettingsPrefs.PREF_REUSE_PREDICT,
+            R.drawable.ic_setting_reuse,
+            R.string.setting_reuse_predict,
+        ) {
+            override fun isOn(): Boolean {
+                return settingsPrefs.reusePredict
+            }
+
+            override fun setOn(on: Boolean) {
+                settingsPrefs.reusePredict = on
+            }
+
+        }
+
+        settings.add(reusePredict)
         settings.add(modelSetting)
 
         return settings.toTypedArray()
