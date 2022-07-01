@@ -106,10 +106,6 @@ abstract class LiteCameraUseCaseFragment: CameraFragment() {
         analyzerExecutor = Executors.newSingleThreadExecutor()
     }
 
-    protected open fun getSettingsPreference(): InferenceSettingsPrefs {
-        return InferenceSettingsPrefs.instance
-    }
-
     protected open fun getImageAnalysisBuilder(screenAspectRatio: Int, rotation: Int): ImageAnalysis.Builder {
         return ImageAnalysis.Builder().apply {
             setTargetAspectRatio(screenAspectRatio)
@@ -123,23 +119,31 @@ abstract class LiteCameraUseCaseFragment: CameraFragment() {
         val imageAnalyzer = getImageAnalysisBuilder(screenAspectRatio, rotation)
             .build()
             .also {
-                namesOfLiteUseCase.forEach { name ->
-                    (LiteUseCase.getLiteUseCase(name) as? ImageLiteUseCase<*, *>)?.updateImageInfo(
-                        rotation, lensFacing)
-                }
+                setupUseCases(screenAspectRatio, rotation)
 
                 it.setAnalyzer(analyzerExecutor) { image ->
-                    namesOfLiteUseCase.forEach { name ->
-                        val viewModel = getLiteUseCaseViewModel(
-                            name)
-                        viewModel?.performUseCase(image)
-                    }
+                    performUseCasesOnImage(image)
                 }
             }
 
         cases.add(imageAnalyzer)
 
         return cases
+    }
+
+    protected open fun setupUseCases(screenAspectRatio: Int, rotation: Int) {
+        namesOfLiteUseCase.forEach { name ->
+            (LiteUseCase.getLiteUseCase(name) as? ImageLiteUseCase<*, *>)?.updateImageInfo(
+                rotation, lensFacing)
+        }
+    }
+
+    protected open fun performUseCasesOnImage(image: ImageProxy) {
+        namesOfLiteUseCase.forEach { name ->
+            val viewModel = getLiteUseCaseViewModel(
+                name)
+            viewModel?.performUseCase(image)
+        }
     }
 
     override fun getLayoutResId(): Int {

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import com.dailystudio.devbricksx.development.Logger
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.AssetFileLiteModel
 import org.tensorflow.litex.TFLiteModel
 import java.io.InputStream
 import java.nio.ByteBuffer
@@ -18,7 +19,7 @@ class SuperResolutionModel(
     device: Model.Device,
     numOfThreads: Int,
     useXNNPACK: Boolean
-): TFLiteModel(context, modelPath, device, numOfThreads, useXNNPACK) {
+): AssetFileLiteModel(context, modelPath, device, numOfThreads, useXNNPACK) {
     companion object {
         const val INPUT_IMAGE_SIZE = 50
         const val OUT_IMAGE_SIZE = 200
@@ -37,7 +38,7 @@ class SuperResolutionModel(
         outputsForSuperRes[0] = outputImage
 
         val inputsForSuperRes = arrayOf<Any>(input)
-        getInterpreter()?.runForMultipleInputsOutputs(
+        interpreter?.runForMultipleInputsOutputs(
             inputsForSuperRes,
             outputsForSuperRes
         )
@@ -51,16 +52,12 @@ class SuperResolutionModel(
         return SuperRes(bitmap, superRes)
     }
 
-
-    fun bitmapToByteBuffer(
+    private fun bitmapToByteBuffer(
         bitmap: Bitmap,
         width: Int,
         height: Int,
-        mean: Float = 0.0f,
-        std: Float = 255.0f
     ): FloatBuffer {
         val inputImage = FloatBuffer.allocate(1 * width * height * 3)
-//        inputImage.order(ByteOrder.nativeOrder())
         inputImage.rewind()
 
         val intValues = IntArray(width * height)
@@ -84,9 +81,9 @@ class SuperResolutionModel(
     }
 
 
-    fun convertArrayToBitmap(imageArray: Array<Array<Array<FloatArray>>>,
-                             imageWidth: Int,
-                             imageHeight: Int
+    private fun convertArrayToBitmap(imageArray: Array<Array<Array<FloatArray>>>,
+                                     imageWidth: Int,
+                                     imageHeight: Int
     ): IntArray {
         val pixels = imageWidth * imageHeight
         val data = IntArray(pixels)
@@ -105,4 +102,5 @@ class SuperResolutionModel(
 
         return data
     }
+
 }

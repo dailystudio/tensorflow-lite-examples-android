@@ -3,13 +3,13 @@ package com.dailystudio.tflite.example.image.superresolution
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.image.superresolution.fragment.SuperResolutionCameraFragment
 import com.dailystudio.tflite.example.image.superresolution.model.SuperRes
 import com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, SuperRes>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     private var clipOverlay: ImageClipOverlay? = null
     private var superResOverlay: ImageClipOverlay? = null
@@ -45,10 +45,23 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, SuperRes>() {
         return getString(R.string.app_desc)
     }
 
-    override fun onResultsUpdated(results: SuperRes) {
-        Logger.debug("[RES]: $results")
-        clipOverlay?.setClipBitmap(results.originalBitmap)
-        superResOverlay?.setClipBitmap(results.superBitmap)
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            SuperResUseCase.UC_NAME to SuperResUseCase()
+        )
+    }
+
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when(nameOfUseCase) {
+            SuperResUseCase.UC_NAME -> {
+                if (results is SuperRes) {
+                    Logger.debug("[RES]: $results")
+
+                    clipOverlay?.setClipBitmap(results.originalBitmap)
+                    superResOverlay?.setClipBitmap(results.superBitmap)
+                }
+            }
+        }
     }
 
 }
