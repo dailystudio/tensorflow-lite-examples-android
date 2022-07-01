@@ -23,5 +23,6 @@ data class ModelExecutionResult(
   val bitmapOriginal: Bitmap,
   val bitmapMaskOnly: Bitmap,
   val executionLog: String,
-  val itemsFound: Set<Int>
+  // A map between labels and colors of the items found.
+  val itemsFound: Map<String, Int>
 )

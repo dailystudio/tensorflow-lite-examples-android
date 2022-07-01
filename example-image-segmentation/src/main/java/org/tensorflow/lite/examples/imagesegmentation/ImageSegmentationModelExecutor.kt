@@ -22,21 +22,15 @@ import android.graphics.Color
 import android.os.SystemClock
 import androidx.core.graphics.ColorUtils
 import android.util.Log
-import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
-import com.dailystudio.tflite.example.common.image.TFLiteImageHelper
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
-import kotlin.collections.HashSet
 import kotlin.random.Random
-import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.TFLiteModel
+import org.tensorflow.litex.AssetFileLiteModel
 
 /**
  * Class responsible to run the Image Segmentation model.
@@ -55,7 +49,8 @@ class ImageSegmentationModelExecutor(
   device: Model.Device,
   numOfThreads: Int,
   useXNNPack: Boolean
-): TFLiteModel(context, imageSegmentationModel, device, numOfThreads, useXNNPack) {
+): AssetFileLiteModel(context, imageSegmentationModel, device, numOfThreads, useXNNPack) {
+
   private val segmentationMasks: ByteBuffer =
     ByteBuffer.allocateDirect(1 * imageSize * imageSize * NUM_CLASSES * 4)
 
@@ -70,128 +65,29 @@ class ImageSegmentationModelExecutor(
     segmentationMasks.order(ByteOrder.nativeOrder())
   }
 
-  fun fastExecute(data: Bitmap,
-                  info: AdvanceInferenceInfo): Pair<Bitmap, Set<String>> {
-    try {
-      fullTimeExecutionTime = SystemClock.uptimeMillis()
-
-      preprocessTime = SystemClock.uptimeMillis()
-      val contentArray =
-        TFLiteImageHelper.bitmapToByteBuffer(
-          data,
-          imageSize,
-          imageSize,
-          IMAGE_MEAN,
-          IMAGE_STD
-        )
-      preprocessTime = SystemClock.uptimeMillis() - preprocessTime
-      info.preProcessTime = preprocessTime
-
-      imageSegmentationTime = SystemClock.uptimeMillis()
-      getInterpreter()?.run(contentArray, segmentationMasks)
-      imageSegmentationTime = SystemClock.uptimeMillis() - imageSegmentationTime
-      Log.d(TAG, "Time to run the model $imageSegmentationTime")
-      info.inferenceTime = imageSegmentationTime
-
-      maskFlatteningTime = SystemClock.uptimeMillis()
-      val maskAndItems = extraMaskAndItemsFromByteBuffer(
-        segmentationMasks, imageSize, imageSize,
-        segmentColors
-      )
-      maskFlatteningTime = SystemClock.uptimeMillis() - maskFlatteningTime
-      Log.d(TAG, "Time to flatten the mask result $maskFlatteningTime")
-      info.flattenTime = maskFlatteningTime
-
-      fullTimeExecutionTime = SystemClock.uptimeMillis() - fullTimeExecutionTime
-      Log.d(TAG, "Total time execution $fullTimeExecutionTime")
-
-      return maskAndItems
-    } catch (e: Exception) {
-      val exceptionLog = "something went wrong: ${e.message}"
-      Log.d(TAG, exceptionLog)
-
-      val emptyBitmap =
-        ImageUtils.createEmptyBitmap(
-          imageSize,
-          imageSize
-        )
-      return Pair(emptyBitmap, setOf())
-    }
-  }
-
-  private fun extraMaskAndItemsFromByteBuffer(buffer: ByteBuffer,
-                                              width: Int,
-                                              height: Int,
-                                              colors: IntArray): Pair<Bitmap, Set<String>> {
-    val start = System.currentTimeMillis()
-
-    val pixels = width * height
-    val data = IntArray(pixels)
-    val itemsFound = HashSet<String>()
-    val cacheInMemory = FloatArray(width * height * NUM_CLASSES)
-
-    buffer.rewind()
-    buffer.asFloatBuffer().get(cacheInMemory)
-
-    for (y in 0 until height) {
-      for (x in 0 until width) {
-        var maxVal = 0f
-        data[y * width + x] = Color.TRANSPARENT
-
-        var itemIndex = 0
-        for (c in 0 until NUM_CLASSES) {
-          val value = cacheInMemory[y * width * NUM_CLASSES + x * NUM_CLASSES + c]
-          if (c == 0 || value > maxVal) {
-            maxVal = value
-            data[y * width + x] = colors[c]
-            itemIndex = c
-          }
-        }
-
-        itemsFound.add(labelsArrays[itemIndex])
-      }
-    }
-
-    val end = System.currentTimeMillis()
-
-    Logger.debug("convert $pixels pixels' buffer in ${end - start} ms")
-
-    val maskBitmap = com.dailystudio.devbricksx.utils.ImageUtils.intArrayToBitmap(
-      data, imageSize, imageSize)
-
-    return Pair(maskBitmap, itemsFound)
-  }
-
   fun execute(data: Bitmap): ModelExecutionResult {
     try {
       fullTimeExecutionTime = SystemClock.uptimeMillis()
 
       preprocessTime = SystemClock.uptimeMillis()
-      val scaledBitmap =
-        ImageUtils.scaleBitmapAndKeepRatio(
-          data,
-          imageSize, imageSize
-        )
+      val scaledBitmap = ImageUtils.scaleBitmapAndKeepRatio(data, imageSize, imageSize)
 
       val contentArray =
-        ImageUtils.bitmapToByteBuffer(
-          scaledBitmap,
-          imageSize,
-          imageSize,
-          IMAGE_MEAN,
-          IMAGE_STD
-        )
+        ImageUtils.bitmapToByteBuffer(scaledBitmap, imageSize, imageSize, IMAGE_MEAN, IMAGE_STD)
       preprocessTime = SystemClock.uptimeMillis() - preprocessTime
 
       imageSegmentationTime = SystemClock.uptimeMillis()
-      getInterpreter()?.run(contentArray, segmentationMasks)
+      interpreter?.run(contentArray, segmentationMasks)
       imageSegmentationTime = SystemClock.uptimeMillis() - imageSegmentationTime
       Log.d(TAG, "Time to run the model $imageSegmentationTime")
 
       maskFlatteningTime = SystemClock.uptimeMillis()
-      val (maskImageApplied, maskOnly, itensFound) =
+      val (maskImageApplied, maskOnly, itemsFound) =
         convertBytebufferMaskToBitmap(
-          segmentationMasks, imageSize, imageSize, scaledBitmap,
+          segmentationMasks,
+          imageSize,
+          imageSize,
+          scaledBitmap,
           segmentColors
         )
       maskFlatteningTime = SystemClock.uptimeMillis() - maskFlatteningTime
@@ -205,28 +101,25 @@ class ImageSegmentationModelExecutor(
         scaledBitmap,
         maskOnly,
         formatExecutionLog(),
-        itensFound
+        itemsFound
       )
     } catch (e: Exception) {
       val exceptionLog = "something went wrong: ${e.message}"
       Log.d(TAG, exceptionLog)
 
-      val emptyBitmap =
-        ImageUtils.createEmptyBitmap(
-          imageSize,
-          imageSize
-        )
+      val emptyBitmap = ImageUtils.createEmptyBitmap(imageSize, imageSize)
       return ModelExecutionResult(
         emptyBitmap,
         emptyBitmap,
         emptyBitmap,
         exceptionLog,
-        HashSet(0)
+        HashMap<String, Int>()
       )
     }
   }
 
-  // base: https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/java/demo/app/src/main/java/com/example/android/tflitecamerademo/ImageClassifier.java
+  // base:
+  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/java/demo/app/src/main/java/com/example/android/tflitecamerademo/ImageClassifier.java
   @Throws(IOException::class)
   private fun loadModelFile(context: Context, modelFile: String): MappedByteBuffer {
     val fileDescriptor = context.assets.openFd(modelFile)
@@ -242,7 +135,7 @@ class ImageSegmentationModelExecutor(
   private fun formatExecutionLog(): String {
     val sb = StringBuilder()
     sb.append("Input Image Size: $imageSize x $imageSize\n")
-    sb.append("GPU enabled: ${devices[0] == Model.Device.GPU}\n")
+    sb.append("GPU enabled: ${device == Model.Device.GPU}\n")
     sb.append("Number of threads: $numberThreads\n")
     sb.append("Pre-process execution time: $preprocessTime ms\n")
     sb.append("Model execution time: $imageSegmentationTime ms\n")
@@ -257,18 +150,14 @@ class ImageSegmentationModelExecutor(
     imageHeight: Int,
     backgroundImage: Bitmap,
     colors: IntArray
-  ): Triple<Bitmap, Bitmap, Set<Int>> {
+  ): Triple<Bitmap, Bitmap, Map<String, Int>> {
     val conf = Bitmap.Config.ARGB_8888
     val maskBitmap = Bitmap.createBitmap(imageWidth, imageHeight, conf)
     val resultBitmap = Bitmap.createBitmap(imageWidth, imageHeight, conf)
     val scaledBackgroundImage =
-      ImageUtils.scaleBitmapAndKeepRatio(
-        backgroundImage,
-        imageWidth,
-        imageHeight
-      )
+      ImageUtils.scaleBitmapAndKeepRatio(backgroundImage, imageWidth, imageHeight)
     val mSegmentBits = Array(imageWidth) { IntArray(imageHeight) }
-    val itemsFound = HashSet<Int>()
+    val itemsFound = HashMap<String, Int>()
     inputBuffer.rewind()
 
     for (y in 0 until imageHeight) {
@@ -277,19 +166,20 @@ class ImageSegmentationModelExecutor(
         mSegmentBits[x][y] = 0
 
         for (c in 0 until NUM_CLASSES) {
-          val value = inputBuffer
-            .getFloat((y * imageWidth * NUM_CLASSES + x * NUM_CLASSES + c) * 4)
+          val value = inputBuffer.getFloat((y * imageWidth * NUM_CLASSES + x * NUM_CLASSES + c) * 4)
           if (c == 0 || value > maxVal) {
             maxVal = value
             mSegmentBits[x][y] = c
           }
         }
-
-        itemsFound.add(mSegmentBits[x][y])
-        val newPixelColor = ColorUtils.compositeColors(
-          colors[mSegmentBits[x][y]],
-          scaledBackgroundImage.getPixel(x, y)
-        )
+        val label = labelsArrays[mSegmentBits[x][y]]
+        val color = colors[mSegmentBits[x][y]]
+        itemsFound.put(label, color)
+        val newPixelColor =
+          ColorUtils.compositeColors(
+            colors[mSegmentBits[x][y]],
+            scaledBackgroundImage.getPixel(x, y)
+          )
         resultBitmap.setPixel(x, y, newPixelColor)
         maskBitmap.setPixel(x, y, colors[mSegmentBits[x][y]])
       }
@@ -300,40 +190,54 @@ class ImageSegmentationModelExecutor(
 
   companion object {
 
-    private const val TAG = "ImageSegmentationMExec"
+    public const val TAG = "SegmentationInterpreter"
     private const val imageSegmentationModel = "deeplabv3_257_mv_gpu.tflite"
     private const val imageSize = 257
     const val NUM_CLASSES = 21
-    private const val IMAGE_MEAN = 128.0f
-    private const val IMAGE_STD = 128.0f
+    private const val IMAGE_MEAN = 127.5f
+    private const val IMAGE_STD = 127.5f
 
     val segmentColors = IntArray(NUM_CLASSES)
-    val labelsArrays = arrayOf(
-      "background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus",
-      "car", "cat", "chair", "cow", "dining table", "dog", "horse", "motorbike",
-      "person", "potted plant", "sheep", "sofa", "train", "tv"
-    )
+    val labelsArrays =
+      arrayOf(
+        "background",
+        "aeroplane",
+        "bicycle",
+        "bird",
+        "boat",
+        "bottle",
+        "bus",
+        "car",
+        "cat",
+        "chair",
+        "cow",
+        "dining table",
+        "dog",
+        "horse",
+        "motorbike",
+        "person",
+        "potted plant",
+        "sheep",
+        "sofa",
+        "train",
+        "tv"
+      )
 
     init {
 
       val random = Random(System.currentTimeMillis())
       segmentColors[0] = Color.TRANSPARENT
       for (i in 1 until NUM_CLASSES) {
-        segmentColors[i] = Color.argb(
-          (128),
-          getRandomRGBInt(
-            random
-          ),
-          getRandomRGBInt(
-            random
-          ),
-          getRandomRGBInt(
-            random
+        segmentColors[i] =
+          Color.argb(
+            (128),
+            getRandomRGBInt(random),
+            getRandomRGBInt(random),
+            getRandomRGBInt(random)
           )
-        )
       }
     }
 
-    private fun getRandomRGBInt(random: Random) = (255 * random.nextFloat()).toInt()
+    private fun getRandomRGBInt(random: Random) = (186 * random.nextFloat()).toInt()
   }
 }

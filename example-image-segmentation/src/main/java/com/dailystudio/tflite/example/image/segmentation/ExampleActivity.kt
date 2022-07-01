@@ -1,10 +1,12 @@
 package com.dailystudio.tflite.example.image.segmentation
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
@@ -13,9 +15,12 @@ import com.dailystudio.tflite.example.common.ui.fragment.ItemLabelsListFragment
 import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
 import com.dailystudio.tflite.example.image.segmentation.fragment.ImageSegmentationCameraFragment
 import com.dailystudio.tflite.example.image.segmentation.ui.MaskOverlay
+import org.tensorflow.lite.examples.imagesegmentation.ImageSegmentationModelExecutor
 import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<AdvanceInferenceInfo, SegmentationResult>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     companion object {
         const val FRAGMENT_TAG_RESULTS = "results-fragment"
@@ -51,23 +56,33 @@ class ExampleActivity : AbsExampleActivity<AdvanceInferenceInfo, SegmentationRes
         return stubView
     }
 
-    override fun onResultsUpdated(results: SegmentationResult) {
-        val overlay: MaskOverlay = findViewById(R.id.mask_overlay)
-        overlay?.setMask(results.maskBitmap)
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when (nameOfUseCase) {
+            SegmentationUseCase.UC_NAME -> {
+                val mask = results as SegmentationResult
 
-        val viewModel = ViewModelProvider(this).get(ItemLabelViewModel::class.java)
+                val overlay: MaskOverlay? = findViewById(R.id.mask_overlay)
+                overlay?.setMask(mask.maskBitmap)
 
-        val items = results.items.toList()
-        for (i in 0 until MAX_ITEMS) {
-            val item = viewModel.getItemLabel(i)
-            item?.let {
-                item.label = ""
+                val viewModel = ViewModelProvider(this)[ItemLabelViewModel::class.java]
 
-                if (i < items.size) {
-                    it.label = items[i]
+                val items = mask.items.toList()
+                for (i in 0 until MAX_ITEMS) {
+                    val item = viewModel.getItemLabel(i)
+                    item?.let {
+                        item.label = ""
+
+                        if (i < items.size) {
+                            it.label = items[i].first
+                            it.color = items[i].second.toInt()
+
+                            Logger.debug("APPLY S-COLOR [${it.label}]: ${it.color}")
+
+                        }
+
+                        viewModel.updateItemLabel(it)
+                    }
                 }
-
-                viewModel.updateItemLabel(it)
             }
         }
     }
@@ -76,7 +91,7 @@ class ExampleActivity : AbsExampleActivity<AdvanceInferenceInfo, SegmentationRes
         val viewModel = ViewModelProvider(this).get(ItemLabelViewModel::class.java)
 
         for (i in 0 until MAX_ITEMS) {
-            viewModel.insertItemLabel(ItemLabel(i, "", ""))
+            viewModel.insertItemLabel(ItemLabel(i, "", "", Color.WHITE))
         }
     }
 
@@ -90,6 +105,12 @@ class ExampleActivity : AbsExampleActivity<AdvanceInferenceInfo, SegmentationRes
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            SegmentationUseCase.UC_NAME to SegmentationUseCase()
+        )
     }
 
 }
