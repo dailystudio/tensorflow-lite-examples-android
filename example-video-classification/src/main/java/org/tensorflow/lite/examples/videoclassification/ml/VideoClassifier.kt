@@ -21,17 +21,16 @@ import android.graphics.Bitmap
 import android.util.Size
 import com.dailystudio.devbricksx.development.Logger
 import org.tensorflow.lite.DataType
-import org.tensorflow.lite.examples.videoclassification.CalculateUtils
+import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
-import org.tensorflow.lite.support.image.ops.Rot90Op
 import org.tensorflow.lite.support.label.Category
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.TFLiteModel
+import org.tensorflow.litex.AssetFileLiteModel
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.math.max
@@ -42,7 +41,7 @@ class VideoClassifier(context: Context,
                       device: Model.Device = Model.Device.CPU,
                       numOfThreads: Int = 1,
                       useXNNPack: Boolean = true
-) : TFLiteModel(context, modelPath, device, numOfThreads, useXNNPack){
+) : AssetFileLiteModel(context, modelPath, device, numOfThreads, useXNNPack){
 
     enum class ClassifierModel {
         MOVINET_A0,
@@ -81,18 +80,20 @@ class VideoClassifier(context: Context,
         }
     }
 
-    private val inputShape: IntArray
-    private val outputCategoryCount: Int
-    private val inputHeight: Int
-    private val inputWidth: Int
+    private lateinit var inputShape: IntArray
+    private var  outputCategoryCount: Int = 0
+    private var  inputHeight: Int = 0
+    private var  inputWidth: Int = 0
     private var inputState = HashMap<String, Any>()
     private val lock = Any()
 
-    private val labels: List<String>
+    private lateinit var labels: List<String>
     private val maxResults: Int = 3
 
-    init {
-        val interpreter = getInterpreter()
+    override fun open() {
+        super.open()
+
+        val interpreter = interpreter as? Interpreter
 
         inputShape = interpreter
             ?.getInputTensorFromSignature(IMAGE_INPUT_NAME, SIGNATURE_KEY)
@@ -116,6 +117,7 @@ class VideoClassifier(context: Context,
                         "(${labels.size} != $outputCategoryCount"
             )
         inputState = initializeInput()
+
     }
 
     /**
@@ -124,7 +126,7 @@ class VideoClassifier(context: Context,
     private fun initializeInput(): HashMap<String, Any> {
         val inputs = HashMap<String, Any>()
 
-        val interpreter = getInterpreter() ?: return inputs
+        val interpreter = interpreter as? Interpreter ?: return inputs
 
         for (inputName in interpreter.getSignatureInputs(SIGNATURE_KEY)) {
             // Skip the input image tensor as it'll be fed in later.
@@ -147,7 +149,7 @@ class VideoClassifier(context: Context,
     private fun initializeOutput(): HashMap<String, Any> {
         val outputs = HashMap<String, Any>()
 
-        val interpreter = getInterpreter() ?: return outputs
+        val interpreter = interpreter as? Interpreter ?: return outputs
 
         for (outputName in interpreter.getSignatureOutputs(SIGNATURE_KEY)) {
             // Initialize a ByteBuffer to store the output of the TFLite model.
@@ -174,7 +176,7 @@ class VideoClassifier(context: Context,
             val outputs = initializeOutput()
 
             // Run inference using the TFLite model.
-            getInterpreter()?.runSignature(inputState, outputs)
+            (interpreter as? Interpreter)?.runSignature(inputState, outputs)
 
             // Post-process the outputs.
             var categories = postprocessOutputLogits(outputs[LOGITS_OUTPUT_NAME] as ByteBuffer)
@@ -187,10 +189,7 @@ class VideoClassifier(context: Context,
             categories.sortByDescending { it.score }
 
             // Take only maxResults number of result.
-            maxResults?.let {
-                categories = categories.subList(0, max(maxResults, categories.size))
-            }
-            return categories
+            return categories.subList(0, max(maxResults, categories.size))
         }
     }
 

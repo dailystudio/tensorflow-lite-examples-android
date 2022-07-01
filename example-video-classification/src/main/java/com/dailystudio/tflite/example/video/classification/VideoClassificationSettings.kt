@@ -7,7 +7,7 @@ import org.tensorflow.lite.examples.videoclassification.ml.VideoClassifier
 import org.tensorflow.lite.support.model.Model
 
 @SharedPreference
-class VideoClassificationSettings(@PreferenceValue
+class VideoClassificationSettings(@PreferenceValue(defaultValueStr = "MOVINET_A0")
                                   val classifierModel: String = VideoClassifier.ClassifierModel.MOVINET_A0.toString(),
                                   @PreferenceValue(defaultValueStr = IMAGE_PRE_SCALE_ENABLED.toString())
                                   val enableImagePreScale: Boolean = true,

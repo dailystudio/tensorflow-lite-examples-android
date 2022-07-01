@@ -11,9 +11,11 @@ import com.dailystudio.tflite.example.video.classification.fragment.VideoClassif
 import com.dailystudio.tflite.example.video.classification.fragment.VideoClassificationSettingsFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.tensorflow.lite.support.label.Category
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 import kotlin.math.min
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Category>>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     companion object {
         const val REPRESENTED_ITEMS_COUNT = 3
@@ -32,10 +34,9 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Category>>() {
 
         fabResetState = findViewById(R.id.fab_reset_state)
         fabResetState?.setOnClickListener {
-            val fragment = exampleFragment
-
-            if (fragment is VideoClassificationCameraFragment) {
-                fragment.resetModelState()
+            val useCase = LiteUseCase.getLiteUseCase(VideoClassificationUseCase.UC_NAME)
+            if (useCase is VideoClassificationUseCase) {
+                useCase.resetVideoState()
             }
         }
 
@@ -51,12 +52,19 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Category>>() {
         }
     }
 
-    override fun onResultsUpdated(results: List<Category>) {
-        val itemCount = min(results.size, REPRESENTED_ITEMS_COUNT)
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when (nameOfUseCase) {
+            VideoClassificationUseCase.UC_NAME -> {
+                if (results is List<*>) {
+                    val itemCount = min(results.size, REPRESENTED_ITEMS_COUNT)
 
-        for (i in 0 until itemCount) {
-            detectItemViews[i]?.text = results[i].label
-            detectItemValueViews[i]?.text = "%.1f%%".format((results[i].score ?: 0f) * 100)
+                    for (i in 0 until itemCount) {
+                        val item = results[i] as Category
+                        detectItemViews[i]?.text = item.label
+                        detectItemValueViews[i]?.text = "%.1f%%".format((item.score ?: 0f) * 100)
+                    }
+                }
+            }
         }
     }
 
@@ -74,6 +82,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Category>>() {
 
     override fun createSettingsFragment(): AbsSettingsDialogFragment? {
         return VideoClassificationSettingsFragment()
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            VideoClassificationUseCase.UC_NAME to VideoClassificationUseCase()
+        )
     }
 
     override fun createBaseFragment(): Fragment {

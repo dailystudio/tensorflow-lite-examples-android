@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.tensorflow.lite.examples.videoclassification
+package org.tensorflow.lite.examples.videoclassification.ml
 
 import android.graphics.*
 import android.media.Image
