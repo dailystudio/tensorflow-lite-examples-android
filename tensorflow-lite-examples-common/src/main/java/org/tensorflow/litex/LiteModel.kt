@@ -1,6 +1,7 @@
 package org.tensorflow.litex
 
 import android.content.Context
+import android.os.Looper
 import androidx.annotation.WorkerThread
 import com.dailystudio.devbricksx.development.Logger
 import org.tensorflow.lite.Delegate
@@ -32,7 +33,6 @@ abstract class LiteModel protected constructor(
                 modelBuffer, device, numOfThreads, useXNNPack).build()
         }
 
-        @WorkerThread
         fun fromAssetFile(context: Context,
                           modelPath: String,
                           device: Model.Device = Model.Device.CPU,
@@ -40,13 +40,8 @@ abstract class LiteModel protected constructor(
                           useXNNPack: Boolean = true): LiteModel? {
             Logger.debug("create model form file: [${modelPath}]")
 
-            return try {
-                AssetFileLiteModel.Builder(
+            return AssetFileLiteModel.Builder(
                     context, modelPath, device, numOfThreads, useXNNPack).build()
-            }  catch (e: IOException) {
-                Logger.error("failed to load model from asset [$modelPath]: $e")
-                null
-            }
         }
     }
 
@@ -74,8 +69,10 @@ abstract class LiteModel protected constructor(
 
     protected var delegate: Delegate? = null
 
+    @WorkerThread
     abstract fun open()
 
+    @WorkerThread
     open fun close() {
         interpreter?.let {
             it.close()
@@ -95,7 +92,7 @@ abstract class LiteModel protected constructor(
 }
 
 open class ByteBufferLiteModel protected constructor(
-    private val modelBuffer: MappedByteBuffer,
+    protected var mappedByteBuffer: MappedByteBuffer? = null,
     device: Model.Device = Model.Device.CPU,
     numOfThreads: Int = 1,
     useXNNPack: Boolean = true
@@ -111,6 +108,7 @@ open class ByteBufferLiteModel protected constructor(
     }
 
     override fun open() {
+        val buffer = mappedByteBuffer ?: return
         val interpreterOptions = Interpreter.Options()
 
         delegate = when (device) {
@@ -140,13 +138,12 @@ open class ByteBufferLiteModel protected constructor(
 
         interpreterOptions.numThreads = numOfThreads
 
-        interpreter = Interpreter(modelBuffer, interpreterOptions)
-        Logger.debug("[NEW MODEL]: device = $device [delegate: $delegate], threads = $numOfThreads, XNNPack = $useXNNPack")
+        interpreter = Interpreter(buffer, interpreterOptions)
+        Logger.debug("[NEW MODEL]: buffer = $buffer, device = $device [delegate: $delegate], threads = $numOfThreads, XNNPack = $useXNNPack")
     }
 }
 
 open class AssetFileLiteModel
-@Throws(IOException::class)
 protected constructor(
     protected val context: Context,
     protected val modelPath: String,
@@ -154,10 +151,7 @@ protected constructor(
     numOfThreads: Int = 1,
     useXNNPack: Boolean = true
 ): ByteBufferLiteModel(
-    FileUtil.loadMappedFile(context, modelPath),
-    device,
-    numOfThreads,
-    useXNNPack) {
+    null, device, numOfThreads, useXNNPack) {
 
     class Builder(
         private val context: Context,
@@ -167,6 +161,17 @@ protected constructor(
         useXNNPack: Boolean = true
     ): LiteModel.Builder(device, numOfThreads, useXNNPack) {
         override fun build() = AssetFileLiteModel(context, modelPath, device, numOfThreads, useXNNPack)
+    }
+
+    override fun open() {
+        mappedByteBuffer = try {
+            FileUtil.loadMappedFile(context, modelPath)
+        } catch (e: IOException) {
+            Logger.error("failed to load model from [$modelPath]: $e")
+            null
+        }
+
+        super.open()
     }
 
 }

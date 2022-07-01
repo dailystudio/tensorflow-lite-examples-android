@@ -8,10 +8,8 @@ import android.graphics.Paint
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
-import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.image.pose.fragment.PoseAnalyzer
+import com.dailystudio.tflite.example.image.pose.PoseUseCase
 import com.dailystudio.tflite.example.image.pose.utils.mapPosition
 import org.tensorflow.lite.examples.posenet.lib.Person
 
@@ -80,7 +78,7 @@ class PoseOverlayView: View {
             }
 
             for (keyPoint in it.keyPoints) {
-                if (keyPoint.score > PoseAnalyzer.MIN_CONFIDENCE) {
+                if (keyPoint.score > PoseUseCase.MIN_CONFIDENCE) {
                     canvas.drawCircle(
                         keyPoint.position.x.toFloat(),
                         keyPoint.position.y.toFloat(),
@@ -88,9 +86,9 @@ class PoseOverlayView: View {
                 }
             }
 
-            for (line in PoseAnalyzer.BODY_JOINTS) {
-                if ((it.keyPoints[line.first.ordinal].score > PoseAnalyzer.MIN_CONFIDENCE)
-                    and (it.keyPoints[line.second.ordinal].score > PoseAnalyzer.MIN_CONFIDENCE)) {
+            for (line in PoseUseCase.BODY_JOINTS) {
+                if ((it.keyPoints[line.first.ordinal].score > PoseUseCase.MIN_CONFIDENCE)
+                    and (it.keyPoints[line.second.ordinal].score > PoseUseCase.MIN_CONFIDENCE)) {
                     canvas.drawLine(
                         it.keyPoints[line.first.ordinal].position.x.toFloat(),
                         it.keyPoints[line.first.ordinal].position.y.toFloat(),

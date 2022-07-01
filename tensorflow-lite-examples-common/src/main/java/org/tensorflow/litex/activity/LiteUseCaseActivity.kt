@@ -248,6 +248,8 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
                 it.visibility = View.VISIBLE
             }
         }
+
+        sheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     protected open fun getLayoutResId(): Int {

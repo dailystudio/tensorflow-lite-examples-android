@@ -6,13 +6,16 @@ import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.common.AbsExampleActivity
+import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.image.pose.fragment.PoseCameraFragment
 import com.dailystudio.tflite.example.image.pose.ui.PoseOverlayView
 import org.tensorflow.lite.examples.posenet.lib.Person
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Person>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     private var poseOverlay: PoseOverlayView? = null
 
@@ -35,17 +38,27 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Person>() {
         return null
     }
 
-    override fun onResultsUpdated(results: Person) {
-        Logger.debug("detected pose: $results")
-        poseOverlay?.setPersonPose(results)
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when (nameOfUseCase) {
+            PoseUseCase.UC_NAME -> {
+                Logger.debug("detected pose: $results")
+                poseOverlay?.setPersonPose(results as Person)
+            }
+        }
     }
 
-    override fun onInferenceInfoUpdated(info: ImageInferenceInfo) {
-        super.onInferenceInfoUpdated(info)
+    override fun onInferenceInfoUpdated(nameOfUseCase: String, info: InferenceInfo) {
+        super.onInferenceInfoUpdated(nameOfUseCase, info)
 
-        poseOverlay?.setFrameConfiguration(
-            info.imageSize.width, info.imageSize.height,
-            info.imageRotation)
+        when (nameOfUseCase) {
+            PoseUseCase.UC_NAME -> {
+                val imageInferenceInfo = info as ImageInferenceInfo
+                poseOverlay?.setFrameConfiguration(
+                    imageInferenceInfo.imageSize.width, imageInferenceInfo.imageSize.height,
+                    imageInferenceInfo.imageRotation)
+            }
+        }
+
     }
 
     override fun getExampleName(): CharSequence? {
@@ -58,6 +71,12 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, Person>() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            PoseUseCase.UC_NAME to PoseUseCase()
+        )
     }
 
 }

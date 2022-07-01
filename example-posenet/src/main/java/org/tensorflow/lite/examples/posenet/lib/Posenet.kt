@@ -19,16 +19,13 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
-import java.io.FileInputStream
+import org.tensorflow.lite.Interpreter
+import org.tensorflow.lite.InterpreterApi
+import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.AssetFileLiteModel
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.nio.MappedByteBuffer
-import java.nio.channels.FileChannel
 import kotlin.math.exp
-import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.gpu.GpuDelegate
-import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.TFLiteModel
 
 enum class BodyPart {
   NOSE,
@@ -93,12 +90,13 @@ enum class Device {
   GPU
 }
 
-class Posenet(context: Context,
-              modelPath: String,
-              device: Model.Device,
-              numOfThreads: Int = NUM_LITE_THREADS,
-              useXNNPack: Boolean = true,
-) : TFLiteModel(context, modelPath, device, numOfThreads, useXNNPack) {
+class Posenet(
+  context: Context,
+  modelPath: String,
+  device: Model.Device,
+  numOfThreads: Int = NUM_LITE_THREADS,
+  useXNNPack: Boolean = true,
+) : AssetFileLiteModel(context, modelPath, device, numOfThreads, useXNNPack) {
 
   companion object {
     private const val NUM_LITE_THREADS = 4
@@ -141,7 +139,7 @@ class Posenet(context: Context,
   /**
    * Initializes an outputMap of 1 * x * y * z FloatArrays for the model processing to populate.
    */
-  private fun initOutputMap(interpreter: Interpreter): HashMap<Int, Any> {
+  private fun initOutputMap(interpreter: InterpreterApi): HashMap<Int, Any> {
     val outputMap = HashMap<Int, Any>()
 
     // 1 * 9 * 9 * 17 contains heatmaps
@@ -185,7 +183,7 @@ class Posenet(context: Context,
    *      person: a Person object containing data about keypoint locations and confidence scores
    */
   fun estimateSinglePose(bitmap: Bitmap): Person {
-    val interpreter = getInterpreter() ?: return Person()
+    val interpreter = interpreter ?: return Person()
 
     val estimationStartTimeNanos = SystemClock.elapsedRealtimeNanos()
     val inputArray = arrayOf(initInputArray(bitmap))
