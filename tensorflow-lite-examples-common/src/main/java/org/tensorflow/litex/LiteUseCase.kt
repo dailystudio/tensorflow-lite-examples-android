@@ -30,7 +30,7 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
         get() {
             return liteModels?.getOrNull(0)
         }
-    private val lock = Object()
+    protected val lockOfModels = Object()
 
     var useAverageTime: Boolean = true
     private val avgInferenceTime = AvgTime(20)
@@ -38,7 +38,7 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 
     @WorkerThread
     protected open fun checkAndPrepareModels(context: Context): Boolean {
-        return synchronized(lock) {
+        return synchronized(lockOfModels) {
             if (liteModels == null) {
                 val settings = getInferenceSettings()
 
@@ -64,7 +64,7 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 
     @WorkerThread
     open fun destroyModels() {
-        synchronized(lock) {
+        synchronized(lockOfModels) {
             Logger.debug("[MODELS INSTANCE]: models to destroy = $liteModels")
             liteModels?.forEach {
                 Logger.debug("models [$it] is closing")
@@ -89,7 +89,7 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
         }
 
         val start = System.currentTimeMillis()
-        val output = synchronized(lock) {
+        val output = synchronized(lockOfModels) {
             runInference(input, info)
         }
         val end = System.currentTimeMillis()
