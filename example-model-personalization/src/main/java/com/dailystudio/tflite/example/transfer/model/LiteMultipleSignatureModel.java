@@ -19,6 +19,7 @@ import android.content.Context;
 
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.support.model.Model;
+import org.tensorflow.litex.AssetFileLiteModel;
 import org.tensorflow.litex.TFLiteModel;
 
 import java.nio.FloatBuffer;
@@ -26,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** A wrapper for TFLite model with multiple signature runner. */
-public class LiteMultipleSignatureModel extends TFLiteModel {
+public class LiteMultipleSignatureModel extends AssetFileLiteModel {
 
   private static final int BOTTLENECK_SIZE = 7 * 7 * 1280;
   private static final int EXPECTED_BATCH_SIZE = 20;
@@ -55,7 +56,8 @@ public class LiteMultipleSignatureModel extends TFLiteModel {
     Map<String, Object> outputs = new HashMap<>();
     float[][] bottleneck = new float[1][BOTTLENECK_SIZE];
     outputs.put("bottleneck", bottleneck);
-    getInterpreter().runSignature(inputs, outputs, "load");
+
+    ((Interpreter)getInterpreter()).runSignature(inputs, outputs, "load");
     return bottleneck[0];
   }
 
@@ -75,7 +77,7 @@ public class LiteMultipleSignatureModel extends TFLiteModel {
     FloatBuffer loss = FloatBuffer.allocate(1);
     outputs.put("loss", loss);
 
-    getInterpreter().runSignature(inputs, outputs, "train");
+    ((Interpreter)getInterpreter()).runSignature(inputs, outputs, "train");
 
     return loss.get(0);
   }
@@ -94,7 +96,7 @@ public class LiteMultipleSignatureModel extends TFLiteModel {
     Map<String, Object> outputs = new HashMap<>();
     float[][] output = new float[1][numClasses];
     outputs.put("output", output);
-    getInterpreter().runSignature(inputs, outputs, "infer");
+    ((Interpreter)getInterpreter()).runSignature(inputs, outputs, "infer");
     return output[0];
   }
 
@@ -103,7 +105,7 @@ public class LiteMultipleSignatureModel extends TFLiteModel {
   }
 
   int getNumBottleneckFeatures() {
-    return getInterpreter().getInputTensorFromSignature("bottleneck", "train").shape()[1];
+    return ((Interpreter)getInterpreter()).getInputTensorFromSignature("bottleneck", "train").shape()[1];
   }
 
 }

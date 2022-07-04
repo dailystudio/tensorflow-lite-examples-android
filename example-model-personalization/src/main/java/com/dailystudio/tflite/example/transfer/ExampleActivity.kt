@@ -14,8 +14,10 @@ import com.dailystudio.tflite.example.transfer.fragment.TransferLearningCameraFr
 import com.dailystudio.tflite.example.transfer.fragment.TransferLearningViewModel
 import com.dailystudio.tflite.example.transfer.model.TransferLearningModel
 import com.google.android.material.button.MaterialButton
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, Array<TransferLearningModel.Prediction>>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     companion object {
         const val NUM_OF_CLASSES = 4
@@ -27,6 +29,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Array<TransferLearning
     private var trainButton: Button? = null
     private var captureModelButton: RadioButton? = null
     private var inferenceModelButton: RadioButton? = null
+
+    private val useCase: TransferLearningUseCase?
+        get() {
+            return LiteUseCase.getLiteUseCase(TransferLearningUseCase.UC_NAME)
+                    as? TransferLearningUseCase
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,10 +77,9 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Array<TransferLearning
 
         trainButton = findViewById(R.id.train_toggle_button)
         trainButton?.setOnClickListener {
-            (exampleFragment as TransferLearningCameraFragment).enableTraining(
-                TransferLearningModel.LossConsumer { epoch, loss ->
+            useCase?.enableTraining({ epoch, loss ->
 
-                })
+            })
         }
 
         captureModelButton = findViewById(R.id.capture_mode_button)
@@ -102,15 +109,24 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Array<TransferLearning
         return null
     }
 
-    override fun onResultsUpdated(results: Array<TransferLearningModel.Prediction>) {
-        val mode = viewModel.mode.value
-        if (mode == TransferLearningViewModel.Mode.Inference) {
-            for (prediction in results) {
-                val classIndex = prediction.className.toInt() - 1
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when (nameOfUseCase) {
+            TransferLearningUseCase.UC_NAME -> {
+                if (results is Array<*>) {
+                    val mode = viewModel.mode.value
+                    if (mode == TransferLearningViewModel.Mode.Inference) {
+                        for (prediction in results) {
+                            if (prediction is TransferLearningModel.Prediction) {
+                                val classIndex = prediction.className.toInt() - 1
 
-                classButtons[classIndex]?.text = prediction.confidence.toString()
+                                classButtons[classIndex]?.text = prediction.confidence.toString()
+                            }
+                        }
+                    }
+                }
             }
         }
+
     }
 
     override fun getExampleName(): CharSequence? {
@@ -123,6 +139,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Array<TransferLearning
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            TransferLearningUseCase.UC_NAME to TransferLearningUseCase()
+        )
     }
 
     private fun dumpSampleClassFromId(id: Int): String? {
@@ -169,7 +191,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Array<TransferLearning
         Logger.debug("[NOS] click on sample class: $sampleClass")
 
         sampleClass?.let {
-            (exampleFragment as? TransferLearningCameraFragment)?.addSample(it)
+            useCase?.addSample(it)
 
             viewModel.addSample(sampleClass)
         }
