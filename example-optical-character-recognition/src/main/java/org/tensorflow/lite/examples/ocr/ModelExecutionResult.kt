@@ -17,8 +17,17 @@ limitations under the License.
 package org.tensorflow.lite.examples.ocr
 
 import android.graphics.Bitmap
+import org.opencv.core.MatOfInt
+import org.opencv.core.MatOfRotatedRect
 
-data class ModelExecutionResult(
+data class DetectionResult(
+  val boundingBoxesMat: MatOfRotatedRect,
+  val indicesMat: MatOfInt,
+  val ratioWidth: Float,
+  val ratioHeight: Float,
+)
+
+data class RecognitionResult(
   val bitmapResult: Bitmap,
   val executionLog: String,
   // A map between words and colors of the items found.

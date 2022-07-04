@@ -13,9 +13,11 @@ import com.dailystudio.tflite.example.common.ui.ItemLabel
 import com.dailystudio.tflite.example.common.ui.fragment.ItemLabelsListFragment
 import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
 import com.dailystudio.tflite.example.image.ocr.fragment.OpticalCharacterRecognitionCameraFragment
-import org.tensorflow.lite.examples.ocr.ModelExecutionResult
+import org.tensorflow.lite.examples.ocr.RecognitionResult
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<OCRInferenceInfo, ModelExecutionResult>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     companion object {
         const val FRAGMENT_TAG_RESULTS = "results-fragment"
@@ -66,29 +68,38 @@ class ExampleActivity : AbsExampleActivity<OCRInferenceInfo, ModelExecutionResul
         return stubView
     }
 
-    override fun onResultsUpdated(results: ModelExecutionResult) {
-        Logger.debug("items: ${results.itemsFound}")
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when (nameOfUseCase) {
+            OCRUseCase.UC_NAME -> {
+                if (results is RecognitionResult) {
+                    val recognition = results as RecognitionResult
 
-        resultOverlay?.setImageBitmap(results.bitmapResult)
+                    Logger.debug("items: ${results.itemsFound}")
 
-        val viewModel = ViewModelProvider(this).get(ItemLabelViewModel::class.java)
+                    resultOverlay?.setImageBitmap(recognition.bitmapResult)
 
-        val items = results.itemsFound.toList()
+                    val viewModel = ViewModelProvider(this)[ItemLabelViewModel::class.java]
 
-        if (items.isNotEmpty()) {
-            for (i in 0 until MAX_ITEMS) {
-                val item = viewModel.getItemLabel(i)
-                item?.let {
-                    item.label = ""
+                    val items = recognition.itemsFound.toList()
 
-                    if (i < items.size) {
-                        it.label = items[i].first
+                    if (items.isNotEmpty()) {
+                        for (i in 0 until MAX_ITEMS) {
+                            val item = viewModel.getItemLabel(i)
+                            item?.let {
+                                item.label = ""
+
+                                if (i < items.size) {
+                                    it.label = items[i].first
+                                }
+
+                                viewModel.updateItemLabel(it)
+                            }
+                        }
                     }
-
-                    viewModel.updateItemLabel(it)
                 }
             }
         }
+
     }
 
     override fun getExampleName(): CharSequence? {
@@ -101,6 +112,12 @@ class ExampleActivity : AbsExampleActivity<OCRInferenceInfo, ModelExecutionResul
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            OCRUseCase.UC_NAME to OCRUseCase()
+        )
     }
 
 }
