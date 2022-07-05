@@ -100,6 +100,8 @@ class ImageSegmentationModelExecutor(
         maskImageApplied,
         scaledBitmap,
         maskOnly,
+        preprocessTime,
+        maskFlatteningTime,
         formatExecutionLog(),
         itemsFound
       )
@@ -112,6 +114,7 @@ class ImageSegmentationModelExecutor(
         emptyBitmap,
         emptyBitmap,
         emptyBitmap,
+        0, 0,
         exceptionLog,
         HashMap<String, Int>()
       )

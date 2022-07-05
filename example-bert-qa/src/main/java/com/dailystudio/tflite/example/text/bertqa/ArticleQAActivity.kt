@@ -12,9 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.text.bertqa.fragment.ArticleQAFragment
 import com.dailystudio.tflite.example.text.bertqa.fragment.QuestionsListFragmentExt
 import com.dailystudio.tflite.example.text.bertqa.model.ArticleViewModel
@@ -25,9 +22,11 @@ import com.rasalexman.kdispatcher.subscribe
 import com.rasalexman.kdispatcher.unsubscribe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.tensorflow.lite.examples.bertqa.ml.QaAnswer
+import org.tensorflow.lite.examples.bertqa.ml.QaUseCase
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ArticleQAActivity : AbsExampleActivity<InferenceInfo, List<QaAnswer>>() {
+class ArticleQAActivity : LiteUseCaseActivity() {
 
     companion object {
 
@@ -123,7 +122,7 @@ class ArticleQAActivity : AbsExampleActivity<InferenceInfo, List<QaAnswer>>() {
         return null
     }
 
-    override fun onResultsUpdated(results: List<QaAnswer>) {
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
     }
 
     override fun getLayoutResId(): Int {
@@ -188,6 +187,12 @@ class ArticleQAActivity : AbsExampleActivity<InferenceInfo, List<QaAnswer>>() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            QaUseCase.UC_NAME to QaUseCase()
+        )
     }
 
 }

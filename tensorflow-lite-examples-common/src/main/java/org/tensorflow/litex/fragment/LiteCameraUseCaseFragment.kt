@@ -17,8 +17,8 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.ImageUtils.toBitmap
 import com.dailystudio.tflite.example.common.R
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.LiteUseCaseViewModel
 import org.tensorflow.litex.getLiteUseCaseViewModel
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -100,6 +100,11 @@ abstract class LiteCameraUseCaseFragment: CameraFragment() {
 
     private lateinit var analyzerExecutor: ExecutorService
 
+    protected val liteUseCaseViewModel: LiteUseCaseViewModel
+        get() {
+            return getLiteUseCaseViewModel()
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -133,16 +138,14 @@ abstract class LiteCameraUseCaseFragment: CameraFragment() {
 
     protected open fun setupUseCases(screenAspectRatio: Int, rotation: Int) {
         namesOfLiteUseCase.forEach { name ->
-            (LiteUseCase.getLiteUseCase(name) as? ImageLiteUseCase<*, *>)?.updateImageInfo(
+            (liteUseCaseViewModel.getUseCase(name) as? ImageLiteUseCase<*, *>)?.updateImageInfo(
                 rotation, lensFacing)
         }
     }
 
     protected open fun performUseCasesOnImage(image: ImageProxy) {
         namesOfLiteUseCase.forEach { name ->
-            val viewModel = getLiteUseCaseViewModel(
-                name)
-            viewModel?.performUseCase(image)
+            liteUseCaseViewModel.performUseCase(name, image)
         }
     }
 

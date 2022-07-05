@@ -29,7 +29,7 @@ class OCRUseCase: ImageLiteUseCase<RecognitionResult, OCRInferenceInfo>() {
         val start = System.currentTimeMillis()
         val detectionResult = detectionModel.detectTexts(inferenceBitmap)
         val detectionEnd = System.currentTimeMillis()
-        info.detectionTime = (System.currentTimeMillis() - detectionEnd)
+        info.detectionTime = (System.currentTimeMillis() - start)
 
         val bitmapWithBoundingBoxes = if (detectionResult != null) {
             val bitmap = recognitionModel.recognizeTexts(

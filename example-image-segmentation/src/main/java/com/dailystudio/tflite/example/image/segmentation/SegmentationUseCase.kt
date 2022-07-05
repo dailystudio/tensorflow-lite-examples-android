@@ -34,6 +34,9 @@ class SegmentationUseCase: ImageLiteUseCase<SegmentationResult, AdvanceInference
             (defaultModel as? ImageSegmentationModelExecutor)
                 ?.execute(inferenceBitmap) ?: return null
 
+        info.preProcessTime = inferenceResult.preProcessTime
+        info.flattenTime = inferenceResult.maskFlatteningTime
+
         val mask = trimBitmap(inferenceResult.bitmapMaskOnly, info.frameSize)
         val extracted = ImageUtils.maskBitmap(
             trimBitmap(inferenceBitmap, info.frameSize), mask)

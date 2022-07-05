@@ -16,6 +16,7 @@ import com.dailystudio.tflite.example.transfer.model.TransferLearningModel
 import com.google.android.material.button.MaterialButton
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.activity.LiteUseCaseActivity
+import org.tensorflow.litex.getLiteUseCaseViewModel
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -32,7 +33,7 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     private val useCase: TransferLearningUseCase?
         get() {
-            return LiteUseCase.getLiteUseCase(TransferLearningUseCase.UC_NAME)
+            return getLiteUseCaseViewModel().getUseCase(TransferLearningUseCase.UC_NAME)
                     as? TransferLearningUseCase
         }
 

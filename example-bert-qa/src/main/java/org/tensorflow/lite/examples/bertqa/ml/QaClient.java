@@ -25,6 +25,7 @@ import com.google.common.base.Joiner;
 
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.support.model.Model;
+import org.tensorflow.litex.AssetFileLiteModel;
 import org.tensorflow.litex.TFLiteModel;
 
 import java.io.BufferedReader;
@@ -42,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Interface to load TfLite model and provide predictions. */
-public class QaClient extends TFLiteModel {
+public class QaClient extends AssetFileLiteModel {
   private static final String TAG = "BertDemo";
   private static final String MODEL_PATH = "model.tflite";
   private static final String DIC_PATH = "vocab.txt";
@@ -68,11 +69,18 @@ public class QaClient extends TFLiteModel {
                   boolean useXNNPack
   ) {
     super(context, MODEL_PATH, device, threads, useXNNPack);
+
     this.featureConverter = new FeatureConverter(dic, DO_LOWER_CASE, MAX_QUERY_LEN, MAX_SEQ_LEN);
+  }
+
+  @Override
+  public void open() {
+    super.open();
 
     loadDictionary();
   }
-/*
+
+  /*
   @WorkerThread
   public synchronized void loadModel() {
     try {

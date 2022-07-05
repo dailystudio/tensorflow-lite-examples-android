@@ -1,23 +1,22 @@
 package org.tensorflow.lite.examples.bertqa.ml
 
 import android.content.Context
-import androidx.lifecycle.LifecycleOwner
-import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.MLUseCase
+import org.tensorflow.litex.LiteModel
+import org.tensorflow.litex.LiteUseCase
 
-class QaUseCase(
-    lifecycleOwner: LifecycleOwner
-): MLUseCase<QaClient, Pair<String, String>, List<QaAnswer>, InferenceInfo>(lifecycleOwner) {
-    override fun runInference(
-        model: QaClient,
-        data: Pair<String, String>,
-        info: InferenceInfo
-    ): List<QaAnswer>? {
+class QaUseCase: LiteUseCase<Pair<String, String>, List<QaAnswer>, InferenceInfo>() {
+
+    companion object {
+        const val UC_NAME = "bertqa"
+    }
+
+
+    override fun runInference(input: Pair<String, String>, info: InferenceInfo): List<QaAnswer>? {
         val start = System.currentTimeMillis()
-        val result = model.predict(data.first, data.second)
+        val result = (defaultModel as? QaClient)?.predict(input.first, input.second)
         val end = System.currentTimeMillis()
 
         info.inferenceTime = end - start
@@ -25,21 +24,24 @@ class QaUseCase(
         return result
     }
 
-    override fun getSettingsPreference(): InferenceSettingsPrefs {
+    override fun getInferenceSettings(): InferenceSettingsPrefs {
         return InferenceSettingsPrefs.instance
     }
 
-    override fun createModel(
+    override fun createModels(
         context: Context,
         device: Model.Device,
-        threads: Int,
+        numOfThreads: Int,
         useXNNPack: Boolean,
         settings: InferenceSettingsPrefs
-    ): QaClient? {
-        return QaClient(context, device, threads, useXNNPack)
+    ): Array<LiteModel> {
+        return arrayOf(
+            QaClient(context, device, numOfThreads, useXNNPack)
+        )
     }
 
     override fun createInferenceInfo(): InferenceInfo {
         return InferenceInfo()
     }
+
 }

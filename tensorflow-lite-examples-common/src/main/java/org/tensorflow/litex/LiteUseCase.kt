@@ -14,17 +14,6 @@ import org.tensorflow.lite.support.model.Model
 
 abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 
-    companion object {
-        private val useCases: MutableMap<String, LiteUseCase<*, *, *>> =
-            mutableMapOf()
-
-        fun registerUseCase(name: String, useCase: LiteUseCase<*, *, *>) {
-            useCases[name] = useCase
-        }
-
-        fun getLiteUseCase(name: String): LiteUseCase<*, *, *>? = useCases[name]
-    }
-
     protected var liteModels: Array<LiteModel>?  = null
     protected val defaultModel: LiteModel?
         get() {
@@ -151,43 +140,33 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
     protected abstract fun runInference(input: Input, info: Info): Output?
 }
 
-fun Fragment.getLiteUseCaseViewModel(name: String): LiteUseCaseViewModel? {
+fun Fragment.getLiteUseCaseViewModel(): LiteUseCaseViewModel {
     val activity = requireActivity()
-    val application = activity.application
-    val useCase = LiteUseCase.getLiteUseCase(name) ?: return null
 
     return ViewModelProvider(
-        activity,
-        LiteUseCaseViewModelFactory(application, useCase)
-    )[LiteUseCaseViewModel::class.java]
+        activity)[LiteUseCaseViewModel::class.java]
 }
 
 fun Fragment.observeUseCaseOutput(name: String, observer: Observer<in Any?>) {
-    val viewModel = getLiteUseCaseViewModel(name) ?: return
-    viewModel.output.observe(this, observer)
+    val viewModel = getLiteUseCaseViewModel()
+    viewModel.observeUseCaseOutput(this, name, observer)
 }
 
 fun Fragment.observeUseCaseInfo(name: String, observer: Observer<in InferenceInfo>) {
-    val viewModel = getLiteUseCaseViewModel(name) ?: return
-    viewModel.inferenceInfo.observe(this, observer)
+    val viewModel = getLiteUseCaseViewModel() ?: return
+    viewModel.observeUseCaseInfo(this, name, observer)
 }
 
-fun AppCompatActivity.getLiteUseCaseViewModel(name: String): LiteUseCaseViewModel? {
-    val application = this.application
-    val useCase = LiteUseCase.getLiteUseCase(name) ?: return null
-
-    return ViewModelProvider(
-        this,
-        LiteUseCaseViewModelFactory(application, useCase)
-    )[LiteUseCaseViewModel::class.java]
+fun AppCompatActivity.getLiteUseCaseViewModel(): LiteUseCaseViewModel {
+    return ViewModelProvider(this)[LiteUseCaseViewModel::class.java]
 }
 
 fun AppCompatActivity.observeUseCaseOutput(name: String, observer: Observer<in Any?>) {
-    val viewModel = getLiteUseCaseViewModel(name) ?: return
-    viewModel.output.observe(this, observer)
+    val viewModel = getLiteUseCaseViewModel()
+    viewModel.observeUseCaseOutput(this, name, observer)
 }
 
 fun AppCompatActivity.observeUseCaseInfo(name: String, observer: Observer<in InferenceInfo>) {
-    val viewModel = getLiteUseCaseViewModel(name) ?: return
-    viewModel.inferenceInfo.observe(this, observer)
+    val viewModel = getLiteUseCaseViewModel()
+    viewModel.observeUseCaseInfo(this, name, observer)
 }

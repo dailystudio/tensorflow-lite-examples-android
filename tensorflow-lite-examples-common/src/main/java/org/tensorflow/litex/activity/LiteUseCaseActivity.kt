@@ -20,6 +20,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.getLiteUseCaseViewModel
 import org.tensorflow.litex.observeUseCaseInfo
 import org.tensorflow.litex.observeUseCaseOutput
 
@@ -116,11 +117,13 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
     }
 
     private fun prepareLiteUseCase(): Array<String> {
+        val viewModel = getLiteUseCaseViewModel()
         val useCases = buildLiteUseCase()
         useCases.forEach { entry ->
             val name = entry.key
             val useCase = entry.value
-            LiteUseCase.registerUseCase(name, useCase)
+
+            viewModel.manageUseCase(name, useCase)
             observeUseCaseOutput(name) { output ->
                 output?.let {
                     updateResultsOnUiThread(name, it)

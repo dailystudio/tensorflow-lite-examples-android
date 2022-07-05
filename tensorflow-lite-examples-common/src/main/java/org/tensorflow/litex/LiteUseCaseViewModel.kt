@@ -3,54 +3,27 @@ package org.tensorflow.litex
 import android.app.Application
 import androidx.lifecycle.*
 import com.dailystudio.devbricksx.development.Logger
+import com.dailystudio.devbricksx.preference.PrefsChange
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.support.model.Model
-import java.lang.RuntimeException
-import java.lang.reflect.InvocationTargetException
 
-class LiteUseCaseViewModelFactory(private val application: Application,
-                                  private val useCase: LiteUseCase<*, *, *>)
-    : ViewModelProvider.NewInstanceFactory() {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return if (LiteUseCaseViewModel::class.java.isAssignableFrom(modelClass)) {
-            try {
-                modelClass.getConstructor(Application::class.java,
-                    LiteUseCase::class.java).newInstance(application, useCase)
-            } catch (e: NoSuchMethodException) {
-                throw RuntimeException("Cannot create an instance of $modelClass", e)
-            } catch (e: IllegalAccessException) {
-                throw RuntimeException("Cannot create an instance of $modelClass", e)
-            } catch (e: InstantiationException) {
-                throw RuntimeException("Cannot create an instance of $modelClass", e)
-            } catch (e: InvocationTargetException) {
-                throw RuntimeException("Cannot create an instance of $modelClass", e)
-            }
-        } else super.create(modelClass)
-    }
-}
+private data class ManagedUseCase(
+    val useCase: LiteUseCase<*, *, *>,
+    val output: MutableLiveData<*>,
+    val info: MutableLiveData<InferenceInfo>
+)
 
 open class LiteUseCaseViewModel(
     application: Application,
-    private val useCase: LiteUseCase<Any, Any, InferenceInfo>
 ): AndroidViewModel(application) {
 
-    private val _inferenceInfo: MutableLiveData<InferenceInfo> by lazy {
-        MutableLiveData(useCase.createInferenceInfo())
-    }
-    val inferenceInfo: LiveData<InferenceInfo> = _inferenceInfo
+    private val managedUseCases: MutableMap<String, ManagedUseCase> =
+        mutableMapOf()
 
-    private val _output: MutableLiveData<Any?> = MutableLiveData(null)
-    val output: LiveData<Any?> = _output
-
-    val settingsChanges by lazy {
-        useCase.getInferenceSettings().prefsChanges.asLiveData()
-    }
-
-    init {
+    fun manageUseCase(nameOfUseCase: String, useCase: LiteUseCase<*, *, *>) {
         viewModelScope.launch {
             val settings = useCase.getInferenceSettings()
             settings.prefsChanges.collect {
@@ -59,20 +32,85 @@ open class LiteUseCaseViewModel(
                 useCase.applySettingsChange(changePrefName, settings)
             }
         }
+
+        val infoLiveData = MutableLiveData(useCase.createInferenceInfo())
+        val outputLiveData = MutableLiveData(null)
+
+        managedUseCases[nameOfUseCase] =
+            ManagedUseCase(useCase, outputLiveData, infoLiveData)
     }
 
-    @Synchronized
-    open fun performUseCase(input: Any): Any? {
+    fun buildUseCase (
+        nameOfUseCase: String,
+        useCaseKlass: Class<out LiteUseCase<*, *, *>>
+    ): LiteUseCase<*, *, *>? {
+        val useCase: LiteUseCase<*, *, *> = try {
+            useCaseKlass.newInstance()
+        } catch (e: IllegalAccessException) {
+            Logger.error("failed to create use-case [$useCaseKlass]: $e")
+            null
+        } catch (e: InstantiationException) {
+            Logger.error("failed to create use-case [$useCaseKlass]: $e")
+            null
+        } ?: return null
+
+        manageUseCase(nameOfUseCase, useCase)
+
+        return useCase
+    }
+
+    fun getUseCase(nameOfUseCase: String): LiteUseCase<*, *, *>? {
+        return managedUseCases[nameOfUseCase]?.useCase
+    }
+
+    fun performUseCase(nameOfUseCase: String, input: Any): Any? {
+        val managedUseCase =
+            managedUseCases[nameOfUseCase] ?: return null
+
+        val useCase = managedUseCase.useCase as LiteUseCase<Any, Any, *>
+        val liveDataOfOutput = managedUseCase.output as MutableLiveData<Any>
+        val liveDataOfInfo = managedUseCase.info
+
         val results = useCase.runModels(getApplication(), input)
 
-        _inferenceInfo.postValue(results.second)
-        _output.postValue(results.first)
+        liveDataOfInfo.postValue(results.second)
+        liveDataOfOutput.postValue(results.first)
 
-        return output
+        return results.first
+    }
+
+    fun observeUseCaseOutput(lifecycleOwner: LifecycleOwner,
+                             nameOfUseCase: String,
+                             observer: Observer<in Any?>) {
+        val managedUseCase =
+            managedUseCases[nameOfUseCase] ?: return
+
+        managedUseCase.output.observe(lifecycleOwner, observer)
+    }
+
+    fun observeUseCaseInfo(lifecycleOwner: LifecycleOwner,
+                           nameOfUseCase: String,
+                           observer: Observer<in InferenceInfo>) {
+        val managedUseCase =
+            managedUseCases[nameOfUseCase] ?: return
+
+        (managedUseCase.info).observe(lifecycleOwner, observer)
+    }
+
+    fun observeUseCaseSettings(lifecycleOwner: LifecycleOwner,
+                               nameOfUseCase: String,
+                               observer: Observer<in PrefsChange>) {
+        val managedUseCase =
+            managedUseCases[nameOfUseCase] ?: return
+
+        managedUseCase.useCase.getInferenceSettings()
+            .prefsChange.observe(lifecycleOwner, observer)
     }
 
     override fun onCleared() {
-        useCase.destroyModels()
+        managedUseCases.forEach {
+            it.value.useCase.destroyModels()
+        }
     }
 
 }

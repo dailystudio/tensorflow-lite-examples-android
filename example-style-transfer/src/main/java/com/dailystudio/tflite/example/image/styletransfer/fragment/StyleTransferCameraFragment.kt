@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
+import org.tensorflow.litex.getLiteUseCaseViewModel
 
 class StyleTransferCameraFragment : LiteCameraUseCaseFragment() {
 
@@ -20,7 +21,7 @@ class StyleTransferCameraFragment : LiteCameraUseCaseFragment() {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 StyleTransferPrefs.prefsChanges.collect {
                     if (it.prefKey == StyleTransferPrefs.KEY_SELECTED_STYLE) {
-                        val useCase = LiteUseCase.getLiteUseCase(StyleTransferUseCase.UC_NAME)
+                        val useCase = liteUseCaseViewModel.getUseCase(StyleTransferUseCase.UC_NAME)
 
                         if (useCase is StyleTransferUseCase) {
                             useCase.selectStyle(StyleTransferPrefs.getSelectedStyle(requireContext()))

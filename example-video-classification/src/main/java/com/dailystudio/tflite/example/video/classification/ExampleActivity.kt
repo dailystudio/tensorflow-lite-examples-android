@@ -13,6 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.tensorflow.lite.support.label.Category
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.activity.LiteUseCaseActivity
+import org.tensorflow.litex.getLiteUseCaseViewModel
 import kotlin.math.min
 
 class ExampleActivity : LiteUseCaseActivity() {
@@ -34,7 +35,7 @@ class ExampleActivity : LiteUseCaseActivity() {
 
         fabResetState = findViewById(R.id.fab_reset_state)
         fabResetState?.setOnClickListener {
-            val useCase = LiteUseCase.getLiteUseCase(VideoClassificationUseCase.UC_NAME)
+            val useCase = getLiteUseCaseViewModel().getUseCase(VideoClassificationUseCase.UC_NAME)
             if (useCase is VideoClassificationUseCase) {
                 useCase.resetVideoState()
             }
