@@ -22,12 +22,14 @@ import com.dailystudio.tflite.example.common.InferenceAgent
 import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
+import com.dailystudio.tflite.example.image.digitclassifier.DigitClassifierUseCase
 import com.dailystudio.tflite.example.image.digitclassifier.R
 import com.divyanshu.draw.widget.DrawView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.digitclassifier.DigitClassifier
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.getLiteUseCaseViewModel
 import java.io.File
 
 data class RecognizedDigit(val digitBitmap: Bitmap? = null,
@@ -35,12 +37,6 @@ data class RecognizedDigit(val digitBitmap: Bitmap? = null,
                            val prop: Float = 0f)
 
 class DigitClassifierFragment : Fragment() {
-
-    companion object {
-        private const val PRE_SCALE_SIZE = (28 * 3)
-
-        private const val INFERENCE_IMAGE_FILE = "inference.png"
-    }
 
     private var drawView: DrawView? = null
     private var clearButton: View? = null
@@ -189,79 +185,8 @@ class DigitClassifierFragment : Fragment() {
 
     private fun classifyDrawing(bitmap: Bitmap) {
         lifecycleScope.launch(Dispatchers.IO) {
-            doAnalysis(bitmap)
+            getLiteUseCaseViewModel().performUseCase(DigitClassifierUseCase.UC_NAME, bitmap)
         }
-    }
-
-    @Synchronized
-    private fun doAnalysis(bitmap: Bitmap) {
-        if (digitClassifier == null) {
-            digitClassifier = prepareModel(getSettingsPreference())
-        }
-
-        val classifier = digitClassifier
-
-        val info = ImageInferenceInfo()
-        info.imageSize = Size(bitmap.width, bitmap.height)
-        info.inferenceImageSize = classifier?.getInferenceSize() ?: Size (0, 0)
-
-        val start = System.currentTimeMillis()
-        val inferenceBitmap = preProcessBitmap(bitmap, info)
-        dumpIntermediateBitmap(inferenceBitmap, INFERENCE_IMAGE_FILE)
-
-        val inferenceStart = System.currentTimeMillis()
-        val result = classifier?.classify(inferenceBitmap)
-        val end = System.currentTimeMillis()
-
-        info.inferenceTime = end - inferenceStart
-        info.analysisTime = end - start
-
-        val digit = RecognizedDigit(inferenceBitmap,
-            result?.first ?: -1,
-            result?.second ?: 0f
-        )
-
-        inferenceAgent.deliverInferenceInfo(info)
-        inferenceAgent.deliverResults(digit)
-    }
-
-    private fun preProcessBitmap(frameBitmap: Bitmap,
-                                 info: ImageInferenceInfo): Bitmap {
-        val matrix = MatrixUtils.getTransformationMatrix(
-            frameBitmap.width,  frameBitmap.height,
-            PRE_SCALE_SIZE, PRE_SCALE_SIZE,
-            0,
-            maintainAspectRatio = true,
-            fitIn = true)
-
-        val paddingColor = ResourcesCompatUtils.getColor(
-            requireContext(),
-            R.color.black)
-
-        return ImageUtils.createTransformedBitmap(frameBitmap,
-            matrix, paddingColor = paddingColor)
-    }
-
-    private fun dumpIntermediateBitmap(bitmap: Bitmap,
-                                       filename: String) {
-        if (!isDumpIntermediatesEnabled()) {
-            return
-        }
-
-        saveIntermediateBitmap(bitmap, filename)
-    }
-
-    private fun saveIntermediateBitmap(bitmap: Bitmap,
-                                       filename: String) {
-        val dir = GlobalContextWrapper.context?.getExternalFilesDir(
-            Environment.DIRECTORY_PICTURES
-        )
-
-        ImageUtils.saveBitmap(bitmap, File(dir, filename))
-    }
-
-    private fun isDumpIntermediatesEnabled(): Boolean {
-        return false
     }
 
 }

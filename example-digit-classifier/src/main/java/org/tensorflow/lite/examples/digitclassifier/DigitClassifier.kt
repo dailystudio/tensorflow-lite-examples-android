@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.AssetFileLiteModel
 import org.tensorflow.litex.TFLiteModel
 import java.lang.Exception
 
@@ -23,7 +24,7 @@ class DigitClassifier(context: Context,
                       device: Model.Device,
                       numOfThreads: Int,
                       useXNNPACK: Boolean = true
-) : TFLiteModel(context, MODEL_FILE, device, numOfThreads, useXNNPACK){
+) : AssetFileLiteModel(context, MODEL_FILE, device, numOfThreads, useXNNPACK){
   var isInitialized = false
     private set
 
@@ -34,9 +35,9 @@ class DigitClassifier(context: Context,
   private var inputImageHeight: Int = 0 // will be inferred from TF Lite model
   private var modelInputSize: Int = 0 // will be inferred from TF Lite model
 
-  init{
+  override fun open() {
+    super.open()
 
-    val interpreter = getInterpreter()
     interpreter?.let {
       // Read input shape from model file
       val inputShape = it.getInputTensor(0).shape()
@@ -70,7 +71,7 @@ class DigitClassifier(context: Context,
 
     startTime = System.nanoTime()
     val result = Array(1) { FloatArray(OUTPUT_CLASSES_COUNT) }
-    getInterpreter()?.run(byteBuffer, result)
+    interpreter?.run(byteBuffer, result)
     elapsedTime = (System.nanoTime() - startTime) / 1000000
     Log.d(TAG, "Inference time = " + elapsedTime + "ms")
 

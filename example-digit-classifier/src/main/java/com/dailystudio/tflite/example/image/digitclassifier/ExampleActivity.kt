@@ -6,14 +6,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.devbricksx.utils.ImageUtils
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.image.digitclassifier.fragment.DigitClassifierFragment
 import com.dailystudio.tflite.example.image.digitclassifier.fragment.RecognizedDigit
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, RecognizedDigit>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     private var digitBitmap: ImageView? = null
     private var resultDigit: TextView? = null
@@ -34,27 +33,29 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, RecognizedDigit>(
         return view
     }
 
-    override fun onResultsUpdated(results: RecognizedDigit) {
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
         Logger.debug("result: $results")
 
-        digitBitmap?.setImageBitmap(if (results.digitBitmap == null) {
-            null
-        } else {
-            val radius = resources.getDimensionPixelSize(
-                R.dimen.results_image_round_corner_radius).toFloat()
-            ImageUtils.clipBitmapWithRoundCorner(results.digitBitmap, radius)
-        })
+        if (results is RecognizedDigit) {
+            digitBitmap?.setImageBitmap(if (results.digitBitmap == null) {
+                null
+            } else {
+                val radius = resources.getDimensionPixelSize(
+                    R.dimen.results_image_round_corner_radius).toFloat()
+                ImageUtils.clipBitmapWithRoundCorner(results.digitBitmap, radius)
+            })
 
-        resultDigit?.text = if (results.digit != -1) {
-            "%d".format(results.digit)
-        } else {
-            getString(R.string.prompt_draw)
-        }
+            resultDigit?.text = if (results.digit != -1) {
+                "%d".format(results.digit)
+            } else {
+                getString(R.string.prompt_draw)
+            }
 
-        resultProp?.text = if (results.digit != -1) {
-            "(%3.1f%%)".format(results.prop * 100)
-        } else {
-            ""
+            resultProp?.text = if (results.digit != -1) {
+                "(%3.1f%%)".format(results.prop * 100)
+            } else {
+                ""
+            }
         }
     }
 
@@ -68,6 +69,12 @@ class ExampleActivity : AbsExampleActivity<ImageInferenceInfo, RecognizedDigit>(
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            DigitClassifierUseCase.UC_NAME to DigitClassifierUseCase()
+        )
     }
 
 }
