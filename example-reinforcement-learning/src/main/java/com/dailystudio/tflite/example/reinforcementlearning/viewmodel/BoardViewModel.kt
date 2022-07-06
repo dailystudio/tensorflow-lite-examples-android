@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
-import com.dailystudio.tflite.example.reinforcementlearning.ReinforcementLearningAnalyzer
+import com.dailystudio.tflite.example.reinforcementlearning.ReinforcementLearningUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,12 +51,9 @@ class BoardViewModel(application: Application): AndroidViewModel(application) {
     private val _gameState = MutableLiveData(GameState.Started)
     val gameState = _gameState
 
-    private var analyzer: ReinforcementLearningAnalyzer? = null
-    private var lock = Object()
-
-    suspend fun playerActionOn(x:Int, y: Int):Int {
+    fun playerActionOn(x:Int, y: Int) {
         val agentCellId = BoardCell.getIdByPos(x, y)
-        val agentCell = AgentBoardCellManager.get(agentCellId) ?: return -1
+        val agentCell = AgentBoardCellManager.get(agentCellId) ?: return
 
         if (agentCell.status == BoardCellStatus.UNTRIED) {
             agentCell.status = if (agentCell.hiddenStatus == HiddenBoardCellStatus.OCCUPIED_BY_PLANE) {
@@ -69,8 +66,6 @@ class BoardViewModel(application: Application): AndroidViewModel(application) {
         }
 
         AgentBoardCellManager.add(agentCell)
-
-        return predictNextMove()
     }
 
     fun agentActionOn(x: Int, y: Int) {
@@ -132,28 +127,6 @@ class BoardViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    private suspend fun predictNextMove(): Int {
-        return withContext(Dispatchers.IO) {
-            synchronized(lock) {
-                if (analyzer == null) {
-                    analyzer = ReinforcementLearningAnalyzer(false)
-                }
-
-                analyzer?.run(
-                    PlayerBoardCellManager.dumpStatus(),
-                    InferenceSettingsPrefs.instance) ?: -1
-            }
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
-        synchronized(lock) {
-            analyzer?.destroyModel()
-        }
-    }
-
     private fun initBoards() {
         val playerHiddenStatus =  Array(Constants.BOARD_SIZE) {
             Array(Constants.BOARD_SIZE) { HiddenBoardCellStatus.UNOCCUPIED }
@@ -188,7 +161,6 @@ class BoardViewModel(application: Application): AndroidViewModel(application) {
                 )
             }
         }
-
     }
 
     private fun placePlaneOnHiddenBoard(hiddenBoard: Array<Array<HiddenBoardCellStatus>>) {

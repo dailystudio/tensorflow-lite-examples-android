@@ -6,14 +6,14 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.reinforcementlearning.fragment.ReinforcementLearningFragment
 import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.BoardViewModel
 import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.GameState
 import com.google.android.material.snackbar.Snackbar
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, Int>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     private var fabResetGame: View? = null
 
@@ -82,11 +82,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Int>() {
         return R.layout.activity_example_reinforcement_learning
     }
 
-    override fun onResultsUpdated(results: Int) {
-    }
-
-    override fun onInferenceInfoUpdated(info: InferenceInfo) {
-        super.onInferenceInfoUpdated(info)
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
     }
 
     override fun getExampleName(): CharSequence? {
@@ -99,6 +95,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Int>() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            ReinforcementLearningUseCase.UC_NAME to ReinforcementLearningUseCase()
+        )
     }
 
 }

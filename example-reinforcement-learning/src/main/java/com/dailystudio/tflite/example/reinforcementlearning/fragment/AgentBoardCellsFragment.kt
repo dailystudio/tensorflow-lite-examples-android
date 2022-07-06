@@ -4,11 +4,13 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.dailystudio.tflite.example.reinforcementlearning.ReinforcementLearningUseCase
 import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.BoardViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.reinforcementlearning.*
 import org.tensorflow.lite.examples.reinforcementlearning.fragment.AgentBoardCellsListFragment
+import org.tensorflow.litex.getLiteUseCaseViewModel
 
 class AgentBoardCellsFragment: AgentBoardCellsListFragment() {
 
@@ -37,8 +39,12 @@ class AgentBoardCellsFragment: AgentBoardCellsListFragment() {
         val playerActionY = position % Constants.BOARD_SIZE
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val agentStrikePos =
-                bardViewModel.playerActionOn(playerActionX, playerActionY)
+            bardViewModel.playerActionOn(playerActionX, playerActionY)
+
+            val viewModel = getLiteUseCaseViewModel()
+            val agentStrikePos = viewModel.performUseCase(ReinforcementLearningUseCase.UC_NAME,
+                PlayerBoardCellManager.dumpStatus()
+            ) as Int? ?: -1
 
             val agentActionX = agentStrikePos / Constants.BOARD_SIZE
             val agentActionY = agentStrikePos % Constants.BOARD_SIZE
