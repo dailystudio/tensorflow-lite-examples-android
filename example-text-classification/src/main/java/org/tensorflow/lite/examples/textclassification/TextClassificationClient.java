@@ -26,6 +26,7 @@ import androidx.annotation.WorkerThread;
 import com.dailystudio.devbricksx.development.Logger;
 
 import org.tensorflow.lite.support.model.Model;
+import org.tensorflow.litex.AssetFileLiteModel;
 import org.tensorflow.litex.TFLiteModel;
 
 import java.io.BufferedReader;
@@ -43,7 +44,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 /** Interface to load TfLite model and provide predictions. */
-public class TextClassificationClient extends TFLiteModel {
+public class TextClassificationClient extends AssetFileLiteModel {
   private static final String TAG = "TextClassificationDemo";
   private static final String MODEL_PATH = "text_classification.tflite";
   private static final String DIC_PATH = "text_classification_vocab.txt";
@@ -126,6 +127,11 @@ public class TextClassificationClient extends TFLiteModel {
                                   int threads,
                                   boolean useXNNPack) {
     super(context, MODEL_PATH, device, threads, useXNNPack);
+  }
+
+  @Override
+  public void open() {
+    super.open();
 
     loadDictionary();
     loadLabels();

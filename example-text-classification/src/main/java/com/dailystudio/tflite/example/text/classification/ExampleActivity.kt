@@ -1,89 +1,23 @@
 package com.dailystudio.tflite.example.text.classification
 
-import android.content.Context
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.lifecycle.LifecycleOwner
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
-import com.dailystudio.devbricksx.utils.StringUtils
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.text.AbsChatActivity
-import com.dailystudio.tflite.example.common.text.ChatRecord
-import com.dailystudio.tflite.example.common.text.MessageType
-import com.dailystudio.tflite.example.common.text.model.ChatRecordViewModel
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
-import com.dailystudio.tflite.example.common.ui.ItemLabel
 import com.dailystudio.tflite.example.common.ui.fragment.ItemLabelsListFragment
 import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
-import com.dailystudio.tflite.example.common.utils.ResultsUtils
+import com.dailystudio.tflite.example.text.classification.fragment.TextClassificationFragment
 import org.tensorflow.lite.examples.textclassification.TextClassificationClient
-import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.MLUseCase
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
+import java.util.*
 
-class TextClassificationUseCase(
-    lifecycleOwner: LifecycleOwner
-): MLUseCase<TextClassificationClient, String, Map<String, TextClassificationClient.Result>, InferenceInfo>(lifecycleOwner) {
-    override fun runInference(
-        model: TextClassificationClient,
-        data: String,
-        info: InferenceInfo
-    ): Map<String, TextClassificationClient.Result>? {
-        val results = model.classify(data)
-
-        val map = mutableMapOf<String, TextClassificationClient.Result>()
-        results?.let {
-            for (r in it) {
-                map[r.title.toLowerCase()] = r
-            }
-        }
-
-        return map
-    }
-
-    override fun getSettingsPreference(): InferenceSettingsPrefs {
-       return InferenceSettingsPrefs.instance
-    }
-
-    override fun createModel(
-        context: Context,
-        device: Model.Device,
-        threads: Int,
-        useXNNPack: Boolean,
-        settings: InferenceSettingsPrefs
-    ): TextClassificationClient? {
-        return TextClassificationClient(context, device, threads, useXNNPack)
-    }
-
-    override fun createInferenceInfo(): InferenceInfo {
-        return InferenceInfo()
-    }
-
-}
-
-class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Result>>() {
-
+class ExampleActivity : LiteUseCaseActivity() {
     companion object {
         const val FRAGMENT_TAG_RESULTS = "results-fragment"
-        const val LABELS_FILE = "text_classification_labels.txt"
 
         const val LABEL_POSITIVE = "positive"
         const val LABEL_NEGATIVE = "negative"
-    }
-
-    private var useCase: TextClassificationUseCase? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        initItemLabels()
-
-        lifecycleScope.launchWhenStarted {
-            useCase = TextClassificationUseCase(this@ExampleActivity)
-        }
     }
 
     override fun createResultsView(): View? {
@@ -101,76 +35,30 @@ class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Res
         return stubView
     }
 
-    override fun onResultsUpdated(results: Map<String, TextClassificationClient.Result>) {
-        val viewModel = ViewModelProvider(this).get(ItemLabelViewModel::class.java)
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when(nameOfUseCase) {
+            TextClassificationUseCase.UC_NAME -> {
+                val viewModel = ViewModelProvider(this)[ItemLabelViewModel::class.java]
 
-        val items = viewModel.getItemLabels()
-        for (item in items) {
-            val key = item.name.toLowerCase()
-            if (results.containsKey(key)) {
-                val result = results[key] ?: continue
+                val items = viewModel.getItemLabels()
+                for (item in items) {
+                    val key = item.name.lowercase(Locale.getDefault())
+                    if (results is Map<*, *>) {
+                        if (results.containsKey(key)) {
+                            val result = results[key] as? TextClassificationClient.Result ?: continue
 
-                item.label = buildString {
-                    append(item.name)
-                    append(" (")
-                    append("%3.1f%%".format(result.confidence * 100))
-                    append(")")
+                            item.label = buildString {
+                                append(item.name)
+                                append(" (")
+                                append("%3.1f%%".format(result.confidence * 100))
+                                append(")")
+                            }
+
+                            viewModel.updateItemLabel(item)
+                        }
+                    }
                 }
-
-                viewModel.updateItemLabel(item)
             }
-        }
-    }
-
-    override fun generateResults(text: String,
-                                 info: InferenceInfo): Map<String, TextClassificationClient.Result>? {
-        return useCase?.run(text)
-    }
-
-    override fun convertResultsToReplyText(results: Map<String, TextClassificationClient.Result>?,
-                                           info: InferenceInfo): String {
-        Logger.debug("convert results: ${ResultsUtils.safeToPrintableLog(results)}")
-        val defaultPrompt = getString(R.string.prompt_default)
-        if (results == null) {
-            return defaultPrompt
-        }
-
-        val positive = results[LABEL_POSITIVE] ?: return defaultPrompt
-        val negative = results[LABEL_NEGATIVE] ?: return defaultPrompt
-        Logger.debug("positive: ${ResultsUtils.safeToPrintableLog(positive)}")
-        Logger.debug("negative: ${ResultsUtils.safeToPrintableLog(negative)}")
-
-        return getString(if (positive.confidence > negative.confidence) {
-            R.string.prompt_positive
-        } else {
-            R.string.prompt_native
-        })
-    }
-
-    override suspend fun insertLeadingRecords() {
-        super.insertLeadingRecords()
-
-        val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
-
-        val records = viewModel.getChatRecords()
-        if (records.size > NOOP_RECORDS_COUNT) {
-            return
-        }
-
-        val record = ChatRecord(System.currentTimeMillis(),
-            getString(R.string.chat_text_question),
-            MessageType.Receive
-        )
-
-        viewModel.insertChatRecord(record)
-    }
-
-    private fun initItemLabels() {
-        val labels = StringUtils.linesFromAsset(this, LABELS_FILE)
-        val viewModel = ViewModelProvider(this).get(ItemLabelViewModel::class.java)
-
-        for ((i, l) in labels.withIndex()) {
-            viewModel.insertItemLabel(ItemLabel(i, l, l))
         }
     }
 
@@ -184,6 +72,16 @@ class ExampleActivity : AbsChatActivity<Map<String, TextClassificationClient.Res
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            TextClassificationUseCase.UC_NAME to TextClassificationUseCase()
+        )
+    }
+
+    override fun createBaseFragment(): Fragment {
+        return TextClassificationFragment()
     }
 
 }
