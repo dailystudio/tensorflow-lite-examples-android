@@ -1,8 +1,8 @@
-package com.dailystudio.tflite.example.common.image
+package org.tensorflow.litex.image
 
 import android.content.Context
 import android.util.Size
-import com.dailystudio.tflite.example.common.InferenceInfoItem
+import org.tensorflow.litex.InferenceInfoItem
 import com.dailystudio.tflite.example.common.R
 
 

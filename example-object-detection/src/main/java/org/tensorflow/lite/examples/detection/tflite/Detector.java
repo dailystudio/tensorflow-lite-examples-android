@@ -21,30 +21,22 @@ import android.graphics.RectF;
 import android.os.Trace;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-
 import com.dailystudio.devbricksx.development.Logger;
 
-import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.InterpreterApi;
 import org.tensorflow.lite.support.common.FileUtil;
-import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.model.Model;
 import org.tensorflow.litex.AssetFileLiteModel;
 import org.tensorflow.litex.TFLiteModel;
-import org.tensorflow.litex.images.Recognition;
+import org.tensorflow.litex.image.Recognition;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /** Generic interface for interacting with different recognition engines. */
 abstract public class Detector extends AssetFileLiteModel {

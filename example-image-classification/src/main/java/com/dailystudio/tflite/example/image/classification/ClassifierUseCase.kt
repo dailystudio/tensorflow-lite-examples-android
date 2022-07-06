@@ -2,17 +2,16 @@ package com.dailystudio.tflite.example.image.classification
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import org.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.fragment.ImageLiteUseCase
-import org.tensorflow.litex.images.Recognition
+import org.tensorflow.litex.image.Recognition
 import java.lang.Exception
 
 class ClassifierUseCase: ImageLiteUseCase<List<Recognition>, ImageInferenceInfo>() {
@@ -69,7 +68,8 @@ class ClassifierUseCase: ImageLiteUseCase<List<Recognition>, ImageInferenceInfo>
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,
-                                 info: ImageInferenceInfo): Bitmap? {
+                                 info: ImageInferenceInfo
+    ): Bitmap? {
         if (frameBitmap == null
             || !ImageClassificationSettingsPrefs.instance.enableImagePreScale) {
             return frameBitmap

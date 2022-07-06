@@ -1,11 +1,11 @@
 package org.tensorflow.lite.examples.bertqa.ml
 
 import android.content.Context
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
+import org.tensorflow.litex.InferenceInfo
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class QaUseCase: LiteUseCase<Pair<String, String>, List<QaAnswer>, InferenceInfo>() {
 
@@ -22,10 +22,6 @@ class QaUseCase: LiteUseCase<Pair<String, String>, List<QaAnswer>, InferenceInfo
         info.inferenceTime = end - start
 
         return result
-    }
-
-    override fun getInferenceSettings(): InferenceSettingsPrefs {
-        return InferenceSettingsPrefs.instance
     }
 
     override fun createModels(

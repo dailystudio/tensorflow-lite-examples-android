@@ -8,10 +8,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.AbsRecyclerViewFragment
-import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.devbricksx.utils.StringUtils
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
+import org.tensorflow.litex.InferenceInfo
 import com.dailystudio.tflite.example.image.gesture.fragment.GestureCameraFragment
 import com.dailystudio.tflite.example.image.gesture.fragment.GestureLabel
 import com.dailystudio.tflite.example.image.gesture.fragment.fragment.GestureLabelsListFragment

@@ -2,7 +2,7 @@ package com.dailystudio.tflite.example.image.classification
 
 import com.dailystudio.devbricksx.annotations.PreferenceValue
 import com.dailystudio.devbricksx.annotations.SharedPreference
-import com.dailystudio.tflite.example.common.ui.InferenceSettings
+import org.tensorflow.litex.ui.InferenceSettings
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.lite.support.model.Model
 

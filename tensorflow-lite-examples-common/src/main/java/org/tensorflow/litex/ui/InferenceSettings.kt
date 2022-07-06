@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.common.ui
+package org.tensorflow.litex.ui
 
 import com.dailystudio.devbricksx.annotations.PreferenceValue
 import com.dailystudio.devbricksx.annotations.SharedPreference

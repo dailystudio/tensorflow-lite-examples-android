@@ -1,10 +1,10 @@
-package com.dailystudio.tflite.example.common.image
+package org.tensorflow.litex.image
 
 import android.content.Context
 import android.util.Size
 import androidx.camera.core.CameraSelector
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.InferenceInfoItem
+import org.tensorflow.litex.InferenceInfo
+import org.tensorflow.litex.InferenceInfoItem
 import com.dailystudio.tflite.example.common.R
 
 open class ImageInferenceInfo(var imageSize: Size = Size(0, 0),

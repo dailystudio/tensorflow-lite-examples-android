@@ -9,7 +9,7 @@ import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
+import org.tensorflow.litex.image.AdvanceInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.styletransfer.*
 import org.tensorflow.lite.support.model.Model
@@ -104,7 +104,8 @@ class StyleTransferUseCase: ImageLiteUseCase<StyleTransferResult, AdvanceInferen
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,
-                                 info: AdvanceInferenceInfo): Bitmap? {
+                                 info: AdvanceInferenceInfo
+    ): Bitmap? {
         if (frameBitmap == null) {
             return frameBitmap
         }

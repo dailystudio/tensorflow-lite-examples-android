@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.common.ui
+package org.tensorflow.litex.ui
 
 import android.content.res.ColorStateList
 import android.graphics.Color

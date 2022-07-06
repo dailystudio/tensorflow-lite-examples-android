@@ -2,8 +2,7 @@ package com.dailystudio.tflite.example.template
 
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
+import org.tensorflow.litex.InferenceInfo
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.activity.LiteUseCaseActivity
 

@@ -4,11 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
+import org.tensorflow.litex.InferenceInfo
+import org.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.image.pose.fragment.PoseCameraFragment
 import com.dailystudio.tflite.example.image.pose.ui.PoseOverlayView
 import org.tensorflow.lite.examples.posenet.lib.Person

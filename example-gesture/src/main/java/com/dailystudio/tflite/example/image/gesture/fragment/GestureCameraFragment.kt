@@ -3,13 +3,12 @@ package com.dailystudio.tflite.example.image.gesture.fragment
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.camera.core.CameraSelector
-import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
 import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import org.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.gesture.Classifier
 import org.tensorflow.lite.support.model.Model
@@ -61,7 +60,8 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,
-                                 info: ImageInferenceInfo): Bitmap? {
+                                 info: ImageInferenceInfo
+    ): Bitmap? {
         val scaledBitmap = preScaleImage(frameBitmap, info)
 
         return scaledBitmap?.let {
@@ -75,7 +75,8 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
 
 
     private fun preScaleImage(frameBitmap: Bitmap?,
-                              info: ImageInferenceInfo): Bitmap? {
+                              info: ImageInferenceInfo
+    ): Bitmap? {
         if (frameBitmap == null) {
             return null
         }

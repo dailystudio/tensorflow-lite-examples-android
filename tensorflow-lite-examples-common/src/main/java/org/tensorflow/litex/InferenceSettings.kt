@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.common
+package org.tensorflow.litex
 
 import org.tensorflow.lite.support.model.Model.Device
 

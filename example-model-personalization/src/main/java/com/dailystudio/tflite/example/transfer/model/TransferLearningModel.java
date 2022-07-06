@@ -20,13 +20,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.tensorflow.lite.examples.transfer.TransferLearningModelWrapper;
 import org.tensorflow.lite.support.model.Model;
-import org.tensorflow.litex.images.Recognition;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

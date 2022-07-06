@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.common.image
+package org.tensorflow.litex.image
 
 import android.graphics.Bitmap
 import java.nio.ByteBuffer

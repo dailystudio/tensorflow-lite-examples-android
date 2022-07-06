@@ -8,8 +8,6 @@ import android.widget.RadioButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.transfer.fragment.TransferLearningCameraFragment
 import com.dailystudio.tflite.example.transfer.fragment.TransferLearningViewModel
 import com.dailystudio.tflite.example.transfer.model.TransferLearningModel

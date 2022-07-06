@@ -6,7 +6,7 @@ import android.os.SystemClock
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import org.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.videoclassification.ml.VideoClassifier
 import org.tensorflow.lite.support.label.Category
@@ -81,7 +81,8 @@ class VideoClassificationUseCase: ImageLiteUseCase<List<Category>, ImageInferenc
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,
-                                 info: ImageInferenceInfo): Bitmap? {
+                                 info: ImageInferenceInfo
+    ): Bitmap? {
         if (frameBitmap == null) {
             return frameBitmap
         }

@@ -11,10 +11,10 @@ import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.app.activity.DevBricksActivity
 import com.dailystudio.devbricksx.fragment.AbsAboutFragment
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
-import com.dailystudio.tflite.example.common.InferenceInfo
+import org.tensorflow.litex.InferenceInfo
 import com.dailystudio.tflite.example.common.R
-import com.dailystudio.tflite.example.common.ui.InferenceInfoView
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
+import org.tensorflow.litex.ui.InferenceInfoView
+import org.tensorflow.litex.fragment.InferenceSettingsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import kotlinx.coroutines.Dispatchers

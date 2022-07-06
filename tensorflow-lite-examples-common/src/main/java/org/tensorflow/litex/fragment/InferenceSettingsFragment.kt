@@ -1,14 +1,14 @@
-package com.dailystudio.tflite.example.common.ui
+package org.tensorflow.litex.fragment
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.view.LayoutInflater
-import android.view.View
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.settings.*
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 import com.dailystudio.tflite.example.common.R
+import org.tensorflow.litex.ui.InferenceSettings
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 import kotlin.math.roundToInt
 
 open class InferenceSettingsFragment: AbsSettingsDialogFragment() {

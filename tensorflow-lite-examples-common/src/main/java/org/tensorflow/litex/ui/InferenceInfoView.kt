@@ -1,16 +1,15 @@
-package com.dailystudio.tflite.example.common.ui
+package org.tensorflow.litex.ui
 
 import android.annotation.TargetApi
 import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.InferenceInfoItem
+import org.tensorflow.litex.InferenceInfo
+import org.tensorflow.litex.InferenceInfoItem
 import com.dailystudio.tflite.example.common.R
 
 class InferenceInfoView: FrameLayout {

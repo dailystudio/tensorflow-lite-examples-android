@@ -2,7 +2,7 @@ package org.tensorflow.litex.fragment
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import org.tensorflow.litex.image.ImageInferenceInfo
 
 import android.os.Bundle
 import android.os.Environment

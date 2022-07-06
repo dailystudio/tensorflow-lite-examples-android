@@ -7,10 +7,36 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.common.AvgTime
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
+import kotlin.math.min
+
+class AvgTime(private val capacity: Int = 10) {
+
+    private val timeValues = Array<Long>(capacity) { 0 }
+    private var wIndex = 0
+    private var count = 0
+
+    val value: Long
+        get() {
+            val len = min(timeValues.size, count)
+            var sum = 0L
+
+            for (i in 0 until len) {
+                sum += timeValues[i]
+            }
+
+            return sum / len
+        }
+
+
+    fun record(newValue: Long) {
+        timeValues[wIndex] = newValue
+        wIndex = (wIndex + 1) % capacity
+        count++
+    }
+
+}
 
 abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 

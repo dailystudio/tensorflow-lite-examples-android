@@ -1,7 +1,7 @@
 package com.dailystudio.tflite.example.text.smartreply
 
 import android.content.Context
-import com.dailystudio.tflite.example.common.InferenceInfo
+import org.tensorflow.litex.InferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.smartreply.SmartReply
 import org.tensorflow.lite.examples.smartreply.SmartReplyClient

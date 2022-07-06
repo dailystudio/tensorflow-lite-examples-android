@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.StringUtils
-import com.dailystudio.tflite.example.common.AbsExampleActivity
 import com.dailystudio.tflite.example.speech.recognition.fragment.CommandsListFragment
 import com.dailystudio.tflite.example.speech.recognition.fragment.SpeechRecognitionFragment
 import com.dailystudio.tflite.example.speech.recognition.model.CommandViewModel

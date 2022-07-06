@@ -1,24 +1,16 @@
 package org.tensorflow.lite.examples.digitclassifier
 
 import android.content.Context
-import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
 import com.dailystudio.devbricksx.development.Logger
-import kotlinx.coroutines.runBlocking
-import java.io.FileInputStream
-import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.nio.channels.FileChannel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.AssetFileLiteModel
-import org.tensorflow.litex.TFLiteModel
-import java.lang.Exception
 
 class DigitClassifier(context: Context,
                       device: Model.Device,

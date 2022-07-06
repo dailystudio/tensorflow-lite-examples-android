@@ -7,14 +7,14 @@ import android.graphics.Matrix
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import org.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.detection.tflite.Detector
 import org.tensorflow.lite.examples.detection.tflite.ObjectDetectionModel
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.fragment.ImageLiteUseCase
-import org.tensorflow.litex.images.Recognition
+import org.tensorflow.litex.image.Recognition
 
 class DetectorUseCase: ImageLiteUseCase<List<Recognition>, ImageInferenceInfo>() {
 
@@ -64,7 +64,8 @@ class DetectorUseCase: ImageLiteUseCase<List<Recognition>, ImageInferenceInfo>()
     }
 
     override fun preProcessImage(frameBitmap: Bitmap?,
-                                 info: ImageInferenceInfo): Bitmap? {
+                                 info: ImageInferenceInfo
+    ): Bitmap? {
         val scaledBitmap = preScaleImage(frameBitmap)
 
         scaledBitmap?.let {

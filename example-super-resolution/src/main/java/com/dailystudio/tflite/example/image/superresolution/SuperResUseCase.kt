@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.RectF
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import org.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.superresolution.model.SuperRes
 import com.dailystudio.tflite.example.image.superresolution.model.SuperResolutionModel

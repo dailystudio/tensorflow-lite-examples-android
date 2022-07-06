@@ -8,9 +8,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.PickStyleDialogFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.StyleTransferCameraFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.StyleTransferSettingsFragment

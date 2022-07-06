@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.common.ui
+package org.tensorflow.litex.ui
 
 import android.annotation.TargetApi
 import android.content.Context
@@ -6,7 +6,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.*
-import com.dailystudio.tflite.example.common.InferenceInfoItem
+import org.tensorflow.litex.InferenceInfoItem
 import com.dailystudio.tflite.example.common.R
 
 

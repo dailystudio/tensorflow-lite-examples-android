@@ -4,11 +4,10 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.preference.PrefsChange
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 
 private data class ManagedUseCase(
     val useCase: LiteUseCase<*, *, *>,

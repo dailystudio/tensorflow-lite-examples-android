@@ -3,14 +3,14 @@ package com.dailystudio.tflite.example.image.detection
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import org.tensorflow.litex.InferenceInfo
+import org.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
 import org.tensorflow.lite.examples.detection.customview.OverlayView
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.activity.LiteUseCaseActivity
-import org.tensorflow.litex.images.Recognition
+import org.tensorflow.litex.image.Recognition
 
 class ExampleActivity : LiteUseCaseActivity() {
 

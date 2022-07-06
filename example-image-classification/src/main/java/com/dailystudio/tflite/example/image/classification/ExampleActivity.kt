@@ -5,14 +5,11 @@ import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationCameraFragment
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationSettingsFragment
-import org.tensorflow.lite.examples.classification.tflite.Classifier
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.activity.LiteUseCaseActivity
-import org.tensorflow.litex.images.Recognition
+import org.tensorflow.litex.image.Recognition
 import kotlin.math.min
 
 class ExampleActivity : LiteUseCaseActivity() {

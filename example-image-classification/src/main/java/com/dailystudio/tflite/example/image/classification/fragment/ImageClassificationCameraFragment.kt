@@ -1,21 +1,7 @@
 package com.dailystudio.tflite.example.image.classification.fragment
 
-import android.content.Context
-import android.graphics.Bitmap
-import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.utils.ImageUtils
-import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.image.AbsImageAnalyzer
-import com.dailystudio.tflite.example.common.image.AbsExampleCameraFragment
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.classification.ClassifierUseCase
-import com.dailystudio.tflite.example.image.classification.ImageClassificationSettingsPrefs
-import org.tensorflow.lite.examples.classification.tflite.Classifier
-import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
-import org.tensorflow.litex.images.Recognition
-import java.lang.Exception
 
 /*
 private class ImageClassificationAnalyzer(rotation: Int,

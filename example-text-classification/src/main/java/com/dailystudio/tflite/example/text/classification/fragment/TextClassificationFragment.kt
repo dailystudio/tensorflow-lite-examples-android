@@ -4,9 +4,9 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.StringUtils
-import com.dailystudio.tflite.example.common.ui.ItemLabel
+import org.tensorflow.litex.ui.ItemLabel
 import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
-import com.dailystudio.tflite.example.common.utils.ResultsUtils
+import org.tensorflow.litex.utils.ResultsUtils
 import com.dailystudio.tflite.example.text.classification.ExampleActivity
 import com.dailystudio.tflite.example.text.classification.R
 import com.dailystudio.tflite.example.text.classification.TextClassificationUseCase

@@ -31,7 +31,7 @@ import com.dailystudio.devbricksx.development.Logger;
 import com.dailystudio.devbricksx.utils.MatrixUtils;
 
 import org.tensorflow.lite.examples.detection.env.BorderedText;
-import org.tensorflow.litex.images.Recognition;
+import org.tensorflow.litex.image.Recognition;
 
 import java.util.LinkedList;
 import java.util.List;

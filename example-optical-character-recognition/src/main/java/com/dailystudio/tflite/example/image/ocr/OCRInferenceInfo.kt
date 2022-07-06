@@ -3,9 +3,8 @@ package com.dailystudio.tflite.example.image.ocr
 import android.content.Context
 import android.util.Size
 import androidx.camera.core.CameraSelector
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.InferenceInfoItem
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import org.tensorflow.litex.InferenceInfoItem
+import org.tensorflow.litex.image.ImageInferenceInfo
 
 class OCRInferenceInfo(imageSize: Size = Size(0, 0),
                        imageRotation: Int = 0,

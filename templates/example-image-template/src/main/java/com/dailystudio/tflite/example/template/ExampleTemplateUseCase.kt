@@ -2,7 +2,7 @@ package com.dailystudio.tflite.example.template
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.dailystudio.tflite.example.common.image.ImageInferenceInfo
+import org.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.template.model.ExampleTemplateModel
 import org.tensorflow.lite.support.model.Model

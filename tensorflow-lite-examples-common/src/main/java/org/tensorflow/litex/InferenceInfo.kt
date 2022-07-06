@@ -1,7 +1,8 @@
-package com.dailystudio.tflite.example.common
+package org.tensorflow.litex
 
 import android.content.Context
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
+import com.dailystudio.tflite.example.common.R
 
 open class InferenceInfo(var analysisTime: Long = 0,
                          var inferenceTime: Long = 0) {

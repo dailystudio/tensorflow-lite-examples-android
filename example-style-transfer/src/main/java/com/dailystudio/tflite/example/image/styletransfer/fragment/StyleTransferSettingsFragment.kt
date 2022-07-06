@@ -1,17 +1,15 @@
 package com.dailystudio.tflite.example.image.styletransfer.fragment
 
 import android.content.Context
-import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.settings.AbsSetting
 import com.dailystudio.devbricksx.settings.RadioSetting
 import com.dailystudio.devbricksx.settings.SimpleRadioSettingItem
 import com.dailystudio.devbricksx.settings.SwitchSetting
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
+import org.tensorflow.litex.fragment.InferenceSettingsFragment
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.styletransfer.R
 import com.dailystudio.tflite.example.image.styletransfer.StyleTransferSettingsPrefs
 import org.tensorflow.lite.examples.styletransfer.FSTModel
-import org.tensorflow.lite.support.model.Model
 
 class StyleTransferSettingsFragment : InferenceSettingsFragment() {
 

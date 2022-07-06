@@ -37,8 +37,7 @@ import org.tensorflow.lite.support.label.TensorLabel;
 import org.tensorflow.lite.support.model.Model.Device;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 import org.tensorflow.litex.AssetFileLiteModel;
-import org.tensorflow.litex.ByteBufferLiteModel;
-import org.tensorflow.litex.images.Recognition;
+import org.tensorflow.litex.image.Recognition;
 
 import java.io.IOException;
 import java.util.ArrayList;

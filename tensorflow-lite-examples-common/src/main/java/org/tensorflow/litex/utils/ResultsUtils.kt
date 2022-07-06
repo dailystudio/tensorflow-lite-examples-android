@@ -1,4 +1,4 @@
-package com.dailystudio.tflite.example.common.utils
+package org.tensorflow.litex.utils
 
 object ResultsUtils {
 

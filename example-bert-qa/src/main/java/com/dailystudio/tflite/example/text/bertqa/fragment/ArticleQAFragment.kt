@@ -8,17 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.DevBricksFragment
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
-import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.text.bertqa.Article
 import com.dailystudio.tflite.example.text.bertqa.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.examples.bertqa.ml.QaAnswer
 import org.tensorflow.lite.examples.bertqa.ml.QaUseCase
-import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.LiteUseCaseViewModel
 import org.tensorflow.litex.getLiteUseCaseViewModel
 

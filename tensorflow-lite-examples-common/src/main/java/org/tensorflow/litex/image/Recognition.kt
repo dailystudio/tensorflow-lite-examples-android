@@ -1,4 +1,4 @@
-package org.tensorflow.litex.images
+package org.tensorflow.litex.image
 
 import android.graphics.RectF
 

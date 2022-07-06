@@ -1,15 +1,7 @@
 package com.dailystudio.tflite.example.text.smartreply
 
-import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
-import com.dailystudio.tflite.example.common.InferenceInfo
-import com.dailystudio.tflite.example.common.text.AbsChatActivity
-import org.tensorflow.lite.examples.smartreply.SmartReply
-import org.tensorflow.lite.examples.smartreply.SmartReplyClient
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.activity.LiteUseCaseActivity
 

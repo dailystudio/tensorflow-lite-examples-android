@@ -4,7 +4,7 @@ import android.content.Context
 import com.dailystudio.devbricksx.settings.AbsSetting
 import com.dailystudio.devbricksx.settings.RadioSetting
 import com.dailystudio.devbricksx.settings.SimpleRadioSettingItem
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsFragment
+import org.tensorflow.litex.fragment.InferenceSettingsFragment
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.video.classification.R
 import com.dailystudio.tflite.example.video.classification.VideoClassificationSettingsPrefs

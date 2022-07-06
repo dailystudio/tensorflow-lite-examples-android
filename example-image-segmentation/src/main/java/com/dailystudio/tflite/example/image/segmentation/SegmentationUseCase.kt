@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.util.Size
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import com.dailystudio.tflite.example.common.image.AdvanceInferenceInfo
+import org.tensorflow.litex.image.AdvanceInferenceInfo
 import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.imagesegmentation.ImageSegmentationModelExecutor
 import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
