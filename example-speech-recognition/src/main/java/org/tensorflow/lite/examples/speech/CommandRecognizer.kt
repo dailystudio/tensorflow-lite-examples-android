@@ -5,6 +5,7 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.speech.recognition.fragment.SpeechRecognitionFragment
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.AssetFileLiteModel
 import org.tensorflow.litex.TFLiteModel
 import java.io.BufferedReader
 import java.io.IOException
@@ -15,7 +16,7 @@ class CommandRecognizer(context: Context,
                         device: Model.Device,
                         numOfThreads: Int,
                         useXNNPack: Boolean
-): TFLiteModel(context, MODEL_FILENAME, device, numOfThreads, useXNNPack) {
+): AssetFileLiteModel(context, MODEL_FILENAME, device, numOfThreads, useXNNPack) {
 
     companion object {
         private const val LABEL_FILENAME = "conv_actions_labels.txt"
@@ -35,7 +36,9 @@ class CommandRecognizer(context: Context,
     private val displayedLabels: MutableList<String> = mutableListOf()
     private var recognizeCommands: RecognizeCommands? = null
 
-    init {
+    override fun open() {
+        super.open()
+
         initLabels()
     }
 
@@ -83,8 +86,8 @@ class CommandRecognizer(context: Context,
         )
 
 
-        getInterpreter()?.resizeInput(0, intArrayOf(RECORDING_LENGTH, 1))
-        getInterpreter()?.resizeInput(1, intArrayOf(1))
+        interpreter?.resizeInput(0, intArrayOf(RECORDING_LENGTH, 1))
+        interpreter?.resizeInput(1, intArrayOf(1))
     }
 
     fun recognizeCommand(data: Array<FloatArray>): RecognizeCommands.RecognitionResult? {
@@ -103,7 +106,7 @@ class CommandRecognizer(context: Context,
         outputMap[0] = outputScores
         // Run the model.
         try {
-            getInterpreter()?.runForMultipleInputsOutputs(inputArray, outputMap)
+            interpreter?.runForMultipleInputsOutputs(inputArray, outputMap)
         } catch (e: Exception) {
             Logger.error("inference failed: $e")
         }

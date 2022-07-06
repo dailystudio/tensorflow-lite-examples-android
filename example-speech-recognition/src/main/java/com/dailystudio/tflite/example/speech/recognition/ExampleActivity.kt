@@ -11,8 +11,10 @@ import com.dailystudio.tflite.example.speech.recognition.fragment.CommandsListFr
 import com.dailystudio.tflite.example.speech.recognition.fragment.SpeechRecognitionFragment
 import com.dailystudio.tflite.example.speech.recognition.model.CommandViewModel
 import org.tensorflow.lite.examples.speech.RecognizeCommands
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<AudioInferenceInfo, RecognizeCommands.RecognitionResult>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,24 +58,29 @@ class ExampleActivity : AbsExampleActivity<AudioInferenceInfo, RecognizeCommands
         return null
     }
 
-    override fun onResultsUpdated(results: RecognizeCommands.RecognitionResult) {
-        Logger.debug("command: ${results.foundCommand}")
-        Logger.debug("score: ${results.score}")
-        Logger.debug("isNew: ${results.isNewCommand}")
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when(nameOfUseCase) {
+            SpeechRecognitionUseCase.UC_NAME -> {
+                if (results is RecognizeCommands.RecognitionResult) {
+                    Logger.debug("command: ${results.foundCommand}")
+                    Logger.debug("score: ${results.score}")
+                    Logger.debug("isNew: ${results.isNewCommand}")
 
-        val viewModel = ViewModelProvider(this).get(
-            CommandViewModel::class.java)
+                    val viewModel = ViewModelProvider(this)[CommandViewModel::class.java]
 
-        val commands = viewModel.getCommands()
-        for (command in commands) {
-            if (results.foundCommand == command.label
-                && results.score > 0.5) {
-                command.prop = results.score
-            } else {
-                command.prop = 0f
+                    val commands = viewModel.getCommands()
+                    for (command in commands) {
+                        if (results.foundCommand == command.label
+                            && results.score > 0.5) {
+                            command.prop = results.score
+                        } else {
+                            command.prop = 0f
+                        }
+
+                        viewModel.updateCommand(command)
+                    }
+                }
             }
-
-            viewModel.updateCommand(command)
         }
     }
 
@@ -87,6 +94,12 @@ class ExampleActivity : AbsExampleActivity<AudioInferenceInfo, RecognizeCommands
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            SpeechRecognitionUseCase.UC_NAME to SpeechRecognitionUseCase()
+        )
     }
 
 }
