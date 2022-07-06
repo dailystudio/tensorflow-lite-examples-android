@@ -1,6 +1,8 @@
 package com.dailystudio.tflite.example.text.smartreply
 
 import android.os.Bundle
+import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
@@ -8,44 +10,10 @@ import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.text.AbsChatActivity
 import org.tensorflow.lite.examples.smartreply.SmartReply
 import org.tensorflow.lite.examples.smartreply.SmartReplyClient
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsChatActivity<Array<SmartReply>>() {
-
-    private lateinit var client: SmartReplyClient
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        client = SmartReplyClient(applicationContext)
-
-        lifecycleScope.launchWhenStarted {
-            client.loadModel()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        client.unloadModel()
-    }
-
-    override fun generateResults(text: String, info: InferenceInfo): Array<SmartReply>? {
-        val ans = client.predict(arrayOf(text))
-        for (reply in ans) {
-            Logger.debug("Reply: ${reply.text}")
-        }
-
-        return ans
-    }
-
-    override fun convertResultsToReplyText(results: Array<SmartReply>?,
-                                           info: InferenceInfo): String {
-        if (results == null || results.isEmpty()) {
-            return ""
-        }
-
-        return results[0].text
-    }
+class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleName(): CharSequence? {
         return getString(R.string.app_name)
@@ -57,6 +25,23 @@ class ExampleActivity : AbsChatActivity<Array<SmartReply>>() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            SmartReplyUseCase.UC_NAME to SmartReplyUseCase()
+        )
+    }
+
+    override fun createBaseFragment(): Fragment {
+        return SmartReplyFragment()
+    }
+
+    override fun createResultsView(): View? {
+        return null
+    }
+
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
     }
 
 }

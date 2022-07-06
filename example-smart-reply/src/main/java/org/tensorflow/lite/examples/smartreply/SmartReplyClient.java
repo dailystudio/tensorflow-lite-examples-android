@@ -16,56 +16,55 @@ limitations under the License.
 package org.tensorflow.lite.examples.smartreply;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.util.Log;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
+import org.tensorflow.lite.support.common.FileUtil;
+import org.tensorflow.lite.support.model.Model;
+import org.tensorflow.litex.AssetFileLiteModel;
+
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Interface to load TfLite model and provide predictions. */
-public class SmartReplyClient implements AutoCloseable {
+public class SmartReplyClient extends AssetFileLiteModel {
   private static final String TAG = "SmartReplyDemo";
   private static final String MODEL_PATH = "smartreply.tflite";
   private static final String BACKOFF_PATH = "backoff_response.txt";
   private static final String JNI_LIB = "smartreply_jni";
 
-  private final Context context;
   private long storage;
-  private MappedByteBuffer model;
-
   private volatile boolean isLibraryLoaded;
 
-  public SmartReplyClient(Context context) {
-    this.context = context;
+  public SmartReplyClient(@NonNull Context context) {
+    super(context, MODEL_PATH, Model.Device.CPU, 1, false);
   }
 
   public boolean isLoaded() {
     return storage != 0;
   }
 
-  @WorkerThread
-  public synchronized void loadModel() {
+  @Override
+  public void open() {
     if (!isLibraryLoaded) {
       System.loadLibrary(JNI_LIB);
       isLibraryLoaded = true;
     }
 
     try {
-      model = loadModelFile();
+      MappedByteBuffer mappedByteBuffer = FileUtil.loadMappedFile(getContext(), getModelPath());
+
       String[] backoff = loadBackoffList();
-      storage = loadJNI(model, backoff);
+      storage = loadJNI(mappedByteBuffer, backoff);
     } catch (IOException e) {
       Log.e(TAG, "Fail to load model", e);
-      return;
     }
   }
 
@@ -91,21 +90,10 @@ public class SmartReplyClient implements AutoCloseable {
     }
   }
 
-  private MappedByteBuffer loadModelFile() throws IOException {
-    try (AssetFileDescriptor fileDescriptor =
-            AssetsUtil.getAssetFileDescriptorOrCached(context, MODEL_PATH);
-         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor())) {
-      FileChannel fileChannel = inputStream.getChannel();
-      long startOffset = fileDescriptor.getStartOffset();
-      long declaredLength = fileDescriptor.getDeclaredLength();
-      return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
-    }
-  }
-
   private String[] loadBackoffList() throws IOException {
     List<String> labelList = new ArrayList<String>();
     try (BufferedReader reader =
-        new BufferedReader(new InputStreamReader(context.getAssets().open(BACKOFF_PATH)))) {
+        new BufferedReader(new InputStreamReader(getContext().getAssets().open(BACKOFF_PATH)))) {
       String line;
       while ((line = reader.readLine()) != null) {
         if (!line.isEmpty()) {

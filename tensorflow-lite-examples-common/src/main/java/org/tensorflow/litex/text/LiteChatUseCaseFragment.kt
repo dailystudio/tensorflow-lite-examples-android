@@ -1,25 +1,24 @@
-package com.dailystudio.tflite.example.common.text
+package org.tensorflow.litex.text
 
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.dailystudio.tflite.example.common.AbsExampleActivity
-import com.dailystudio.tflite.example.common.InferenceAgent
-import com.dailystudio.tflite.example.common.InferenceInfo
 import com.dailystudio.tflite.example.common.R
-import com.dailystudio.tflite.example.common.text.model.ChatRecordViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.tensorflow.litex.LiteUseCaseViewModel
+import org.tensorflow.litex.getLiteUseCaseViewModel
+import org.tensorflow.litex.text.model.ChatRecordViewModel
 
-@Deprecated("Using LiteChatUseCaseFragment instead")
-abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Results>() {
+abstract class LiteChatUseCaseFragment: ChatRecordListFragmentExt() {
 
     companion object {
         const val NOOP_RECORDS_COUNT = 1
@@ -29,13 +28,20 @@ abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Resu
     private var userInput: EditText? = null
     private var sendButton: Button? = null
 
-    private var inferenceAgent: InferenceAgent<InferenceInfo, Results> =
-        InferenceAgent()
+    protected val liteUseCaseViewModel: LiteUseCaseViewModel
+        get() {
+            return getLiteUseCaseViewModel()
+        }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? =
+        inflater.inflate(getLayoutResId(), container, false)
 
-        userInput = findViewById(R.id.input)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        userInput = view.findViewById(R.id.input)
         userInput?.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
             }
@@ -48,7 +54,7 @@ abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Resu
             }
         })
 
-        sendButton = findViewById(R.id.send_button)
+        sendButton = view.findViewById(R.id.send_button)
         sendButton?.setOnClickListener{
             val editable = userInput?.text ?: return@setOnClickListener
             val text = editable.toString()
@@ -63,29 +69,18 @@ abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Resu
 
         lifecycleScope.launchWhenStarted {
             insertLeadingRecords()
-
-            val info = InferenceInfo()
-            inferenceAgent.deliverInferenceInfo(info)
+//
+//            val info = InferenceInfo()
+//            inferenceAgent.deliverInferenceInfo(info)
         }
     }
 
-    override fun getLayoutResId(): Int {
-        return R.layout.activity_chat
-    }
-
-    override fun createBaseFragment(): Fragment {
-        return ChatRecordListFragmentExt()
-    }
-
-    override fun createResultsView(): View? {
-        return null
-    }
-
-    override fun onResultsUpdated(results: Results) {
+    open fun getLayoutResId(): Int {
+        return R.layout.fragment_chat
     }
 
     protected open suspend fun insertLeadingRecords() {
-        val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
+        val viewModel = ViewModelProvider(this)[ChatRecordViewModel::class.java]
 
         val records = viewModel.getChatRecords()
         if (records.isNotEmpty()) {
@@ -103,7 +98,7 @@ abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Resu
     }
 
     private suspend fun randomlyGenerateRecords() {
-        val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
+        val viewModel = ViewModelProvider(this)[ChatRecordViewModel::class.java]
 
         var direction = MessageType.Send
         var humanId = 0
@@ -131,7 +126,7 @@ abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Resu
     }
 
     private suspend fun sendMessage(text: String) {
-        val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
+        val viewModel = ViewModelProvider(this)[ChatRecordViewModel::class.java]
 
         val record = ChatRecord(System.currentTimeMillis(),
             text,
@@ -141,24 +136,10 @@ abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Resu
     }
 
     private suspend fun receiveReply(text: String) {
-        val info = InferenceInfo()
+        val result = liteUseCaseViewModel.performUseCase(nameOfUsedUseCase, text)
+        val replyText = convertResultsToReplyText(result)
 
-        val start = System.currentTimeMillis()
-        val results = generateResults(text, info)
-        val inferenceEnd = System.currentTimeMillis()
-        val replyText = convertResultsToReplyText(results, info)
-        val end = System.currentTimeMillis()
-
-        info.analysisTime = end - start
-        info.inferenceTime = inferenceEnd - start
-
-        inferenceAgent.deliverInferenceInfo(info)
-
-        results?.let {
-            inferenceAgent.deliverResults(it)
-        }
-
-        val viewModel = ViewModelProvider(this).get(ChatRecordViewModel::class.java)
+        val viewModel = ViewModelProvider(this)[ChatRecordViewModel::class.java]
 
         val record = ChatRecord(System.currentTimeMillis(),
             replyText,
@@ -167,10 +148,8 @@ abstract class AbsChatActivity<Results> : AbsExampleActivity<InferenceInfo, Resu
         viewModel.insertChatRecord(record).join()
     }
 
-    abstract fun generateResults(text: String,
-                                 info: InferenceInfo): Results?
+    protected abstract val nameOfUsedUseCase: String
 
-    abstract fun convertResultsToReplyText(results: Results?,
-                                           info: InferenceInfo): String
+    abstract fun convertResultsToReplyText(results: Any?): String
 
 }
