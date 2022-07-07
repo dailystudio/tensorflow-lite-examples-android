@@ -2,14 +2,14 @@ package com.dailystudio.tflite.example.image.ocr
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.dailystudio.tflite.example.common.AvgTime
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.ocr.model.OCRDetectionModel
 import com.dailystudio.tflite.example.image.ocr.model.OCRRecognitionModel
 import org.tensorflow.lite.examples.ocr.RecognitionResult
 import org.tensorflow.lite.support.model.Model
+import org.tensorflow.litex.AvgTime
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.fragment.ImageLiteUseCase
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class OCRUseCase: ImageLiteUseCase<RecognitionResult, OCRInferenceInfo>() {
 

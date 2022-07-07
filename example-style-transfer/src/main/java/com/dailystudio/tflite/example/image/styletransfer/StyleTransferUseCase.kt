@@ -10,11 +10,11 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import org.tensorflow.litex.image.AdvanceInferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.styletransfer.*
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.fragment.ImageLiteUseCase
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class StyleTransferUseCase: ImageLiteUseCase<StyleTransferResult, AdvanceInferenceInfo>() {
 

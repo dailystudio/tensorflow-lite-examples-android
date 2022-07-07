@@ -6,7 +6,6 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import org.tensorflow.litex.image.ImageInferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.pose.utils.mapKeyPoint
 import org.tensorflow.lite.examples.posenet.lib.BodyPart
 import org.tensorflow.lite.examples.posenet.lib.Person
@@ -14,6 +13,7 @@ import org.tensorflow.lite.examples.posenet.lib.Posenet
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.fragment.ImageLiteUseCase
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class PoseUseCase: ImageLiteUseCase<Person, ImageInferenceInfo>() {
 

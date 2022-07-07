@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.dailystudio.tflite.example.common.ui.fragment.ItemLabelsListFragment
-import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
 import com.dailystudio.tflite.example.text.classification.fragment.TextClassificationFragment
 import org.tensorflow.lite.examples.textclassification.TextClassificationClient
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.activity.LiteUseCaseActivity
+import org.tensorflow.litex.ui.fragment.ItemLabelsListFragment
+import org.tensorflow.litex.ui.model.ItemLabelViewModel
 import java.util.*
 
 class ExampleActivity : LiteUseCaseActivity() {

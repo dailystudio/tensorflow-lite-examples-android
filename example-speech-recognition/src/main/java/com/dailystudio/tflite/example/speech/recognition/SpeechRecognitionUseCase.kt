@@ -2,12 +2,12 @@ package com.dailystudio.tflite.example.speech.recognition
 
 import android.content.Context
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.speech.CommandRecognizer
 import org.tensorflow.lite.examples.speech.RecognizeCommands
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 import java.util.*
 
 class SpeechRecognitionUseCase: LiteUseCase<ShortArray, RecognizeCommands.RecognitionResult, AudioInferenceInfo>() {

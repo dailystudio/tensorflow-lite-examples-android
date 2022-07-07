@@ -8,12 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
 import org.tensorflow.litex.ui.ItemLabel
-import com.dailystudio.tflite.example.common.ui.fragment.ItemLabelsListFragment
-import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
 import com.dailystudio.tflite.example.image.ocr.fragment.OpticalCharacterRecognitionCameraFragment
 import org.tensorflow.lite.examples.ocr.RecognitionResult
 import org.tensorflow.litex.LiteUseCase
 import org.tensorflow.litex.activity.LiteUseCaseActivity
+import org.tensorflow.litex.ui.fragment.ItemLabelsListFragment
+import org.tensorflow.litex.ui.model.ItemLabelViewModel
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -36,7 +36,7 @@ class ExampleActivity : LiteUseCaseActivity() {
     }
 
     private fun initItemLabels() {
-        val viewModel = ViewModelProvider(this).get(ItemLabelViewModel::class.java)
+        val viewModel = ViewModelProvider(this)[ItemLabelViewModel::class.java]
 
         for (i in 0 until MAX_ITEMS) {
             viewModel.insertItemLabel(ItemLabel(i, "", ""))

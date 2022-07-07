@@ -2,15 +2,10 @@ package com.dailystudio.tflite.example.image.superresolution.model
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import com.dailystudio.devbricksx.development.Logger
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.AssetFileLiteModel
-import org.tensorflow.litex.TFLiteModel
-import java.io.InputStream
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
 class SuperResolutionModel(

@@ -2,11 +2,11 @@ package com.dailystudio.tflite.example.reinforcementlearning
 
 import android.content.Context
 import org.tensorflow.litex.InferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.reinforcementlearning.*
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class ReinforcementLearningUseCase
     : LiteUseCase<Array<Array<BoardCellStatus>>, Int, InferenceInfo>() {

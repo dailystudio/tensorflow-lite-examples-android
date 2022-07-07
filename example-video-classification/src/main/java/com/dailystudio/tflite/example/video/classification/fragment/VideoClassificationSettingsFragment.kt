@@ -5,10 +5,10 @@ import com.dailystudio.devbricksx.settings.AbsSetting
 import com.dailystudio.devbricksx.settings.RadioSetting
 import com.dailystudio.devbricksx.settings.SimpleRadioSettingItem
 import org.tensorflow.litex.fragment.InferenceSettingsFragment
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.video.classification.R
 import com.dailystudio.tflite.example.video.classification.VideoClassificationSettingsPrefs
 import org.tensorflow.lite.examples.videoclassification.ml.VideoClassifier
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class VideoClassificationSettingsFragment : InferenceSettingsFragment() {
 

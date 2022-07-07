@@ -7,12 +7,12 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import org.tensorflow.litex.image.ImageInferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import org.tensorflow.lite.examples.videoclassification.ml.VideoClassifier
 import org.tensorflow.lite.support.label.Category
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.fragment.ImageLiteUseCase
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 import java.lang.Exception
 
 class VideoClassificationUseCase: ImageLiteUseCase<List<Category>, ImageInferenceInfo>() {

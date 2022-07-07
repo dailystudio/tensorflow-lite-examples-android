@@ -2,11 +2,8 @@ package org.tensorflow.lite.examples.speech
 
 import android.content.Context
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.speech.recognition.fragment.SpeechRecognitionFragment
-import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.AssetFileLiteModel
-import org.tensorflow.litex.TFLiteModel
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

@@ -3,7 +3,6 @@ package org.tensorflow.lite.examples.reinforcementlearning
 import android.content.Context
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.AssetFileLiteModel
-import org.tensorflow.litex.TFLiteModel
 
 abstract class PlaneStrikeAgent(context: Context,
                                 model: String,

@@ -6,11 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.dailystudio.devbricksx.development.Logger
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
-import com.dailystudio.tflite.example.reinforcementlearning.ReinforcementLearningUseCase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.tensorflow.lite.examples.reinforcementlearning.*
 import java.util.*
 

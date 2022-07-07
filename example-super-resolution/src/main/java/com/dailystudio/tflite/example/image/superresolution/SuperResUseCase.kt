@@ -6,12 +6,12 @@ import android.graphics.RectF
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.ImageUtils
 import org.tensorflow.litex.image.ImageInferenceInfo
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.superresolution.model.SuperRes
 import com.dailystudio.tflite.example.image.superresolution.model.SuperResolutionModel
 import org.tensorflow.lite.support.model.Model
 import org.tensorflow.litex.LiteModel
 import org.tensorflow.litex.fragment.ImageLiteUseCase
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 import kotlin.math.roundToInt
 
 class SuperResUseCase: ImageLiteUseCase<SuperRes, ImageInferenceInfo>() {

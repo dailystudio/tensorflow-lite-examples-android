@@ -7,10 +7,10 @@ import com.dailystudio.devbricksx.settings.RadioSetting
 import com.dailystudio.devbricksx.settings.SimpleRadioSettingItem
 import com.dailystudio.devbricksx.settings.SwitchSetting
 import org.tensorflow.litex.fragment.InferenceSettingsFragment
-import com.dailystudio.tflite.example.common.ui.InferenceSettingsPrefs
 import com.dailystudio.tflite.example.image.classification.ImageClassificationSettingsPrefs
 import com.dailystudio.tflite.example.image.classification.R
 import org.tensorflow.lite.examples.classification.tflite.Classifier
+import org.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class ImageClassificationSettingsFragment : InferenceSettingsFragment() {
 

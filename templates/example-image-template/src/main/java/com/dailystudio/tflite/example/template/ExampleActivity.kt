@@ -4,8 +4,10 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import org.tensorflow.litex.InferenceInfo
 import com.dailystudio.tflite.example.template.fragment.ExampleTemplateCameraFragment
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     override fun createBaseFragment(): Fragment {
         return ExampleTemplateCameraFragment()
@@ -15,7 +17,7 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
         return null
     }
 
-    override fun onResultsUpdated(results: Void) {
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
     }
 
     override fun getExampleName(): CharSequence? {
@@ -28,6 +30,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, Void>() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            ExampleTemplateUseCase.UC_NAME to ExampleTemplateUseCase()
+        )
     }
 
 }

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.StringUtils
 import org.tensorflow.litex.ui.ItemLabel
-import com.dailystudio.tflite.example.common.ui.model.ItemLabelViewModel
 import org.tensorflow.litex.utils.ResultsUtils
 import com.dailystudio.tflite.example.text.classification.ExampleActivity
 import com.dailystudio.tflite.example.text.classification.R
@@ -15,6 +14,7 @@ import org.tensorflow.litex.text.ChatRecord
 import org.tensorflow.litex.text.LiteChatUseCaseFragment
 import org.tensorflow.litex.text.MessageType
 import org.tensorflow.litex.text.model.ChatRecordViewModel
+import org.tensorflow.litex.ui.model.ItemLabelViewModel
 
 class TextClassificationFragment: LiteChatUseCaseFragment() {
 
@@ -73,7 +73,7 @@ class TextClassificationFragment: LiteChatUseCaseFragment() {
 
     private fun initItemLabels() {
         val labels = StringUtils.linesFromAsset(requireContext(), LABELS_FILE)
-        val viewModel = ViewModelProvider(this).get(ItemLabelViewModel::class.java)
+        val viewModel = ViewModelProvider(this)[ItemLabelViewModel::class.java]
 
         for ((i, l) in labels.withIndex()) {
             viewModel.insertItemLabel(ItemLabel(i, l, l))
