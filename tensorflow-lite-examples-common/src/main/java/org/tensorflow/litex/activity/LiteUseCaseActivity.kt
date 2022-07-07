@@ -305,7 +305,7 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
     }
 
     protected open fun getExampleThumbVideoResource(): Int {
-        return R.raw.about_video
+        return R.raw.default_about_video
     }
 
     protected open fun getExampleIconResource(): Int {
