@@ -26,5 +26,7 @@
     <dimen name="overflow_menu_size">32dp</dimen>
     <dimen name="overflow_menu_margin">8dp</dimen>
 
+    <dimen name="about_video_thumb_width">120dp</dimen>
+    <dimen name="about_video_thumb_height">200dp</dimen>
 
 </resources>

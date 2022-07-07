@@ -20,29 +20,36 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.fragment.LiteUseCaseAboutFragment
 import org.tensorflow.litex.getLiteUseCaseViewModel
 import org.tensorflow.litex.observeUseCaseInfo
 import org.tensorflow.litex.observeUseCaseOutput
 
+class AboutFragment(private val exampleName: CharSequence?,
+                    private val exampleIconResId: Int,
+                    private val exampleDesc: CharSequence?,
+                    private val exampleThumbResId: Int,
+                    private val exampleVideoResId: Int = -1
+) : LiteUseCaseAboutFragment() {
+    override val appThumbResource: Int
+        get() = exampleThumbResId
+
+    override val appName: CharSequence?
+        get() = exampleName
+
+    override val appDescription: CharSequence?
+        get() = exampleDesc
+
+    override val appIconResource: Int
+        get() = exampleIconResId
+
+    override val aboutVideoResId: Int
+        get() = exampleVideoResId
+
+}
+
 abstract class LiteUseCaseActivity: DevBricksActivity() {
 
-    class AboutFragment(private val exampleName: CharSequence?,
-                        private val exampleIconResId: Int,
-                        private val exampleDesc: CharSequence?,
-                        private val exampleThumbResId: Int) : AbsAboutFragment() {
-        override val appThumbResource: Int
-            get() = exampleThumbResId
-
-        override val appName: CharSequence?
-            get() = exampleName
-
-        override val appDescription: CharSequence?
-            get() = exampleDesc
-
-        override val appIconResource: Int
-            get() = exampleIconResId
-
-    }
 
     private var bottomSheetLayout: ViewGroup? = null
     private var visibleLayout: ViewGroup? = null
@@ -57,6 +64,7 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
 
     private var settingsFragment: AbsSettingsDialogFragment? = null
     lateinit var exampleFragment: Fragment
+    private var aboutFragment: AbsAboutFragment? = null
 
     private lateinit var uiThread: Thread
 
@@ -74,6 +82,12 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        aboutFragment?.dismissAllowingStateLoss()
+        settingsFragment?.dismissAllowingStateLoss()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_example_activity, menu)
@@ -83,16 +97,13 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_about -> {
-                val fragment = createAboutFragment()
+                aboutFragment = createAboutFragment()
 
-                fragment.show(supportFragmentManager, "about")
+                aboutFragment?.show(supportFragmentManager, "about")
             }
 
             R.id.action_settings -> {
-                val fragment = settingsFragment ?: createSettingsFragment()
-
-                settingsFragment = fragment
-
+                settingsFragment = createSettingsFragment()
 
                 settingsFragment?.show(supportFragmentManager, "settings")
             }
@@ -284,11 +295,17 @@ abstract class LiteUseCaseActivity: DevBricksActivity() {
             getExampleName(),
             getExampleIconResource(),
             getExampleDesc(),
-            getExampleThumbResource())
+            getExampleThumbResource(),
+            getExampleThumbVideoResource(),
+        )
     }
 
     protected open fun getExampleThumbResource(): Int {
         return R.drawable.app_thumb
+    }
+
+    protected open fun getExampleThumbVideoResource(): Int {
+        return R.raw.about_video
     }
 
     protected open fun getExampleIconResource(): Int {

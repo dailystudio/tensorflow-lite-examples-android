@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/fragment_view_root"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content">
+
+	<ScrollView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
+
+		<RelativeLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+
+			<FrameLayout
+				android:id="@+id/about_app_thumb_layout"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content">
+				<ImageView
+					android:id="@+id/about_app_thumb"
+					android:scaleType="centerCrop"
+					android:layout_width="match_parent"
+					android:layout_height="@dimen/about_thumb_size" />
+				<TextureView
+					android:id="@+id/about_app_thumb_video"
+					android:visibility="gone"
+					android:layout_gravity="center"
+					android:layout_width="match_parent"
+					android:layout_height="@dimen/about_video_thumb_height" />
+			</FrameLayout>
+
+			<LinearLayout
+				android:id="@+id/app_info_layout"
+				android:orientation="horizontal"
+				android:layout_below="@id/about_app_thumb_layout"
+				android:layout_margin="@dimen/default_content_padding"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content">
+
+				<ImageView
+					android:id="@+id/about_app_icon"
+					android:layout_gravity="center_vertical"
+					android:layout_marginStart="@dimen/about_app_icon_margin_h"
+					android:layout_marginEnd="@dimen/about_app_icon_margin_h"
+					android:layout_marginTop="@dimen/about_app_icon_margin_v"
+					android:layout_marginBottom="@dimen/about_app_icon_margin_v"
+					android:layout_width="@dimen/about_app_icon_size"
+					android:layout_height="@dimen/about_app_icon_size"/>
+
+				<LinearLayout
+					android:orientation="vertical"
+					android:layout_gravity="center_vertical"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content">
+
+					<TextView
+						android:id="@+id/about_app_name"
+						style="@style/AppNameLabel"
+						android:layout_width="wrap_content"
+						android:layout_height="match_parent"/>
+
+					<TextView
+						android:id="@+id/about_app_ver"
+						style="@style/AppVerLabel"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"/>
+
+				</LinearLayout>
+
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/about_app_desc"
+				android:layout_below="@id/app_info_layout"
+				android:autoLink="email|web"
+				android:layout_marginStart="@dimen/default_content_padding"
+				android:layout_marginEnd="@dimen/default_content_padding"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"/>
+
+		</RelativeLayout>
+
+	</ScrollView>
+
+</FrameLayout>
