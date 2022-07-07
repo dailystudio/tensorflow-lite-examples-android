@@ -24,9 +24,7 @@ import android.os.Trace;
 import com.dailystudio.devbricksx.development.Logger;
 
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.Interpreter;
-import org.tensorflow.lite.gpu.GpuDelegate;
-import org.tensorflow.lite.nnapi.NnApiDelegate;
+import org.tensorflow.lite.InterpreterApi;
 import org.tensorflow.lite.support.common.FileUtil;
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.TensorProcessor;
@@ -39,7 +37,7 @@ import org.tensorflow.lite.support.image.ops.Rot90Op;
 import org.tensorflow.lite.support.label.TensorLabel;
 import org.tensorflow.lite.support.model.Model.Device;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
-import org.tensorflow.litex.TFLiteModel;
+import org.tensorflow.litex.AssetFileLiteModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +47,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 /** A classifier specialized to label images using TensorFlow Lite. */
-public abstract class Classifier extends TFLiteModel {
+public abstract class Classifier extends AssetFileLiteModel {
 
   /** The model type used for classification. */
   public enum Model {
@@ -60,10 +58,10 @@ public abstract class Classifier extends TFLiteModel {
   private static final int MAX_RESULTS = 3;
 
   /** Image size along the x axis. */
-  private final int imageSizeX;
+  private int imageSizeX;
 
   /** Image size along the y axis. */
-  private final int imageSizeY;
+  private int imageSizeY;
 
   /** Labels corresponding to the output of the vision model. */
   private List<String> labels;
@@ -72,10 +70,10 @@ public abstract class Classifier extends TFLiteModel {
   private TensorImage inputImageBuffer;
 
   /** Output probability TensorBuffer. */
-  private final TensorBuffer outputProbabilityBuffer;
+  private TensorBuffer outputProbabilityBuffer;
 
   /** Processer to apply post processing of the output probability. */
-  private final TensorProcessor probabilityProcessor;
+  private TensorProcessor probabilityProcessor;
 
   /**
    * Creates a classifier with the provided configuration.
@@ -169,13 +167,20 @@ public abstract class Classifier extends TFLiteModel {
   /** Initializes a {@code Classifier}. */
   protected Classifier(Context context, String modelPath, Device device, int numThreads, boolean useXNNPack) throws IOException {
     super(context, modelPath, device, numThreads, useXNNPack);
-
     Logger.INSTANCE.debug("model path: %s", modelPath);
+  }
 
+  @Override
+  public void open() {
+    super.open();
     // Loads labels out from the label file.
-    labels = FileUtil.loadLabels(context, getLabelPath());
+    try {
+      labels = FileUtil.loadLabels(getContext(), getLabelPath());
+    } catch (IOException e) {
+      Logger.INSTANCE.error("failed to load labels from [" + getLabelPath() + "]: " + e);
+    }
 
-    Interpreter tflite = getInterpreter();
+    InterpreterApi tflite = getInterpreter();
 
     // Reads type and shape of input and output tensors, respectively.
     int imageTensorIndex = 0;
@@ -212,7 +217,7 @@ public abstract class Classifier extends TFLiteModel {
     Trace.endSection();
     Logger.INSTANCE.info("Timecost to load the image: " + (endTimeForLoadImage - startTimeForLoadImage));
 
-    Interpreter tflite = getInterpreter();
+    InterpreterApi tflite = getInterpreter();
 
     // Runs the inference call.
     Trace.beginSection("runInference");
@@ -288,7 +293,7 @@ public abstract class Classifier extends TFLiteModel {
   }
 
   /** Gets the name of the model file stored in Assets. */
-  protected abstract String getModelPath();
+//  protected abstract String getModelPath();
 
   /** Gets the name of the label file stored in Assets. */
   protected abstract String getLabelPath();

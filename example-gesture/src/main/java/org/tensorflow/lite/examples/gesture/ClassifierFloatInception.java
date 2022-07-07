@@ -48,6 +48,7 @@ public class ClassifierFloatInception extends Classifier {
       throws IOException {
     super(context, MODEL_PATH, device, numThreads, useXNNPack);
   }
+/*
 
   @Override
   protected String getModelPath() {
@@ -56,6 +57,7 @@ public class ClassifierFloatInception extends Classifier {
     // downloaded into assets.
     return MODEL_PATH;
   }
+*/
 
   @Override
   protected String getLabelPath() {

@@ -17,8 +17,10 @@ import com.dailystudio.tflite.example.image.gesture.fragment.model.GestureLabelV
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.gesture.Classifier
+import org.tensorflow.litex.LiteUseCase
+import org.tensorflow.litex.activity.LiteUseCaseActivity
 
-class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recognition>>() {
+class ExampleActivity : LiteUseCaseActivity() {
 
     companion object {
         const val FRAGMENT_TAG_RESULTS = "results-fragment"
@@ -57,27 +59,35 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
         return stubView
     }
 
-    override fun onResultsUpdated(results: List<Classifier.Recognition>) {
-        val selectedGesture = if (results.isNotEmpty()) {
-            results[0]
-        } else {
-            null
+    override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+        when (nameOfUseCase) {
+            GestureUseCase.UC_NAME -> {
+                if (results is List<*>) {
+                    val selectedGesture = if (results.isNotEmpty()) {
+                        results[0]
+                    } else {
+                        null
+                    } as? Classifier.Recognition
+
+                    Logger.debug("selectedGesture = ${selectedGesture.toString()
+                        .replace("%", "%%")}")
+
+                    val viewModel = ViewModelProvider(this)[GestureLabelViewModel::class.java]
+
+                    val gestureLabels = viewModel.getGestureLabels()
+                    for (gl in gestureLabels) {
+                        gl.selected = selectedGesture?.let {
+                            it.title == gl.label
+                        } ?: false
+
+                        Logger.debug("updated-gl = $gl")
+
+                        viewModel.updateGestureLabel(gl)
+                    }
+                }
+            }
         }
 
-        Logger.debug("selectedGesture = ${selectedGesture.toString().replace("%", "%%")}")
-
-        val viewModel = ViewModelProvider(this).get(GestureLabelViewModel::class.java)
-
-        val gestureLabels = viewModel.getGestureLabels()
-        for (gl in gestureLabels) {
-            gl.selected = selectedGesture?.let {
-                it.title == gl.label
-            } ?: false
-
-            Logger.debug("updated-gl = $gl")
-
-            viewModel.updateGestureLabel(gl)
-        }
     }
 
     private fun initResults() {
@@ -106,6 +116,12 @@ class ExampleActivity : AbsExampleActivity<InferenceInfo, List<Classifier.Recogn
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+        return mapOf(
+            GestureUseCase.UC_NAME to GestureUseCase()
+        )
     }
 
 }
