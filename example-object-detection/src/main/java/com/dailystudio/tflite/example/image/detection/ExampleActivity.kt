@@ -3,14 +3,14 @@ package com.dailystudio.tflite.example.image.detection
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import org.tensorflow.litex.InferenceInfo
-import org.tensorflow.litex.image.ImageInferenceInfo
+import com.dailystudio.tensorflow.litex.InferenceInfo
+import com.dailystudio.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.image.detection.fragment.ObjectDetectionCameraFragment
 import org.tensorflow.lite.examples.detection.customview.OverlayView
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
-import org.tensorflow.litex.image.Recognition
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.image.Recognition
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -74,6 +74,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.object_detection_720p
     }
 
     override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {

@@ -26,8 +26,8 @@ import com.dailystudio.devbricksx.development.Logger;
 import org.tensorflow.lite.InterpreterApi;
 import org.tensorflow.lite.support.common.FileUtil;
 import org.tensorflow.lite.support.model.Model;
-import org.tensorflow.litex.AssetFileLiteModel;
-import org.tensorflow.litex.image.Recognition;
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel;
+import com.dailystudio.tensorflow.litex.image.Recognition;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
