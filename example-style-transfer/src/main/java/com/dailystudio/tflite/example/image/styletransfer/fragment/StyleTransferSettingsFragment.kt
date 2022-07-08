@@ -5,11 +5,11 @@ import com.dailystudio.devbricksx.settings.AbsSetting
 import com.dailystudio.devbricksx.settings.RadioSetting
 import com.dailystudio.devbricksx.settings.SimpleRadioSettingItem
 import com.dailystudio.devbricksx.settings.SwitchSetting
-import org.tensorflow.litex.fragment.InferenceSettingsFragment
+import com.dailystudio.tensorflow.litex.fragment.InferenceSettingsFragment
 import com.dailystudio.tflite.example.image.styletransfer.R
 import com.dailystudio.tflite.example.image.styletransfer.StyleTransferSettingsPrefs
 import org.tensorflow.lite.examples.styletransfer.FSTModel
-import org.tensorflow.litex.ui.InferenceSettingsPrefs
+import com.dailystudio.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class StyleTransferSettingsFragment : InferenceSettingsFragment() {
 

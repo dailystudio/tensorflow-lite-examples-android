@@ -8,9 +8,9 @@ import com.dailystudio.tflite.example.image.styletransfer.StyleTransferPrefs
 import com.dailystudio.tflite.example.image.styletransfer.StyleTransferUseCase
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
-import org.tensorflow.litex.getLiteUseCaseViewModel
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.fragment.LiteCameraUseCaseFragment
+import com.dailystudio.tensorflow.litex.getLiteUseCaseViewModel
 
 class StyleTransferCameraFragment : LiteCameraUseCaseFragment() {
 

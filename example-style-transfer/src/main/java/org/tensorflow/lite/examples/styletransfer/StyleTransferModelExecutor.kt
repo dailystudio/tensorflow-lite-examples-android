@@ -22,7 +22,7 @@ import android.os.SystemClock
 import android.util.Log
 import kotlin.collections.set
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.AssetFileLiteModel
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel
 
 enum class FSTModel {
   FastStyleTransferInt8,

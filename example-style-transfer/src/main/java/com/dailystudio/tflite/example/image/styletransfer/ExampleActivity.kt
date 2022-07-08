@@ -11,14 +11,14 @@ import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.PickStyleDialogFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.StyleTransferCameraFragment
 import com.dailystudio.tflite.example.image.styletransfer.fragment.StyleTransferSettingsFragment
-import com.dailystudio.tflite.example.image.styletransfer.model.StyleImageViewModel
 import com.dailystudio.tflite.example.image.styletransfer.ui.StyledOverlay
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.styletransfer.StyleTransferResult
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tflite.example.image.styletransfer.model.StyleImageViewModel
 
 
 class ExampleActivity: LiteUseCaseActivity() {
@@ -117,7 +117,7 @@ class ExampleActivity: LiteUseCaseActivity() {
             null
         } ?: return
 
-        val viewModel = ViewModelProvider(this).get(StyleImageViewModel::class.java)
+        val viewModel = ViewModelProvider(this)[StyleImageViewModel::class.java]
 
         for ((i, style) in styles.withIndex()) {
             val styleImage = StyleImage(i,
@@ -138,6 +138,10 @@ class ExampleActivity: LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.style_transfer_720p
     }
 
     override fun createSettingsFragment(): AbsSettingsDialogFragment? {
