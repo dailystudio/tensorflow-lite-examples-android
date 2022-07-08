@@ -10,7 +10,7 @@ import com.dailystudio.tflite.example.image.superresolution.SuperResUseCase
 import com.dailystudio.tflite.example.image.superresolution.ui.SelectOverlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
+import com.dailystudio.tensorflow.litex.fragment.LiteCameraUseCaseFragment
 
 class SuperResolutionCameraFragment : LiteCameraUseCaseFragment() {
 

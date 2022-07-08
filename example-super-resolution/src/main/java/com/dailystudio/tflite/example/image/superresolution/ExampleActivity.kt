@@ -6,8 +6,8 @@ import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.tflite.example.image.superresolution.fragment.SuperResolutionCameraFragment
 import com.dailystudio.tflite.example.image.superresolution.model.SuperRes
 import com.dailystudio.tflite.example.image.superresolution.ui.ImageClipOverlay
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -43,6 +43,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.super_resolution_720p
     }
 
     override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
