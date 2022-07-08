@@ -10,8 +10,8 @@ import com.dailystudio.tflite.example.reinforcementlearning.fragment.Reinforceme
 import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.BoardViewModel
 import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.GameState
 import com.google.android.material.snackbar.Snackbar
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -95,6 +95,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.reforcement_learning_720p
     }
 
     override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {

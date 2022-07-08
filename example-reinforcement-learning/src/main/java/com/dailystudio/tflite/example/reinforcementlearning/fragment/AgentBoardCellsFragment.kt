@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.reinforcementlearning.*
 import org.tensorflow.lite.examples.reinforcementlearning.fragment.AgentBoardCellsListFragment
-import org.tensorflow.litex.getLiteUseCaseViewModel
+import com.dailystudio.tensorflow.litex.getLiteUseCaseViewModel
 
 class AgentBoardCellsFragment: AgentBoardCellsListFragment() {
 
