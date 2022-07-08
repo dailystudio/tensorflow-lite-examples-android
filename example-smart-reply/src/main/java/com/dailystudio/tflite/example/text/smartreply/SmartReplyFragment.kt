@@ -1,7 +1,7 @@
 package com.dailystudio.tflite.example.text.smartreply
 
 import org.tensorflow.lite.examples.smartreply.SmartReply
-import org.tensorflow.litex.text.LiteChatUseCaseFragment
+import com.dailystudio.tensorflow.litex.text.LiteChatUseCaseFragment
 
 class SmartReplyFragment: LiteChatUseCaseFragment() {
     override val nameOfUsedUseCase: String
