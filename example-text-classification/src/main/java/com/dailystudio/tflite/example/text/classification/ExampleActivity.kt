@@ -6,10 +6,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.tflite.example.text.classification.fragment.TextClassificationFragment
 import org.tensorflow.lite.examples.textclassification.TextClassificationClient
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
-import org.tensorflow.litex.ui.fragment.ItemLabelsListFragment
-import org.tensorflow.litex.ui.model.ItemLabelViewModel
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.ui.fragment.ItemLabelsListFragment
+import com.dailystudio.tensorflow.litex.ui.model.ItemLabelViewModel
 import java.util.*
 
 class ExampleActivity : LiteUseCaseActivity() {
@@ -72,6 +72,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.text_classification_720p
     }
 
     override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {

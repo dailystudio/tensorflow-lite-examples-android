@@ -4,17 +4,17 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.utils.StringUtils
-import org.tensorflow.litex.ui.ItemLabel
-import org.tensorflow.litex.utils.ResultsUtils
+import com.dailystudio.tensorflow.litex.ui.ItemLabel
+import com.dailystudio.tensorflow.litex.utils.ResultsUtils
 import com.dailystudio.tflite.example.text.classification.ExampleActivity
 import com.dailystudio.tflite.example.text.classification.R
 import com.dailystudio.tflite.example.text.classification.TextClassificationUseCase
 import org.tensorflow.lite.examples.textclassification.TextClassificationClient
-import org.tensorflow.litex.text.ChatRecord
-import org.tensorflow.litex.text.LiteChatUseCaseFragment
-import org.tensorflow.litex.text.MessageType
-import org.tensorflow.litex.text.model.ChatRecordViewModel
-import org.tensorflow.litex.ui.model.ItemLabelViewModel
+import com.dailystudio.tensorflow.litex.text.ChatRecord
+import com.dailystudio.tensorflow.litex.text.LiteChatUseCaseFragment
+import com.dailystudio.tensorflow.litex.text.MessageType
+import com.dailystudio.tensorflow.litex.text.model.ChatRecordViewModel
+import com.dailystudio.tensorflow.litex.ui.model.ItemLabelViewModel
 
 class TextClassificationFragment: LiteChatUseCaseFragment() {
 

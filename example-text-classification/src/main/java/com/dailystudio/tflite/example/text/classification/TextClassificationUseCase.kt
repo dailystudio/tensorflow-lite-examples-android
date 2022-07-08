@@ -1,12 +1,12 @@
 package com.dailystudio.tflite.example.text.classification
 
 import android.content.Context
-import org.tensorflow.litex.InferenceInfo
+import com.dailystudio.tensorflow.litex.InferenceInfo
 import org.tensorflow.lite.examples.textclassification.TextClassificationClient
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.LiteModel
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.ui.InferenceSettingsPrefs
+import com.dailystudio.tensorflow.litex.LiteModel
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.ui.InferenceSettingsPrefs
 import java.util.*
 
 class TextClassificationUseCase: LiteUseCase<String, Map<String, TextClassificationClient.Result>, InferenceInfo>() {

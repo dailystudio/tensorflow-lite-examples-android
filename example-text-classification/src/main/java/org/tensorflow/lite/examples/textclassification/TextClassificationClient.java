@@ -26,8 +26,7 @@ import androidx.annotation.WorkerThread;
 import com.dailystudio.devbricksx.development.Logger;
 
 import org.tensorflow.lite.support.model.Model;
-import org.tensorflow.litex.AssetFileLiteModel;
-import org.tensorflow.litex.TFLiteModel;
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
