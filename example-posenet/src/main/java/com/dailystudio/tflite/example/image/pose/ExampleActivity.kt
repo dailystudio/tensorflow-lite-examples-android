@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.development.Logger
-import org.tensorflow.litex.InferenceInfo
-import org.tensorflow.litex.image.ImageInferenceInfo
+import com.dailystudio.tensorflow.litex.InferenceInfo
+import com.dailystudio.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.image.pose.fragment.PoseCameraFragment
 import com.dailystudio.tflite.example.image.pose.ui.PoseOverlayView
 import org.tensorflow.lite.examples.posenet.lib.Person
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -68,6 +68,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.pose_estimation_720p
     }
 
     override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {

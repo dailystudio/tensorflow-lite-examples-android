@@ -1,7 +1,7 @@
 package com.dailystudio.tflite.example.image.pose.fragment
 
 import com.dailystudio.tflite.example.image.pose.PoseUseCase
-import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
+import com.dailystudio.tensorflow.litex.fragment.LiteCameraUseCaseFragment
 
 class PoseCameraFragment : LiteCameraUseCaseFragment() {
 

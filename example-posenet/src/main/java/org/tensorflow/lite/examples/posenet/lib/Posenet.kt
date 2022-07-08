@@ -22,7 +22,7 @@ import android.util.Log
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.InterpreterApi
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.AssetFileLiteModel
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.math.exp
