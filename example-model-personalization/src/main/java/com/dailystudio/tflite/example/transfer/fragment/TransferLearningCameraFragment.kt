@@ -3,7 +3,7 @@ package com.dailystudio.tflite.example.transfer.fragment
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.tflite.example.transfer.TransferLearningUseCase
-import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
+import com.dailystudio.tensorflow.litex.fragment.LiteCameraUseCaseFragment
 
 class TransferLearningCameraFragment : LiteCameraUseCaseFragment() {
 

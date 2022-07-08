@@ -19,8 +19,7 @@ import android.content.Context;
 
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.support.model.Model;
-import org.tensorflow.litex.AssetFileLiteModel;
-import org.tensorflow.litex.TFLiteModel;
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;

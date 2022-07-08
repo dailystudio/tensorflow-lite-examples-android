@@ -12,9 +12,9 @@ import com.dailystudio.tflite.example.transfer.fragment.TransferLearningCameraFr
 import com.dailystudio.tflite.example.transfer.fragment.TransferLearningViewModel
 import com.dailystudio.tflite.example.transfer.model.TransferLearningModel
 import com.google.android.material.button.MaterialButton
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
-import org.tensorflow.litex.getLiteUseCaseViewModel
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.getLiteUseCaseViewModel
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -138,6 +138,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.model_personalization_720p
     }
 
     override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
