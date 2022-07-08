@@ -38,15 +38,10 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    api "com.facebook.stetho:stetho:${project.ext.stethoVersion}"
-    api "com.github.Rasalexman:KDispatcher:${project.ext.kdispatcherVersion}"
-    api "com.nostra13.universalimageloader:universal-image-loader:${project.ext.imageLoaderVersion}"
-    api "com.squareup.retrofit2:retrofit:${project.ext.retrofitVersion}"
-    api "com.squareup.retrofit2:converter-gson:${project.ext.retrofitVersion}"
-
     api "cn.dailystudio:devbricksx:${DEVBRICKS_X_VERSION}"
     api "cn.dailystudio:devbricksx-camera:${DEVBRICKS_X_VERSION}"
     api "cn.dailystudio:devbricksx-audio:${DEVBRICKS_X_VERSION}"
+
     kapt "cn.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
 
     // Build off of nightly TensorFlow Lite

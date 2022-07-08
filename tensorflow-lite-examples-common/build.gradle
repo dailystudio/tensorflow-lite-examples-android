@@ -38,6 +38,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    api "com.facebook.stetho:stetho:${project.ext.stethoVersion}"
+    api "com.nostra13.universalimageloader:universal-image-loader:${project.ext.imageLoaderVersion}"
+
     api project(":tensorflow-litex")
 
     // Test helpers
