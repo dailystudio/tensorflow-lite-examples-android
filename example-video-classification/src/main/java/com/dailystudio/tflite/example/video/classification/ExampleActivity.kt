@@ -9,9 +9,9 @@ import com.dailystudio.tflite.example.video.classification.fragment.VideoClassif
 import com.dailystudio.tflite.example.video.classification.fragment.VideoClassificationSettingsFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.tensorflow.lite.support.label.Category
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
-import org.tensorflow.litex.getLiteUseCaseViewModel
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.getLiteUseCaseViewModel
 import kotlin.math.min
 
 class ExampleActivity : LiteUseCaseActivity() {
@@ -77,6 +77,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.video_classification_720p
     }
 
     override fun createSettingsFragment(): AbsSettingsDialogFragment? {

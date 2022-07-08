@@ -5,7 +5,7 @@ import android.util.Range
 import androidx.camera.camera2.interop.Camera2Interop
 import androidx.camera.core.ImageAnalysis
 import com.dailystudio.tflite.example.video.classification.VideoClassificationUseCase
-import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
+import com.dailystudio.tensorflow.litex.fragment.LiteCameraUseCaseFragment
 
 class VideoClassificationCameraFragment : LiteCameraUseCaseFragment() {
 
