@@ -1,11 +1,11 @@
 package org.tensorflow.lite.examples.bertqa.ml
 
 import android.content.Context
-import org.tensorflow.litex.InferenceInfo
+import com.dailystudio.tensorflow.litex.InferenceInfo
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.LiteModel
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.ui.InferenceSettingsPrefs
+import com.dailystudio.tensorflow.litex.LiteModel
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class QaUseCase: LiteUseCase<Pair<String, String>, List<QaAnswer>, InferenceInfo>() {
 

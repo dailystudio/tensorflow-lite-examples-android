@@ -23,10 +23,8 @@ import androidx.annotation.WorkerThread;
 
 import com.google.common.base.Joiner;
 
-import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.support.model.Model;
-import org.tensorflow.litex.AssetFileLiteModel;
-import org.tensorflow.litex.TFLiteModel;
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

@@ -16,8 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.tensorflow.lite.examples.bertqa.ml.QaAnswer
 import org.tensorflow.lite.examples.bertqa.ml.QaUseCase
-import org.tensorflow.litex.LiteUseCaseViewModel
-import org.tensorflow.litex.getLiteUseCaseViewModel
+import com.dailystudio.tensorflow.litex.LiteUseCaseViewModel
+import com.dailystudio.tensorflow.litex.getLiteUseCaseViewModel
 
 class ArticleQAFragment : DevBricksFragment() {
 
