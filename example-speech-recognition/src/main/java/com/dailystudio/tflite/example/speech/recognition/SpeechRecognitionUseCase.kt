@@ -5,9 +5,9 @@ import com.dailystudio.devbricksx.development.Logger
 import org.tensorflow.lite.examples.speech.CommandRecognizer
 import org.tensorflow.lite.examples.speech.RecognizeCommands
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.LiteModel
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.ui.InferenceSettingsPrefs
+import com.dailystudio.tensorflow.litex.LiteModel
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.ui.InferenceSettingsPrefs
 import java.util.*
 
 class SpeechRecognitionUseCase: LiteUseCase<ShortArray, RecognizeCommands.RecognitionResult, AudioInferenceInfo>() {

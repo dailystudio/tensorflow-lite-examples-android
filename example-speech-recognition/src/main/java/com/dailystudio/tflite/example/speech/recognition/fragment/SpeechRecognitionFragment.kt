@@ -8,7 +8,7 @@ import com.dailystudio.devbricksx.audio.AudioConfig
 import com.dailystudio.devbricksx.audio.AudioProcessFragment
 import com.dailystudio.tflite.example.speech.recognition.R
 import com.dailystudio.tflite.example.speech.recognition.SpeechRecognitionUseCase
-import org.tensorflow.litex.getLiteUseCaseViewModel
+import com.dailystudio.tensorflow.litex.getLiteUseCaseViewModel
 
 class SpeechRecognitionFragment : AudioProcessFragment() {
 

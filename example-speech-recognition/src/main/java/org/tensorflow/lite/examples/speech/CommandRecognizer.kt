@@ -3,7 +3,7 @@ package org.tensorflow.lite.examples.speech
 import android.content.Context
 import com.dailystudio.devbricksx.development.Logger
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.AssetFileLiteModel
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

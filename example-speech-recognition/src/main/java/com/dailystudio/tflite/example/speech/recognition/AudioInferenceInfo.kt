@@ -1,8 +1,8 @@
 package com.dailystudio.tflite.example.speech.recognition
 
 import android.content.Context
-import org.tensorflow.litex.InferenceInfo
-import org.tensorflow.litex.InferenceInfoItem
+import com.dailystudio.tensorflow.litex.InferenceInfo
+import com.dailystudio.tensorflow.litex.InferenceInfoItem
 
 class AudioInferenceInfo(var sampleRate: Int = 0,
                          var bufferSize: Int = 0,

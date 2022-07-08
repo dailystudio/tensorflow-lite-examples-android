@@ -10,8 +10,8 @@ import com.dailystudio.tflite.example.speech.recognition.fragment.CommandsListFr
 import com.dailystudio.tflite.example.speech.recognition.fragment.SpeechRecognitionFragment
 import com.dailystudio.tflite.example.speech.recognition.model.CommandViewModel
 import org.tensorflow.lite.examples.speech.RecognizeCommands
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -93,6 +93,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.speech_recognition_720p
     }
 
     override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
