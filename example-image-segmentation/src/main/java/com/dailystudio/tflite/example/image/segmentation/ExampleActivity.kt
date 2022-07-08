@@ -7,14 +7,14 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.dailystudio.devbricksx.development.Logger
-import org.tensorflow.litex.ui.ItemLabel
+import com.dailystudio.tensorflow.litex.ui.ItemLabel
 import com.dailystudio.tflite.example.image.segmentation.fragment.ImageSegmentationCameraFragment
 import com.dailystudio.tflite.example.image.segmentation.ui.MaskOverlay
 import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
-import org.tensorflow.litex.ui.fragment.ItemLabelsListFragment
-import org.tensorflow.litex.ui.model.ItemLabelViewModel
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.ui.fragment.ItemLabelsListFragment
+import com.dailystudio.tensorflow.litex.ui.model.ItemLabelViewModel
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -101,6 +101,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.image_segmentation_720p
     }
 
     override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {

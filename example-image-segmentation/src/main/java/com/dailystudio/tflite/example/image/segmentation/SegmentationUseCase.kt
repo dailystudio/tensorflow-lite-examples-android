@@ -6,13 +6,13 @@ import android.graphics.Color
 import android.util.Size
 import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
-import org.tensorflow.litex.image.AdvanceInferenceInfo
+import com.dailystudio.tensorflow.litex.image.AdvanceInferenceInfo
 import org.tensorflow.lite.examples.imagesegmentation.ImageSegmentationModelExecutor
 import org.tensorflow.lite.examples.imagesegmentation.SegmentationResult
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.LiteModel
-import org.tensorflow.litex.fragment.ImageLiteUseCase
-import org.tensorflow.litex.ui.InferenceSettingsPrefs
+import com.dailystudio.tensorflow.litex.LiteModel
+import com.dailystudio.tensorflow.litex.fragment.ImageLiteUseCase
+import com.dailystudio.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class SegmentationUseCase: ImageLiteUseCase<SegmentationResult, AdvanceInferenceInfo>() {
 
