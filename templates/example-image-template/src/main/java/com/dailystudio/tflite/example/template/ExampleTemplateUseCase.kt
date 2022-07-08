@@ -2,12 +2,12 @@ package com.dailystudio.tflite.example.template
 
 import android.content.Context
 import android.graphics.Bitmap
-import org.tensorflow.litex.image.ImageInferenceInfo
+import com.dailystudio.tensorflow.litex.image.ImageInferenceInfo
 import com.dailystudio.tflite.example.template.model.ExampleTemplateModel
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.LiteModel
-import org.tensorflow.litex.fragment.ImageLiteUseCase
-import org.tensorflow.litex.ui.InferenceSettingsPrefs
+import com.dailystudio.tensorflow.litex.LiteModel
+import com.dailystudio.tensorflow.litex.fragment.ImageLiteUseCase
+import com.dailystudio.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class ExampleTemplateUseCase: ImageLiteUseCase<Void, ImageInferenceInfo>() {
 

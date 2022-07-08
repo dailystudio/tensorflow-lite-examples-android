@@ -2,9 +2,9 @@ package com.dailystudio.tflite.example.template
 
 import android.view.View
 import androidx.fragment.app.Fragment
-import org.tensorflow.litex.InferenceInfo
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.InferenceInfo
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -33,6 +33,11 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+
+        return R.raw.about_video
     }
 
     override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {

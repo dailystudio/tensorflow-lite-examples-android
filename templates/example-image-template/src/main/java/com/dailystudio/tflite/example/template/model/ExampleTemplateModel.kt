@@ -3,7 +3,7 @@ package com.dailystudio.tflite.example.template.model
 import android.content.Context
 import android.graphics.Bitmap
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.AssetFileLiteModel
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel
 
 class ExampleTemplateModel(
     context: Context,
