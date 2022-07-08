@@ -15,6 +15,7 @@ include ':example-object-detection'
 include ':example-video-classification'
 include ':example-image-classification'
 include ':tensorflow-lite-examples-common'
+include ':tensorflow-litex'
 include ':app'
 
 include ':example-template'

@@ -1,0 +1,69 @@
+<resources>
+
+    <style name="ExampleActivity" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="ExampleTitleText" parent="DefaultLabel">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textSize">@dimen/bottom_sheet_title_font_size</item>
+        <item name="android:textStyle">bold|italic</item>
+    </style>
+
+    <style name="BottomSheetTitle" parent="DefaultLabel">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="ResultItem">
+        <item name="android:paddingStart">@dimen/result_item_padding_h</item>
+        <item name="android:paddingEnd">@dimen/result_item_padding_h</item>
+        <item name="android:paddingTop">@dimen/result_item_padding_v</item>
+        <item name="android:paddingBottom">@dimen/result_item_padding_v</item>
+    </style>
+
+    <style name="ResultItemTitle" parent="ResultItem">
+        <item name="android:textSize">@dimen/result_item_title_font_size</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="ResultItemValue" parent="ResultItem">
+        <item name="android:textSize">@dimen/result_item_value_font_size</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:gravity">end|center_vertical</item>
+    </style>
+
+    <style name="InferenceItemText">
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="InferenceItemLabel" parent="InferenceItemText">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/inference_item_label_font_size</item>
+    </style>
+
+    <style name="InferenceItemValue" parent="InferenceItemText">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/inference_item_value_font_size</item>
+    </style>
+
+    <style name="ItemLabel" parent="DefaultListItemText1stLine">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/item_label_font_size</item>
+        <item name="android:padding">@dimen/item_label_padding</item>
+    </style>
+
+    <style name="ChatText">
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/default_font_size</item>
+        <item name="android:padding">@dimen/default_padding</item>
+    </style>
+
+</resources>
