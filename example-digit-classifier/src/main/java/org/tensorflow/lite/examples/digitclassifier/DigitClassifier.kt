@@ -10,7 +10,7 @@ import java.nio.ByteOrder
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.AssetFileLiteModel
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel
 
 class DigitClassifier(context: Context,
                       device: Model.Device,

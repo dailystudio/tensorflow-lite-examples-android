@@ -14,7 +14,7 @@ import com.dailystudio.tflite.example.image.digitclassifier.R
 import com.divyanshu.draw.widget.DrawView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.tensorflow.litex.getLiteUseCaseViewModel
+import com.dailystudio.tensorflow.litex.getLiteUseCaseViewModel
 
 data class RecognizedDigit(val digitBitmap: Bitmap? = null,
                            val digit: Int = -1,
