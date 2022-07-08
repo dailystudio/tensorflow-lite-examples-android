@@ -9,7 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.AbsRecyclerViewFragment
 import com.dailystudio.devbricksx.utils.StringUtils
-import org.tensorflow.litex.InferenceInfo
+import com.dailystudio.tensorflow.litex.InferenceInfo
 import com.dailystudio.tflite.example.image.gesture.fragment.GestureCameraFragment
 import com.dailystudio.tflite.example.image.gesture.fragment.GestureLabel
 import com.dailystudio.tflite.example.image.gesture.fragment.fragment.GestureLabelsListFragment
@@ -17,8 +17,8 @@ import com.dailystudio.tflite.example.image.gesture.fragment.model.GestureLabelV
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.gesture.Classifier
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
 
 class ExampleActivity : LiteUseCaseActivity() {
 

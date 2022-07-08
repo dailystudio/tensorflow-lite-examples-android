@@ -2,7 +2,7 @@ package com.dailystudio.tflite.example.image.gesture.fragment
 
 import androidx.camera.core.CameraSelector
 import com.dailystudio.tflite.example.image.gesture.GestureUseCase
-import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
+import com.dailystudio.tensorflow.litex.fragment.LiteCameraUseCaseFragment
 
 class GestureCameraFragment : LiteCameraUseCaseFragment() {
 

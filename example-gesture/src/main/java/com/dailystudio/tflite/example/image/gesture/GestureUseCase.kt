@@ -8,10 +8,10 @@ import com.dailystudio.devbricksx.utils.ImageUtils
 import com.dailystudio.devbricksx.utils.MatrixUtils
 import org.tensorflow.lite.examples.gesture.Classifier
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.LiteModel
-import org.tensorflow.litex.fragment.ImageLiteUseCase
-import org.tensorflow.litex.image.ImageInferenceInfo
-import org.tensorflow.litex.ui.InferenceSettingsPrefs
+import com.dailystudio.tensorflow.litex.LiteModel
+import com.dailystudio.tensorflow.litex.fragment.ImageLiteUseCase
+import com.dailystudio.tensorflow.litex.image.ImageInferenceInfo
+import com.dailystudio.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class GestureUseCase: ImageLiteUseCase<List<Classifier.Recognition>, ImageInferenceInfo>() {
 
