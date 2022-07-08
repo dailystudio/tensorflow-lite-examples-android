@@ -36,8 +36,8 @@ import org.tensorflow.lite.support.image.ops.Rot90Op;
 import org.tensorflow.lite.support.label.TensorLabel;
 import org.tensorflow.lite.support.model.Model.Device;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
-import org.tensorflow.litex.AssetFileLiteModel;
-import org.tensorflow.litex.image.Recognition;
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel;
+import com.dailystudio.tensorflow.litex.image.Recognition;
 
 import java.io.IOException;
 import java.util.ArrayList;

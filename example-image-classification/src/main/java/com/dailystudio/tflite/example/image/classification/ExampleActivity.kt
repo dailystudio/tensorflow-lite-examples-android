@@ -7,9 +7,9 @@ import androidx.fragment.app.Fragment
 import com.dailystudio.devbricksx.settings.AbsSettingsDialogFragment
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationCameraFragment
 import com.dailystudio.tflite.example.image.classification.fragment.ImageClassificationSettingsFragment
-import org.tensorflow.litex.LiteUseCase
-import org.tensorflow.litex.activity.LiteUseCaseActivity
-import org.tensorflow.litex.image.Recognition
+import com.dailystudio.tensorflow.litex.LiteUseCase
+import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tensorflow.litex.image.Recognition
 import kotlin.math.min
 
 class ExampleActivity : LiteUseCaseActivity() {
@@ -77,6 +77,10 @@ class ExampleActivity : LiteUseCaseActivity() {
 
     override fun getExampleDesc(): CharSequence? {
         return getString(R.string.app_desc)
+    }
+
+    override fun getExampleThumbVideoResource(): Int {
+        return R.raw.image_classification_720p
     }
 
     override fun createSettingsFragment(): AbsSettingsDialogFragment? {

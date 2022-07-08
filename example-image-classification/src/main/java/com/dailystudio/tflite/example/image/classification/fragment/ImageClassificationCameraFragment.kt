@@ -1,7 +1,7 @@
 package com.dailystudio.tflite.example.image.classification.fragment
 
 import com.dailystudio.tflite.example.image.classification.ClassifierUseCase
-import org.tensorflow.litex.fragment.LiteCameraUseCaseFragment
+import com.dailystudio.tensorflow.litex.fragment.LiteCameraUseCaseFragment
 
 /*
 private class ImageClassificationAnalyzer(rotation: Int,
