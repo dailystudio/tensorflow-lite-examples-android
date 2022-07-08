@@ -10,7 +10,7 @@ import org.opencv.utils.Converters
 import org.tensorflow.lite.examples.ocr.DetectionResult
 import org.tensorflow.lite.examples.ocr.ImageUtils
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.AssetFileLiteModel
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 

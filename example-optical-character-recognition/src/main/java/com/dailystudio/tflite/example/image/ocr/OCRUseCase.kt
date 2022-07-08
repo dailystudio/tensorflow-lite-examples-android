@@ -6,10 +6,10 @@ import com.dailystudio.tflite.example.image.ocr.model.OCRDetectionModel
 import com.dailystudio.tflite.example.image.ocr.model.OCRRecognitionModel
 import org.tensorflow.lite.examples.ocr.RecognitionResult
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.AvgTime
-import org.tensorflow.litex.LiteModel
-import org.tensorflow.litex.fragment.ImageLiteUseCase
-import org.tensorflow.litex.ui.InferenceSettingsPrefs
+import com.dailystudio.tensorflow.litex.AvgTime
+import com.dailystudio.tensorflow.litex.LiteModel
+import com.dailystudio.tensorflow.litex.fragment.ImageLiteUseCase
+import com.dailystudio.tensorflow.litex.ui.InferenceSettingsPrefs
 
 class OCRUseCase: ImageLiteUseCase<RecognitionResult, OCRInferenceInfo>() {
 

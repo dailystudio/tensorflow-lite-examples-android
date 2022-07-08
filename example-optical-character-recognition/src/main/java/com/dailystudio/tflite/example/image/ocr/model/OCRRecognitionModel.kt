@@ -14,7 +14,7 @@ import org.opencv.imgproc.Imgproc
 import org.tensorflow.lite.examples.ocr.DetectionResult
 import org.tensorflow.lite.examples.ocr.ImageUtils
 import org.tensorflow.lite.support.model.Model
-import org.tensorflow.litex.AssetFileLiteModel
+import com.dailystudio.tensorflow.litex.AssetFileLiteModel
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
