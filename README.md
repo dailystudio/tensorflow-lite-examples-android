@@ -1,36 +1,36 @@
 # TensorFlow Lite Examples - Android
 
-This repository refactors and rewrites all the TensorFlow Lite examples included in the TensorFlow official website. For more details, please refer to:
+This repository refactors and rewrites all the TensorFlow Lite examples for Android. They are officially illustrated on the TensorFlow official website. For more details, please refer to:
 
 [https://www.tensorflow.org/lite/examples](https://www.tensorflow.org/lite/examples)
 
-The target of this repository is to provide you a much simpler way to use TensorFlow Lite on Android. It helps you easily understand how does a captured Bitmap, a small buffer of raw audio data, or a piece of text convert run in inference and how to represent those results on the user interface.
-
-The first step of this repository is almost accomplished. I have cleaned up the source codes from the official examples and simply refactor them to remove duplicated and low-performance parts. The next step is to refactor the code deeply, extract more reusable parts, and create a support library.
+The target of this repository is to provide you with a much simpler way to use TensorFlow Lite on Android. It helps you easily understand how a captured Bitmap, a small buffer of raw audio data, or a piece of text are converted to run in inferences and how to represent results on the user interface.
 
 [![](.github/youtube.png)](https://www.youtube.com/watch?v=ctn-t1pg9pA&feature=youtu.be)
 
-Here is an overview of the progress of each standalone example:
+## Templates
+To make it easy to create your new example application, there are two boilerplate projects under the [templates](./templates) directory.
 
-Examples             | Status         | Inference Performance
-:-------:            | :-:            | :--
-Image Classification | CLEANED UP     | 25 ms per frame
-Object Detection     | CLEANED UP     | 20 ms per frame
-Pose Estimation      | CLEANED UP     | 75 ms per frame
-Speech Recognition   | CLEANED UP     | 40 ms per 1.6K audio data
-Gesture Recognition  | NOT WORK WELL  | 10 ms per 1.6K audio data
-Smart Reply          | CLEANED UP     | 25 ms per sentence
-Image Segmentation   | CLEANED UP     | 70 ms per frame
-Style Transfer       | CLEANED UP     | 150 ms per frame
-Digit Classifier     | CLEANED UP     | 6 ms per frame
-Text Classification  | CLEANED UP     | 10 ms per frame
-Q&A (BERT)           | CLEANED UP     | 280 ms per frame (Include pre-process time)
+- [example-template](./templates/example-template), an empty project with the same basic UI as other examples in the repository. You can build your TensorFlow Lite example from scratch. 
 
-The results above are tested on **Oneplus 7 (Snapdragon 855 + 128G RAM)** with TensorFlow Lite Nightly Build library.
+- [example-image-template](./templates/example-image-template), more than providing the same design style as examples in the repository, it also includes basic facilities that support camera features. You can build your TensorFlow Lite example that requires Camera support.
+
+There is also a [script](./scripts) that helps to create your project quickly from the boilerplate.
+
+## Performance
+
+Here is a performance test results on two Android phones and with two different Android versions. 
+
+Compare to the official [performance tool](https://www.tensorflow.org/lite/performance/measurement) provided by TensorFlow Lite, the results are taken in a realistic running environment, which is also affected by other parts of the application and potential hardware resource occupation.
+
+In this test, Oneplus 7 (Snapdragon 855) is a flagship device in 2019, where as Oneplus 9 (Snapdragon 888) is a flagship device in 021. Oneplus 7 is running with Android 11, while Oneplus 9 is running with Android 12. Both of them have 12 RAM on device.
+
+[![](.github/performance.png)]()
+
 
 ## License
 
-    Copyright 2020 Daily Studio.
+    Copyright 2022 Daily Studio.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
