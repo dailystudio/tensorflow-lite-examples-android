@@ -23,7 +23,7 @@ Here is a performance test results on two Android phones and with two different 
 
 Compare to the official [performance tool](https://www.tensorflow.org/lite/performance/measurement) provided by TensorFlow Lite, the results are taken in a realistic running environment, which is also affected by other parts of the application and potential hardware resource occupation.
 
-In this test, Oneplus 7 (Snapdragon 855) is a flagship device in 2019, where as Oneplus 9 (Snapdragon 888) is a flagship device in 021. Oneplus 7 is running with Android 11, while Oneplus 9 is running with Android 12. Both of them have 12 RAM on device.
+In this test, Oneplus 7 (Snapdragon 855) is a flagship device in 2019, where as Oneplus 9 (Snapdragon 888) is a flagship device in 2021. Oneplus 7 is running with Android 11, while Oneplus 9 is running with Android 12. Both of them have 12 RAM on device.
 
 [![](.github/performance.png)]()
 
