@@ -35,12 +35,21 @@ task clean(type: Delete) {
 }
 
 ext {
-    // Jcenter publish credentials
+
+    // publish credentials
     if (file("private.properties").exists()) {
         Properties props = new Properties()
         props.load(new FileInputStream(file("private.properties")))
+
         BINTRAY_KEY = props.getProperty('BINTRAY_KEY')
         BINTRAY_USER = props.getProperty('BINTRAY_USER')
+
+        NEXUS_USER = props.getProperty('NEXUS_USER')
+        NEXUS_PASS = props.getProperty('NEXUS_PASS')
+
+        GPG_KEY_ID = props.getProperty('GPG_KEY_ID')
+        GPG_KEY_PASS = props.getProperty('GPG_KEY_PASS')
+        GPG_KEY_FILE = props.getProperty('GPG_KEY_FILE')
     } else {
         BINTRAY_KEY = ""
         BINTRAY_USER = ""
@@ -54,6 +63,22 @@ ext {
 
     DEVBRICKS_X_VERSION = '1.6.5'
     ROOM_VERSION = '2.4.2'
+
+    // Publishing Parameters
+    SITE_URL = 'https://github.com/dailystudio/tensorflow-lite-examples-android/tree/master/tensorflow-litex'
+    SCM_URL = 'https://github.com/dailystudio/tensorflow-lite-examples-android.git'
+    SCM_CONNECTION  = 'scm:git@github.com:dailystudio/tensorflow-lite-examples-android.git'
+    SCM_DEV_CONNECTION = 'scm:git@github.com:dailystudio/tensorflow-lite-examples-android.git'
+    GROUP_NAME = 'cn.dailystudio'
+    DESCRIPTION = 'Provide facilities commonly used in TensorFlow Lite development on Android platform.'
+    DEVELOPER_ID = 'dailystudio'
+    DEVELOPER_NAME = 'dailystudio'
+    DEVELOPER_EMAIL = 'dailystudio2020@gmail.com'
+    LICENCE_NAME  = 'The Apache Software License, Version 2.0'
+    LICENCE_URL = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+
+    RELEASE_REPOSITORY_URL = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+
 }
 
 def String version() {

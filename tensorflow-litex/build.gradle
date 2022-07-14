@@ -58,15 +58,4 @@ dependencies {
     testImplementation "androidx.room:room-testing:${ROOM_VERSION}"
 }
 
-/*
-publish {
-    userOrg = 'dailystudio'
-    groupId = 'com.dailystudio'
-    artifactId = 'tensorflow-lite-examples-common'
-    publishVersion = VERSION_NAME
-    desc = 'TensorFlow Lite Examples Common Library'
-    bintrayUser = BINTRAY_USER
-    bintrayKey = BINTRAY_KEY
-    website = 'https://github.com/dailystudio/tensorflow-lite-examples-android'
-}
-*/
+apply from: '../buildscripts/maven_push.gradle'

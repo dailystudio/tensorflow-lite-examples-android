@@ -1,0 +1,149 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+
+    if (project.plugins.findPlugin("com.android.library")) {
+        from android.sourceSets.main.java.srcDirs
+    } else {
+        from sourceSets.main.java.srcDirs
+    }
+}
+
+task androidJavadocsJar(type: Jar) {
+    archiveClassifier.set('javadoc')
+}
+
+afterEvaluate {
+    publishing {
+/*
+        println '---------- [MavenCentral Publications] ----------'
+        println '[Repository]'
+        println " |- URL: ${RELEASE_REPOSITORY_URL}"
+        println " `- Credentials: ${NEXUS_USER}/${NEXUS_PASS}"
+        println "[Artifact]"
+        println " |- GroupId: [${GROUP_NAME}]"
+        println " |- ArtifactId: [${project.ext.POM_ARTIFACT_ID}]"
+        println " |- Version: [${VERSION_NAME}]"
+        println " |- Description: [${project.ext.POM_DESCRIPTION}]"
+        println " |- Developer: ${DEVELOPER_NAME} [${DEVELOPER_ID}, ${DEVELOPER_EMAIL}]"
+        println " |- Url: [${SITE_URL}]"
+        println " |- License: ${LICENCE_NAME} [${LICENCE_URL}]"
+        println " `- SCM: ${SCM_CONNECTION}"
+*/
+
+        publications {
+            release(MavenPublication) {
+                groupId GROUP_NAME
+                artifactId project.ext.POM_ARTIFACT_ID
+
+                version VERSION_NAME
+                if (project.plugins.findPlugin("com.android.library")) {
+                    artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+                } else {
+                    artifact("$buildDir/libs/${project.getName()}.jar")
+                }
+
+                artifact androidSourcesJar
+                artifact androidJavadocsJar
+
+                pom {
+                    name = project.ext.POM_ARTIFACT_ID
+                    description = project.ext.POM_DESCRIPTION
+                    url = SITE_URL
+
+                    licenses {
+                        license {
+                            name = LICENCE_NAME
+                            url = LICENCE_URL
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = DEVELOPER_ID
+                            name = DEVELOPER_NAME
+                            email = DEVELOPER_EMAIL
+                        }
+                    }
+
+                    scm {
+                        connection = SCM_CONNECTION
+                        developerConnection = SCM_DEV_CONNECTION
+                        url = SCM_URL
+                    }
+
+                    withXml {
+                        final dependenciesNode = asNode().appendNode('dependencies')
+
+                        ext.addDependency = { dep, String scope ->
+                            if (dep.group == null || dep.version == null || dep.name == null || dep.name == "unspecified")
+                                return // ignore invalid dependencies
+
+                            final dependencyNode = dependenciesNode.appendNode('dependency')
+                            if (dep.version == 'unspecified') {
+                                dependencyNode.appendNode('groupId', GROUP_NAME)
+                                dependencyNode.appendNode('version', VERSION_NAME)
+                            } else {
+                                dependencyNode.appendNode('groupId', dep.group)
+                                dependencyNode.appendNode('version', dep.version)
+                            }
+                            dependencyNode.appendNode('artifactId', dep.name)
+                            dependencyNode.appendNode('scope', scope)
+
+                            if (!dep.transitive) {
+                                // If this dependency is not transitive, we should force exclude all its dependencies from the POM
+                                final exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
+                                exclusionNode.appendNode('groupId', '*')
+                                exclusionNode.appendNode('artifactId', '*')
+                            } else if (!dep.properties.excludeRules.empty) {
+                                // Otherwise add specified exclude rules
+                                final exclusionsNode = dependencyNode.appendNode('exclusions')
+                                dep.properties.excludeRules.each { rule ->
+                                    final exclusionNode = exclusionsNode.appendNode('exclusion')
+                                    exclusionNode.appendNode('groupId', rule.group ?: '*')
+                                    exclusionNode.appendNode('artifactId', rule.module ?: '*')
+                                }
+                            }
+                        }
+
+                        // List all "compile" dependencies (for old Gradle)
+//                        configurations.compile.getDependencies().each { dep -> addDependency(dep, "compile") }
+                        // List all "api" dependencies (for new Gradle) as "compile" dependencies
+                        configurations.api.getDependencies().each { dep -> addDependency(dep, "compile") }
+                        // List all "implementation" dependencies (for new Gradle) as "runtime" dependencies
+                        configurations.implementation.getDependencies().each { dep -> addDependency(dep, "runtime") }
+                    }
+                }
+            }
+        }
+
+        // The repository to publish to, Sonatype/MavenCentral
+        repositories {
+            maven {
+                name = "mavencentral"
+                url = RELEASE_REPOSITORY_URL
+                credentials {
+                    username NEXUS_USER
+                    password NEXUS_PASS
+                }
+            }
+        }
+    }
+}
+
+ext["signing.keyId"] = GPG_KEY_ID
+ext["signing.password"] = GPG_KEY_PASS
+ext["signing.secretKeyRingFile"] = GPG_KEY_FILE
+signing {
+/*
+    println '---------- [MavenCentral Publications] ----------'
+    println '[GnuPG]'
+    println " |- KeyId: ${GPG_KEY_ID}"
+    println " |- Passowrd: ${GPG_KEY_PASS}"
+    println " `- KeyFile: ${GPG_KEY_FILE}"
+*/
+
+    sign publishing.publications
+}
