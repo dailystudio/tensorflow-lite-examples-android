@@ -9,11 +9,16 @@ The target of this repository is to provide you with a much simpler way to use T
 [![](.github/youtube.png)](https://www.youtube.com/watch?v=ctn-t1pg9pA&feature=youtu.be)
 
 ## Templates
-To make it easy to create your new example application, there are two boilerplate projects under the [templates](./templates) directory.
+To make it easy to create your new example application, there are a few of boilerplate projects under the [templates](./templates) directory.
 
 - [example-template](./templates/example-template), an empty project with the same basic UI as other examples in the repository. You can build your TensorFlow Lite example from scratch. 
 
+- [example-template-with-litex](./templates/example-template), an empty project with the same basic UI as other examples in the repository. You can build your TensorFlow Lite example from scratch. Compare to the one above, it uses [a pre-buildt library](https://search.maven.org/artifact/cn.dailystudio/tensorflow-litex/1.4.5/aar) in the Maven Central instead of a module project "tensorflow-litex" in this repository.
+
 - [example-image-template](./templates/example-image-template), more than providing the same design style as examples in the repository, it also includes basic facilities that support camera features. You can build your TensorFlow Lite example that requires Camera support.
+
+- [example-image-template-with-litex](./templates/example-image-template), more than providing the same design style as examples in the repository, it also includes basic facilities that support camera features. You can build your TensorFlow Lite example that requires Camera support. Compare to the one above, it uses [a pre-buildt library](https://search.maven.org/artifact/cn.dailystudio/tensorflow-litex/1.4.5/aar) in the Maven Central instead of a module project "tensorflow-litex" in this repository.
+
 
 There is also a [script](./scripts) that helps to create your project quickly from the boilerplate.
 
