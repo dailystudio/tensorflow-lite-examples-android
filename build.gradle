@@ -62,6 +62,7 @@ ext {
     VERSION_CODE = versionCode().toInteger()
 
     DEVBRICKS_X_VERSION = '1.6.5'
+    TENSORFLOW_LITEX_VERSION = version()
     ROOM_VERSION = '2.4.2'
 
     // Publishing Parameters
