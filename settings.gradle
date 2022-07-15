@@ -20,7 +20,9 @@ include ':app'
 
 include ':example-template'
 include ':example-image-template'
+include ':example-template-with-litex'
 include ':example-image-template-with-litex'
 project(':example-template').projectDir = new File('templates/example-template')
 project(':example-image-template').projectDir = new File('templates/example-image-template')
+project(':example-template-with-litex').projectDir = new File('templates/example-template-with-litex')
 project(':example-image-template-with-litex').projectDir = new File('templates/example-image-template-with-litex')
