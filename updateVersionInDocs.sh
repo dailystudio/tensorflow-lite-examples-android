@@ -18,6 +18,7 @@ echo "Retrieving version from $VERSION_PROPERTIES: [${version}]"
 
 files="
   README.md
+  tensorflow-litex/README.md
 "
 
 for f in ${files}; do
@@ -26,8 +27,8 @@ for f in ${files}; do
   fi
 
   echo "updating version in file [${f}]..."
-  sed -i "" "s/devbricksx_version\ =\ \".*\"/devbricksx_version\ =\ \"${version}\"/g" ${f}
+  sed -i "" "s/tfiltex_version\ =\ \".*\"/tfiltex_version\ =\ \"${version}\"/g" ${f}
   sed -i "" "s/download.svg\?version=[0-9]\.[0-9]\.[0-9]/download.svg\?version=${version}/g" ${f}
-  sed -i "" "s/maven\/devbricksx\/[0-9]\.[0-9]\.[0-9]\//maven\/devbricksx\/${version}\//g" ${f}
+  sed -i "" "s/maven\/tensorflow-litex\/[0-9]\.[0-9]\.[0-9]\//maven\/tensorflow-litex\/${version}\//g" ${f}
 done
 
