@@ -1,7 +1,7 @@
 # TensorFlow LiteX
 [![License](https://poser.pugx.org/dreamfactory/dreamfactory/license.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![API](https://img.shields.io/badge/API-19%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/cn.dailystudio/tensorflow-litex/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cn.dailystudio/tensorflow-litex)
 
-TensorFlow Lite eXtremes, as *TensorFlow LiteX* below, is a lightweight library which encapsulates commonly used routines and provides you a set of shortcuts when you do machine learning task on Android platform. 
+TensorFlow Lite eXtremes, as *TensorFlow LiteX*, is a lightweight library which encapsulates commonly used routines and provides you with a set of shortcuts when you do machine learning tasks on Android platform. 
 
 It is a pretty slim layer above the TensorFlow Lite Support library. Without any latency increment, it removes repetitive codes which you usually use to open models, prepare data, and display results, especially for those cases that require image input from an on-device Camera.
 
@@ -56,7 +56,7 @@ When you correctly set up the right dependencies of TensorFlow LiteX, you are re
 
 
 ### 1. Prepare TensorFlow Lite models
-No matter you get it from your professional teams or download it from open source sites, such as TensorFlow Hub, make sure it can work on your target devices with acceptable performance. These works are out of the scope of this document. You can refer to [official document](https://www.tensorflow.org/lite/guide#1_generate_a_tensorflow_lite_model) for details.
+No matter from where you get your model,  from your professional teams or download it from open source sites, such as TensorFlow Hub, make sure it can work on your target devices with acceptable performance. These works are out of the scope of this document. You can refer to [official document](https://www.tensorflow.org/lite/guide#1_generate_a_tensorflow_lite_model) for details.
 
 In TensorFlow LiteX, it use **LiteModel** to represent a TensorFlow Lite model. Usually, the TensorFlow Lite models are put in **assets** folders of the application. You can load it with the shortcut API of TensorFlow LiteX. 
 
@@ -72,7 +72,7 @@ val model = LiteModel.fromAssetFile(context,
 
 It illustrates how to load a model, named "model.tflte", in **assets** directory. It also overrides the hardware delegation properly by using *device*, *numOfThreads*, and *useXNNPack* parameters.
 
-There is no limitation on the location where you put your model in. You can download it during the runtime and put it in your internal or external storage. Use **LiteModel.fromBuffer()** to load it from other place rather than assets directory.
+There is no limitation on the location where you put your model in. You can download it during the runtime and put it in your internal or external storage. Use **LiteModel.fromBuffer()** to load it from another place rather than assets directory.
 
 ### 2. Wrap models into use cases
 Basically, after you load the model into memory through **LiteModel**, you can use it to run inference in your apps. For example,
@@ -111,7 +111,7 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 
 ```
 ### createModels()
-It implements all the instances of LiteModel that you required in your use case. No matter how to create a specific LiteModel, you must return an array that holds these model instances. Here is an example of creating model in Digit Classifier,
+It implements all the instances of LiteModel that you require in your use case. No matter how to create a specific LiteModel, you must return an array that holds these model instances. Here is an example of creating model in Digit Classifier,
 
 ```kotlin
 override fun createModels(
@@ -127,9 +127,9 @@ override fun createModels(
 ```
 
 ### createInferenceInfo()
-To create an instance of inference information of the use case. TensorFlow LiteX uses InferenceInfo and derived subclasses to describe the state of each inference in runtime, such as analysis time and real inference time, etc. The created inference information will be used repeatly across different inferences to track the updates. 
+To create an instance of inference information of the use case. TensorFlow LiteX uses InferenceInfo and derived subclasses to describe the state of each inference in runtime, such as analysis time and real inference time, etc. The created inference information will be used repeatedly across different inferences to track the updates. 
 
-There are pre-built inhertted class of InferenceInfo, like ImageInferenceInfo. It adds more information of the image used in inference. You need to create the right instance on demand,
+There are pre-built inherited classes of InferenceInfo, like ImageInferenceInfo. It adds more information of the image used in inference. You need to create the right instance on demand,
 
 ```kotlin
 override fun createInferenceInfo(): ImageInferenceInfo {
@@ -138,7 +138,7 @@ override fun createInferenceInfo(): ImageInferenceInfo {
 ```
 
 ### runInference()
-The most important fucntion in LiteUseCase. It defines how to perform the inference with the models. You can use models created by createModels() here to perfom the core action in your case.
+The most important function in LiteUseCase. It defines how to perform the inference with the models. You can use models created by createModels() here to perform the core action in your case.
 
 If you only have a single model in the use case, you can directly retrieve it by shortcut member **defaultModel**:
 
@@ -146,7 +146,7 @@ If you only have a single model in the use case, you can directly retrieve it by
 val result = (defaultModel as? DigitClassifier)?.classify(inferenceBitmap)
 ```
 
-Or, sometimes, in a bit more complicated case, you might need more than one models. You can access them by get it from **liteModels**, which is a protected member of LiteUseCase,
+Or, sometimes, in a bit more complicated case, you might need more than one model. You can access them by get it from **liteModels**, which is a protected member of LiteUseCase,
 
 ```kotlin
 val result = (liteModels?.get(1) as? OCRRecognitionModel)?.recognizeTexts(
@@ -171,7 +171,7 @@ override fun createModels(
 ``` 
 
 ### 3. Introduce use cases into your app
-Now, it is time to your use case in your app. You can create an instance of your use case anywhere, just by calling its constructor. Like this,
+Now, it is time to use the case in your app. You can create an instance of your use case anywhere, just by calling its constructor. Like this,
 
 ```kotlin
 val useCase = DigitClassifierUseCase()
@@ -190,7 +190,7 @@ val info = retOfInference.second
 ```
 
 ### 4. Manage use cases in your app
-Till now, you can use the LiteUseCase in your apps. But they are still in an "Unmanaged" state which means you need to handle their lifecycles by yourself. You have to destroy them at right time and recreate the models when important settings are changed. TensorFlow LiteX also provides useful facilities to manage use cases in your applications. 
+Till now, you can use the LiteUseCase in your apps. But they are still in an "Unmanaged" state which means you need to handle their life cycles by yourself. You have to destroy them at the right time and recreate the models when important settings are changed. TensorFlow LiteX also provides useful facilities to manage use cases in your applications. 
 
 There is a ViewModel, called **LiteUseCaseViewModel**, helps you manage **LiteUseCase** in your apps. You can get this ViewModel anywhere inside your fragments or activities to manage use cases.
 
@@ -211,7 +211,7 @@ Using this instance you can manage your use case by calling its function **manag
 ```kotlin
 viewModel.manageUseCase("classifier", useCase)
 ```
-After that, you can get the use case esaily with the name,
+After that, you can get the use case easily with the name,
 
 ```kotlin
 val useCase = viewModel.getUseCase("classifier")
@@ -228,7 +228,7 @@ By using **LiteUseCaseViewModel**, you need to care about the destruction of use
 - Using XNNPack or not
 
 ### 5. Observe inference changes
-You can retrieve inference results directly by calling **runModels()** or **performUseCase()**. But, if you want to track the results of inference information conitniously somewhere in you apps, you can observe them throught **LiteUseCaseViewModel**'s extended functions in **Fragment** and **AppCompatActivity**. Here is an example,
+You can retrieve inference results directly by calling **runModels()** or **performUseCase()**. But, if you want to track the results of inference information continuously somewhere in you apps, you can observe them through **LiteUseCaseViewModel**'s extended functions in **Fragment** and **AppCompatActivity**. Here is an example,
 
 ```kotlin
 observeUseCaseOutput("classifier") { output ->
@@ -256,7 +256,7 @@ Based on AppCompatActivity, it encapsulates a layer that helps you build and man
 To make the responsibilities clear, it is designed as an abstract class. You have to implement the following abstract functions before using this class. Using Digit Classifier as the example,
 
 #### buildLiteUseCase()
-It returns a map from **String** to **LiteUseCase**. **LiteUseCaseActivity** uses this map to manage help you manage these cases.
+It returns a map from **String** to **LiteUseCase**. **LiteUseCaseActivity** uses this map to help you manage these cases.
 
 ```kotlin
 override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
@@ -279,7 +279,7 @@ override fun createBaseFragment(): Fragment {
 #### createResultsView()
 By default, it is empty in the view of results. You can create your own layouts for the display of inference results.
 
-But, sometimes, the results are already presented to users inside the base Fragment, you can return null here.
+But, sometimes, the results are already presented to users inside the base Fragment, so you can return null here.
 
 ```kotlin
 override fun createResultsView(): View? {
@@ -295,7 +295,7 @@ override fun createResultsView(): View? {
 ```
 
 #### onResultsUpdated()
-If you have customized view for results displying. You can update it with latest inference's results.
+If you have a customized view for results displaying. You can update it with the latest inference's results.
 
 ```kotlin
 override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
@@ -319,7 +319,7 @@ override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
 ### ImageLiteUseCase
 When you intend to do ML tasks related to image processing from the Camera. You can use **ImageLiteUseCase**  which inherits from **LiteUseCase**, but automatically converts image data that gets from CameraX API to **Bitmap**. It is much easier for you to perform operations on Bitmap rather than raw YUV data. 
 
-You implement its abstract function **analyzeFrame()** instead **runInference()** in its super class.
+You implement its abstract function **analyzeFrame()** instead **runInference()** in its superclass.
 
 ```kotlin
 override fun analyzeFrame(
@@ -373,3 +373,5 @@ class ImageClassificationCameraFragment : LiteCameraUseCaseFragment() {
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+
