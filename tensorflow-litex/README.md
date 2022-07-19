@@ -93,8 +93,6 @@ The **LiteUseCase** is an abstract class. You need to derive from it and impleme
 
 abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 
-	...
-	
     @WorkerThread
     protected abstract fun createModels(
         context: Context,
@@ -108,6 +106,7 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 
     @WorkerThread
     protected abstract fun runInference(input: Input, info: Info): Output?
+
 }
 
 ```
@@ -179,7 +178,65 @@ The index used to access a model in **liteModels** depends on the order you retu
 
 ``` 
 
-### 3. Add use cases to your app
+### 3. Introduce use cases into your app
+Now, it is time to your use case in your app. You can create an instance of your use case anywhere, just by calling its constructor. Like this,
+
+```kotlin
+val useCase = DigitClassifierUseCase()
+```
+
+With this instance, you can call **runModels()** to run an inference with loaded models and get the results. 
+
+```kotlin
+val retOfInference = useCase.runModels(image)
+```
+**runModels()** returns a pair of data. The value of the **first** element in the pair is the inference result, whereas the **second** one is the corresponding inference information.
+
+```kotlin
+val output = retOfInference.first
+val info = retOfInference.second
+```
+
+### 4. Manage use cases in your app
+Till now, you can use the LiteUseCase in your apps. But they are still in an "Unmanaged" state which means you need to handle their lifecycles by yourself. You have to destroy them at right time and recreate the models when important settings are changed. TensorFlow LiteX also provides useful facilities to manage use cases in your applications. 
+
+There is a ViewModel, called **LiteUseCaseViewModel**, helps you manage **LiteUseCase** in your apps. You can get this ViewModel anywhere inside your fragments or activities to manage use cases.
+
+```kotlin
+val viewModel = ViewModelProvider(this)[LiteUseCaseViewModel::class.java]
+```
+
+According to the official MVVM document, **ViewModelProvider** creates different instances of the same ViewModel class in different lifecycle scopes. If you are not quite clear about the differences, or if you want to share inferences information across different fragments or activities, TensorFlow LiteX also extends **Fragment** and **AppCompatActivity**  with functions to simplify this process. 
+
+To retrieve the instance of **LiteUseCaseViewModel** in a Fragment or Activity, just call the **getLiteUseCaseViewModel()**
+
+```kotlin
+val viewModel = getLiteUseCaseViewModel()
+```
+
+Using this instance you can manage your use case by calling its function **manageUseCase()** and you must give the case a unique name to identify it later.
+
+```kotlin
+viewModel.manageUseCase("classifier", useCase)
+```
+After that, you can get the use case esaily with the name,
+
+```kotlin
+val useCase = viewModel.getUseCase("classifier")
+```
+To give developer the maximum convenience, the **LiteUseCaseViewModel** also provides a shortcut function to run inference,
+
+```kotlin
+val output = viewModel.performUseCase("classifier", image)
+```
+By using **LiteUseCaseViewModel**, you need to care about the destruction of use cases. Plus, by default, it automatically recreates models in managed use cases when the following settings are changed, 
+
+- Type of hardware used for inference, CPU or GPU
+- Number of threads
+- Using XNNPack or not
+
+
+### 5. Observe inference changes
 
 ---
 > The following content are under developement
