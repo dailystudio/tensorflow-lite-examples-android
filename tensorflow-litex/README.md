@@ -316,7 +316,7 @@ override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
 
 ```
 
-#### ImageLiteUseCase
+### ImageLiteUseCase
 When you intend to do ML tasks related to image processing from the Camera. You can use **ImageLiteUseCase**  which inherits from **LiteUseCase**, but automatically converts image data that gets from CameraX API to **Bitmap**. It is much easier for you to perform operations on Bitmap rather than raw YUV data. 
 
 You implement its abstract function **analyzeFrame()** instead **runInference()** in its super class.
