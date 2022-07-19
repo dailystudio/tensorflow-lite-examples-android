@@ -74,7 +74,7 @@ It illustrates how to load a model, named "model.tflte", in **assets** directory
 
 There is no limitation on the location where you put your model in. You can download it during the runtime and put it in your internal or external storage. Use **LiteModel.fromBuffer()** to load it from other place rather than assets directory.
 
-### 2. Use models in use cases
+### 2. Wrap models into use cases
 Basically, after you load the model into memory through **LiteModel**, you can use it to run inference in your apps. For example,
 
 ```kotlin
@@ -114,17 +114,15 @@ abstract class LiteUseCase<Input, Output, Info: InferenceInfo> {
 It implements all the instances of LiteModel that you required in your use case. No matter how to create a specific LiteModel, you must return an array that holds these model instances. Here is an example of creating model in Digit Classifier,
 
 ```kotlin
-
-    override fun createModels(
-        context: Context,
-        device: Model.Device,
-        numOfThreads: Int,
-        useXNNPack: Boolean,
-        settings: InferenceSettingsPrefs
-    ): Array<LiteModel> {
-        return arrayOf(DigitClassifier(context, device, numOfThreads, useXNNPack))
-    }
-
+override fun createModels(
+    context: Context,
+    device: Model.Device,
+    numOfThreads: Int,
+    useXNNPack: Boolean,
+    settings: InferenceSettingsPrefs
+): Array<LiteModel> {
+    return arrayOf(DigitClassifier(context, device, numOfThreads, useXNNPack))
+}
 
 ```
 
@@ -134,12 +132,9 @@ To create an instance of inference information of the use case. TensorFlow LiteX
 There are pre-built inhertted class of InferenceInfo, like ImageInferenceInfo. It adds more information of the image used in inference. You need to create the right instance on demand,
 
 ```kotlin
-
-    override fun createInferenceInfo(): ImageInferenceInfo {
-        return ImageInferenceInfo()
-    }
-
-
+override fun createInferenceInfo(): ImageInferenceInfo {
+    return ImageInferenceInfo()
+}
 ```
 
 ### runInference()
@@ -161,21 +156,18 @@ val result = (liteModels?.get(1) as? OCRRecognitionModel)?.recognizeTexts(
 The index used to access a model in **liteModels** depends on the order you return in **createModels()**. Here is the implementation of **createModels()** related the code above. It helps you understand why we can access the **OCRRecognitionModel** by index 1.
 
 ```kotlin
-
-    override fun createModels(
-        context: Context,
-        device: Model.Device,
-        numOfThreads: Int,
-        useXNNPack: Boolean,
-        settings: InferenceSettingsPrefs
-    ): Array<LiteModel> {
-        return arrayOf(
-            OCRDetectionModel(context, device, numOfThreads, useXNNPack),
-            OCRRecognitionModel(context, numOfThreads),
-        )
-    }
-
-
+override fun createModels(
+    context: Context,
+    device: Model.Device,
+    numOfThreads: Int,
+    useXNNPack: Boolean,
+    settings: InferenceSettingsPrefs
+): Array<LiteModel> {
+    return arrayOf(
+        OCRDetectionModel(context, device, numOfThreads, useXNNPack),
+        OCRRecognitionModel(context, numOfThreads),
+    )
+}
 ``` 
 
 ### 3. Introduce use cases into your app
@@ -235,8 +227,145 @@ By using **LiteUseCaseViewModel**, you need to care about the destruction of use
 - Number of threads
 - Using XNNPack or not
 
-
 ### 5. Observe inference changes
+You can retrieve inference results directly by calling **runModels()** or **performUseCase()**. But, if you want to track the results of inference information conitniously somewhere in you apps, you can observe them throught **LiteUseCaseViewModel**'s extended functions in **Fragment** and **AppCompatActivity**. Here is an example,
 
----
-> The following content are under developement
+```kotlin
+observeUseCaseOutput("classifier") { output ->
+    output?.let {
+        displayResultsOnUi(it)
+    }
+}
+observeUseCaseInfo(("classifier") { info ->
+    syncInferenceInfo(info)
+}
+```
+
+## Simplify ML stuff in your app
+By leveraging **LiteUseCase** and **LiteUseCaseViewModel**, you can simplify a lot of repetitive work when you do ML things in your apps. Based on these facilities, TensorFlow LiteX also offers you something to accelerate your development with TensorFlow Lite.
+
+### LiteUseCaseActivity
+Based on AppCompatActivity, it encapsulates a layer that helps you build and manage LiteUseCase, and observe inference results and information. Plus, it provides unified basic layouts of your application, such as,
+
+- **Bottom sheet** which displays the inference results and information
+- **Settings screen** which includes some default settings, e.g. hardware acceleration options, number of inference threads, and XNNPack support.
+- **About screen** which also supports using a short video as the app introduction
+
+**LiteUseCaseActivity** includes a Fragment that is responsible for ML tasks. How to run the inferences with use cases is the work of this Fragment, while **LiteUseCaseActivity** focuses on managing these use cases and monitoring the inference results and information.
+
+To make the responsibilities clear, it is designed as an abstract class. You have to implement the following abstract functions before using this class. Using Digit Classifier as the example,
+
+#### buildLiteUseCase()
+It returns a map from **String** to **LiteUseCase**. **LiteUseCaseActivity** uses this map to manage help you manage these cases.
+
+```kotlin
+override fun buildLiteUseCase(): Map<String, LiteUseCase<*, *, *>> {
+    return mapOf(
+        DigitClassifierUseCase.UC_NAME to DigitClassifierUseCase()
+    )
+}
+```
+
+#### createBaseFragment()
+It returns a Fragment that performs your primary ML tasks.
+
+```kotlin
+override fun createBaseFragment(): Fragment {
+    return DigitClassifierFragment()
+}
+
+```
+
+#### createResultsView()
+By default, it is empty in the view of results. You can create your own layouts for the display of inference results.
+
+But, sometimes, the results are already presented to users inside the base Fragment, you can return null here.
+
+```kotlin
+override fun createResultsView(): View? {
+    val view: View = LayoutInflater.from(this).inflate(
+        R.layout.layout_results_view, null)
+
+    digitBitmap = view.findViewById(R.id.result_image)
+    resultDigit = view.findViewById(R.id.result_digit)
+    resultProp = view.findViewById(R.id.result_prop)
+
+    return view
+}
+```
+
+#### onResultsUpdated()
+If you have customized view for results displying. You can update it with latest inference's results.
+
+```kotlin
+override fun onResultsUpdated(nameOfUseCase: String, results: Any) {
+    if (results is RecognizedDigit) {
+        resultDigit.text = if (results.digit != -1) {
+            "%d".format(results.digit)
+        } else {
+            getString(R.string.prompt_draw)
+        }
+
+        resultProp.text = if (results.digit != -1) {
+            "(%3.1f%%)".format(results.prop * 100)
+        } else {
+            ""
+        }
+    }
+}
+
+```
+
+#### ImageLiteUseCase
+When you intend to do ML tasks related to image processing from the Camera. You can use **ImageLiteUseCase**  which inherits from **LiteUseCase**, but automatically converts image data that gets from CameraX API to **Bitmap**. It is much easier for you to perform operations on Bitmap rather than raw YUV data. 
+
+You implement its abstract function **analyzeFrame()** instead **runInference()** in its super class.
+
+```kotlin
+override fun analyzeFrame(
+    inferenceBitmap: Bitmap,
+    info: ImageInferenceInfo
+): List<Recognition>? {
+    var mappedResults: List<Recognition>? = null
+	
+    val start = System.currentTimeMillis()
+    val results: List<Recognition>? =
+        (defaultModel as? Detector)?.recognizeImage(inferenceBitmap)
+    val end = System.currentTimeMillis()
+	
+    info.inferenceTime = (end - start)
+	
+    results?.let {
+        mappedResults = mapRecognitions(it)
+    }
+	
+    return mappedResults
+}
+
+```
+
+### LiteCameraUseCaseFragment
+As a good company of **ImageLiteUseCase**, when you are doing ML tasks with on-device cameras, you can extend **LiteCameraUseCaseFragment** to implement your base Fragment.
+
+**LiteCameraUseCaseFragment** encapsulates lots of codes that are used to manipulate cameras with CameraX APIs. The only thing you need to do is override its abstract member **namesOfLiteUseCase**. The variable tells the Fragment to run all of these use cases when it processes each frame.
+
+```kotlin
+override val namesOfLiteUseCase: Array<String>
+	get() = arrayOf(ClassifierUseCase.UC_NAME)
+```
+
+## License
+
+    Copyright 2022 Daily Studio.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
