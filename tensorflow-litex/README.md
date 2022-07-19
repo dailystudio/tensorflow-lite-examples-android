@@ -350,8 +350,12 @@ As a good company of **ImageLiteUseCase**, when you are doing ML tasks with on-d
 **LiteCameraUseCaseFragment** encapsulates lots of codes that are used to manipulate cameras with CameraX APIs. The only thing you need to do is override its abstract member **namesOfLiteUseCase**. The variable tells the Fragment to run all of these use cases when it processes each frame.
 
 ```kotlin
-override val namesOfLiteUseCase: Array<String>
-	get() = arrayOf(ClassifierUseCase.UC_NAME)
+class ImageClassificationCameraFragment : LiteCameraUseCaseFragment() {
+
+    override val namesOfLiteUseCase: Array<String>
+        get() = arrayOf(ClassifierUseCase.UC_NAME)
+
+}
 ```
 
 ## License
