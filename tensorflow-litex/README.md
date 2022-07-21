@@ -8,7 +8,7 @@ It is a pretty slim layer above the TensorFlow Lite Support library. Without any
 ## Quick Setup
 To use **TensorFlow LiteX** in your application, follow the steps below.
 
-###Step 1: Dependencies 
+### Step 1: Dependencies 
 
 Add the following dependencies in build.gradle of your application.
 
@@ -32,7 +32,7 @@ tfiltex_version = "1.4.5"
 devbricksx_version = "1.6.5"
 ```
 
-###Step 2: Configure compile options
+### Step 2: Configure compile options
 Add the following compile options in build.gradle of your application module.
 
 ```groovy
