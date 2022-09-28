@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         val viewModel = ViewModelProvider(this@MainActivity)
             .get(ExampleViewModel::class.java)
 
-        val examples = viewModel.getExamples()
+        val examples = viewModel.allExamples
         for (example in examples) {
             if (example.`package` != null && example.`package` == packageName) {
                 return example
@@ -90,13 +90,13 @@ class MainActivity : AppCompatActivity() {
         val viewModel = ViewModelProvider(this@MainActivity)
             .get(ExampleViewModel::class.java)
 
-        val examples = viewModel.getExamples()
+        val examples = viewModel.allExamples
         for (example in examples) {
             updateExampleInstallation(example)
         }
     }
 
-    private suspend fun createExamples() {
+    private fun createExamples() {
         val examples = JSONUtils.fromRaw(
             this@MainActivity, R.raw.examples, Array<Example>::class.java)
 
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                 .get(ExampleViewModel::class.java)
 
             for (example in it) {
-                viewModel.insertExample(example).join()
+                viewModel.insertExample(example)
             }
         }
     }

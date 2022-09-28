@@ -2,7 +2,11 @@ package com.dailystudio.tflite.example.image.styletransfer
 
 import android.view.View
 import android.widget.ImageView
-import com.dailystudio.devbricksx.annotations.*
+import com.dailystudio.devbricksx.annotations.data.InMemoryCompanion
+import com.dailystudio.devbricksx.annotations.fragment.ListFragment
+import com.dailystudio.devbricksx.annotations.view.Adapter
+import com.dailystudio.devbricksx.annotations.view.ViewType
+import com.dailystudio.devbricksx.annotations.viewmodel.ViewModel
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsViewHolder
 import com.dailystudio.tflite.example.common.Constants
@@ -13,9 +17,7 @@ import com.nostra13.universalimageloader.core.ImageLoader
     viewHolder = StyleImageViewHolder::class,
     layout = R.layout.style_card_view)
 @ViewModel
-@InMemoryRepository(key = Int::class)
-@InMemoryManager(key = Int::class)
-@DiffUtil
+@InMemoryCompanion
 data class StyleImage(val id: Int,
                       val name: String,
                       val assetPath: String,

@@ -1,15 +1,16 @@
 package com.dailystudio.tflite.example.video.classification
 
-import com.dailystudio.devbricksx.annotations.PreferenceValue
-import com.dailystudio.devbricksx.annotations.SharedPreference
+import com.dailystudio.devbricksx.annotations.data.BooleanField
+import com.dailystudio.devbricksx.annotations.data.DataStoreCompanion
+import com.dailystudio.devbricksx.annotations.data.StringField
 import com.dailystudio.tensorflow.litex.ui.InferenceSettings
 import org.tensorflow.lite.examples.videoclassification.ml.VideoClassifier
 import org.tensorflow.lite.support.model.Model
 
-@SharedPreference
-class VideoClassificationSettings(@PreferenceValue(defaultValueStr = "MOVINET_A0")
+@DataStoreCompanion
+class VideoClassificationSettings(@StringField("MOVINET_A0")
                                   val classifierModel: String = VideoClassifier.ClassifierModel.MOVINET_A0.toString(),
-                                  @PreferenceValue(defaultValueStr = IMAGE_PRE_SCALE_ENABLED.toString())
+                                  @BooleanField(IMAGE_PRE_SCALE_ENABLED)
                                   val enableImagePreScale: Boolean = true,
                                   device: String = Model.Device.CPU.toString(),
                                   numOfThread: Int = 1,

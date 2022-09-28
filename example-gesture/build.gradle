@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+
+    id("com.google.devtools.ksp") version "$ksp_version"
 }
 
 android {
@@ -52,6 +54,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    sourceSets.configureEach {
+        kotlin.srcDir("$buildDir/generated/ksp/$name/kotlin/")
+    }
+
 }
 
 dependencies {
@@ -64,5 +70,5 @@ dependencies {
 
     implementation project(":tensorflow-lite-examples-common")
 
-    kapt "cn.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
+    ksp "cn.dailystudio:devbricksx-compiler:${DEVBRICKS_X_VERSION}"
 }

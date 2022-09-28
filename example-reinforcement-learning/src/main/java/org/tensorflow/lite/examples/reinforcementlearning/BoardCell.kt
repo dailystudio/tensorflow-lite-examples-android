@@ -3,6 +3,11 @@ package org.tensorflow.lite.examples.reinforcementlearning
 import android.graphics.Color
 import android.view.View
 import com.dailystudio.devbricksx.annotations.*
+import com.dailystudio.devbricksx.annotations.data.InMemoryCompanion
+import com.dailystudio.devbricksx.annotations.fragment.ListFragment
+import com.dailystudio.devbricksx.annotations.view.Adapter
+import com.dailystudio.devbricksx.annotations.view.ViewType
+import com.dailystudio.devbricksx.annotations.viewmodel.ViewModel
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsViewHolder
@@ -66,7 +71,7 @@ open class BoardCell(val x: Int,
 }
 
 @ViewModel
-@ListFragment (
+@ListFragment(
     gridLayout = true,
     columns = Constants.BOARD_SIZE,
     layoutByName = "fragment_board"
@@ -76,9 +81,7 @@ open class BoardCell(val x: Int,
     viewHolder = AgentBoardCellViewHolder::class,
     layoutByName = "layout_cell"
 )
-@DiffUtil
-@InMemoryManager(key = String::class)
-@InMemoryRepository(key = String::class)
+@InMemoryCompanion
 class AgentBoardCell(x: Int,
                      y: Int,
 ): BoardCell(x, y)
@@ -95,9 +98,7 @@ class AgentBoardCell(x: Int,
     viewHolder = BoardCellViewHolder::class,
     layoutByName = "layout_cell"
 )
-@DiffUtil
-@InMemoryManager(key = String::class)
-@InMemoryRepository(key = String::class)
+@InMemoryCompanion
 class PlayerBoardCell(x: Int,
                       y: Int,
 ): BoardCell(x, y)

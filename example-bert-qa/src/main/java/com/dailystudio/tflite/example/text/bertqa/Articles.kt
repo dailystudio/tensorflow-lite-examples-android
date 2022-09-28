@@ -3,6 +3,11 @@ package com.dailystudio.tflite.example.text.bertqa
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.dailystudio.devbricksx.annotations.*
+import com.dailystudio.devbricksx.annotations.data.InMemoryCompanion
+import com.dailystudio.devbricksx.annotations.fragment.ListFragment
+import com.dailystudio.devbricksx.annotations.view.Adapter
+import com.dailystudio.devbricksx.annotations.view.ViewType
+import com.dailystudio.devbricksx.annotations.viewmodel.ViewModel
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsInformativeCardViewHolder
 import com.dailystudio.devbricksx.ui.AbsViewHolder
@@ -19,9 +24,7 @@ data class Contents(val titles: Array<Array<String>>,
 @ViewModel
 @Adapter(viewType = ViewType.CardInformative,
     viewHolder = ArticleViewHolder::class)
-@InMemoryManager(key = Int::class)
-@InMemoryRepository(key = Int::class)
-@DiffUtil
+@InMemoryCompanion
 data class Article(val id: Int,
                    val title: String,
                    val content: String,
@@ -78,9 +81,7 @@ class ArticleViewHolder(itemView: View): AbsInformativeCardViewHolder<Article>(i
     viewHolder = QuestionViewHolder::class
 )
 @ViewModel
-@InMemoryRepository(key = Int::class)
-@InMemoryManager(key = Int::class)
-@DiffUtil
+@InMemoryCompanion
 data class Question(val id: Int, val text: String) : InMemoryObject<Int> {
 
     override fun getKey(): Int {

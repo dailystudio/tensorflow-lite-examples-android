@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+
+    id("com.google.devtools.ksp") version "$ksp_version"
 }
 
 android {
@@ -52,6 +54,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    sourceSets.configureEach {
+        kotlin.srcDir("$buildDir/generated/ksp/$name/kotlin/")
+    }
+
 }
 
 dependencies {
@@ -74,9 +80,7 @@ dependencies {
         force = true
     }
 
-
-    kapt "cn.dailystudio:devbricksx-java-compiler:${DEVBRICKS_X_VERSION}"
-    kapt "cn.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
+    ksp "cn.dailystudio:devbricksx-compiler:${DEVBRICKS_X_VERSION}"
 }
 
 // Download default models; if you wish to use your own models then

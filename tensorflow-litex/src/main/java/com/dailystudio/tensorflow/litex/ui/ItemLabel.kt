@@ -4,7 +4,11 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.View
 import android.widget.TextView
-import com.dailystudio.devbricksx.annotations.*
+import com.dailystudio.devbricksx.annotations.data.InMemoryCompanion
+import com.dailystudio.devbricksx.annotations.fragment.ListFragment
+import com.dailystudio.devbricksx.annotations.view.Adapter
+import com.dailystudio.devbricksx.annotations.view.ViewType
+import com.dailystudio.devbricksx.annotations.viewmodel.ViewModel
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsViewHolder
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
@@ -19,9 +23,7 @@ import java.util.*
     layoutByName = "layout_item_label"
 )
 @ViewModel
-@InMemoryRepository(key = Int::class)
-@InMemoryManager(key = Int::class)
-@DiffUtil
+@InMemoryCompanion
 data class ItemLabel(val id: Int,
                      val name: String,
                      var label: String,

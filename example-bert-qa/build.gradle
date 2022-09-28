@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+
+    id("com.google.devtools.ksp") version "$ksp_version"
 }
 
 android {
@@ -52,6 +54,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    sourceSets.configureEach {
+        kotlin.srcDir("$buildDir/generated/ksp/$name/kotlin/")
+    }
+
 }
 
 dependencies {
@@ -66,7 +72,7 @@ dependencies {
     implementation "com.github.Rasalexman:KDispatcher:${project.ext.kdispatcherVersion}"
     implementation "com.google.guava:guava:${project.ext.guavaVersion}"
 
-    kapt "cn.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
+    ksp "cn.dailystudio:devbricksx-compiler:${DEVBRICKS_X_VERSION}"
 }
 
 // Download default models; if you wish to use your own models then

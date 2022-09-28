@@ -1,21 +1,24 @@
 package com.dailystudio.tensorflow.litex.ui
 
-import com.dailystudio.devbricksx.annotations.PreferenceValue
-import com.dailystudio.devbricksx.annotations.SharedPreference
+import com.dailystudio.devbricksx.annotations.data.BooleanField
+import com.dailystudio.devbricksx.annotations.data.DataStoreCompanion
+import com.dailystudio.devbricksx.annotations.data.IntegerField
+import com.dailystudio.devbricksx.annotations.data.StringField
 import org.tensorflow.lite.support.model.Model
 
-@SharedPreference
-open class InferenceSettings(@PreferenceValue(defaultValueStr = "CPU")
-                             val device: String = Model.Device.CPU.toString(),
-                             @PreferenceValue(defaultValueStr = DEFAULT_NUM_OF_THREADS.toString())
-                             val numberOfThreads: Int = 1,
-                             @PreferenceValue(defaultValueStr = USE_AVERAGE_TIME.toString())
-                             val useAverageTime: Boolean = true,
-                             @PreferenceValue(defaultValueStr = USE_XNNPACK.toString())
-                             val useXNNPack: Boolean = true,
+@DataStoreCompanion
+open class InferenceSettings(@StringField(DEFAULT_DEVICE)
+                             val device: String = DEFAULT_DEVICE,
+                             @IntegerField(DEFAULT_NUM_OF_THREADS)
+                             val numberOfThreads: Int = DEFAULT_NUM_OF_THREADS,
+                             @BooleanField(USE_AVERAGE_TIME)
+                             val useAverageTime: Boolean = USE_AVERAGE_TIME,
+                             @BooleanField(USE_XNNPACK)
+                             val useXNNPack: Boolean = USE_XNNPACK,
 ) {
 
     companion object {
+        const val DEFAULT_DEVICE = "CPU"
         const val DEFAULT_NUM_OF_THREADS = 1
         const val MIN_NUM_OF_THREADS = 1
         const val MAX_NUM_OF_THREADS = 4

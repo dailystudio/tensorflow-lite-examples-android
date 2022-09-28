@@ -8,21 +8,23 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.TextViewCompat
 import com.dailystudio.devbricksx.annotations.*
+import com.dailystudio.devbricksx.annotations.data.InMemoryCompanion
+import com.dailystudio.devbricksx.annotations.fragment.ListFragment
+import com.dailystudio.devbricksx.annotations.view.Adapter
+import com.dailystudio.devbricksx.annotations.view.ViewType
+import com.dailystudio.devbricksx.annotations.viewmodel.ViewModel
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsSingleLineViewHolder
 import com.dailystudio.devbricksx.utils.ColorUtils
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
-
 
 @Adapter(
     viewHolder = CommandViewHolder::class,
     viewType = ViewType.SingleLine
 )
 @ListFragment(gridLayout = true, columns = 2, layout = R.layout.fragment_commands_list)
-@DiffUtil
 @ViewModel
-@InMemoryRepository(key = Int::class)
-@InMemoryManager(key = Int::class)
+@InMemoryCompanion
 data class Command(val id: Int,
                    val label: String,
                    var prop: Float = 0f): InMemoryObject<Int> {

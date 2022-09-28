@@ -49,7 +49,7 @@ class ExampleActivity : LiteUseCaseActivity() {
                 TransferLearningViewModel.Mode.Capture -> {
                     enableSamplesCollecting()
 
-                    val classes = viewModel.getClassTrainingInfos()
+                    val classes = viewModel.allClassTrainingInfos
                     attachClassTrainingInfo(classes)
 
                     trainButton?.visibility = View.VISIBLE

@@ -40,7 +40,7 @@ class ExampleActivity : LiteUseCaseActivity() {
             TextClassificationUseCase.UC_NAME -> {
                 val viewModel = ViewModelProvider(this)[ItemLabelViewModel::class.java]
 
-                val items = viewModel.getItemLabels()
+                val items = viewModel.allItemLabels
                 for (item in items) {
                     val key = item.name.lowercase(Locale.getDefault())
                     if (results is Map<*, *>) {

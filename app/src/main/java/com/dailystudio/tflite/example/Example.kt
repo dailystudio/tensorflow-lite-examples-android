@@ -9,6 +9,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import com.dailystudio.devbricksx.annotations.*
+import com.dailystudio.devbricksx.annotations.data.InMemoryCompanion
+import com.dailystudio.devbricksx.annotations.fragment.ListFragment
+import com.dailystudio.devbricksx.annotations.view.Adapter
+import com.dailystudio.devbricksx.annotations.view.ViewType
+import com.dailystudio.devbricksx.annotations.viewmodel.ViewModel
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsInformativeCardViewHolder
 import com.dailystudio.devbricksx.utils.ImageUtils
@@ -24,9 +29,7 @@ import com.nostra13.universalimageloader.core.ImageLoader
     paged = true
 )
 @ListFragment(gridLayout = false)
-@DiffUtil
-@InMemoryRepository(key = Int::class)
-@InMemoryManager(key = Int::class)
+@InMemoryCompanion
 class Example(val id: Int,
               val `package`: String,
               val title: String,

@@ -58,7 +58,7 @@ class TextClassificationFragment: LiteChatUseCaseFragment() {
 
         val viewModel = ViewModelProvider(this)[ChatRecordViewModel::class.java]
 
-        val records = viewModel.getChatRecords()
+        val records = viewModel.allChatRecords
         if (records.size > NOOP_RECORDS_COUNT) {
             return
         }

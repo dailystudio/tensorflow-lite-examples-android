@@ -9,8 +9,8 @@ import com.dailystudio.tflite.example.reinforcementlearning.viewmodel.BoardViewM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.reinforcementlearning.*
-import org.tensorflow.lite.examples.reinforcementlearning.fragment.AgentBoardCellsListFragment
 import com.dailystudio.tensorflow.litex.getLiteUseCaseViewModel
+import org.tensorflow.lite.examples.reinforcementlearning.fragment.AgentBoardCellsListFragment
 
 class AgentBoardCellsFragment: AgentBoardCellsListFragment() {
 

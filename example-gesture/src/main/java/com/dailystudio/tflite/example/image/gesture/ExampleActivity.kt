@@ -9,16 +9,15 @@ import androidx.lifecycle.lifecycleScope
 import com.dailystudio.devbricksx.development.Logger
 import com.dailystudio.devbricksx.fragment.AbsRecyclerViewFragment
 import com.dailystudio.devbricksx.utils.StringUtils
-import com.dailystudio.tensorflow.litex.InferenceInfo
 import com.dailystudio.tflite.example.image.gesture.fragment.GestureCameraFragment
 import com.dailystudio.tflite.example.image.gesture.fragment.GestureLabel
-import com.dailystudio.tflite.example.image.gesture.fragment.fragment.GestureLabelsListFragment
-import com.dailystudio.tflite.example.image.gesture.fragment.model.GestureLabelViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.examples.gesture.Classifier
 import com.dailystudio.tensorflow.litex.LiteUseCase
 import com.dailystudio.tensorflow.litex.activity.LiteUseCaseActivity
+import com.dailystudio.tflite.example.image.gesture.fragment.fragment.GestureLabelsListFragment
+import com.dailystudio.tflite.example.image.gesture.fragment.model.GestureLabelViewModel
 
 class ExampleActivity : LiteUseCaseActivity() {
 
@@ -74,7 +73,7 @@ class ExampleActivity : LiteUseCaseActivity() {
 
                     val viewModel = ViewModelProvider(this)[GestureLabelViewModel::class.java]
 
-                    val gestureLabels = viewModel.getGestureLabels()
+                    val gestureLabels = viewModel.allGestureLabels
                     for (gl in gestureLabels) {
                         gl.selected = selectedGesture?.let {
                             it.title == gl.label

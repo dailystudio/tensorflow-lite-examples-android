@@ -2,9 +2,14 @@ package com.dailystudio.tensorflow.litex.text
 
 import android.view.Gravity
 import android.view.View
-import android.widget.*
-import com.dailystudio.devbricksx.annotations.*
-import com.dailystudio.devbricksx.annotations.Adapter
+import android.widget.FrameLayout
+import android.widget.TextView
+import com.dailystudio.devbricksx.annotations.data.InMemoryCompanion
+import com.dailystudio.devbricksx.annotations.data.Ordering
+import com.dailystudio.devbricksx.annotations.fragment.ListFragment
+import com.dailystudio.devbricksx.annotations.view.Adapter
+import com.dailystudio.devbricksx.annotations.view.ViewType
+import com.dailystudio.devbricksx.annotations.viewmodel.ViewModel
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 import com.dailystudio.devbricksx.ui.AbsViewHolder
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
@@ -23,9 +28,7 @@ enum class MessageType {
     paged = false,
     viewType = ViewType.Customized,
     viewHolder = ChatRecordViewHolder::class)
-@InMemoryRepository(key = Long::class)
-@InMemoryManager(key = Long::class, ordering = Ordering.Ascending)
-@DiffUtil
+@InMemoryCompanion(ordering = Ordering.Ascending)
 data class ChatRecord(
     val timestamp: Long,
     val text: String,

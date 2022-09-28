@@ -1,15 +1,12 @@
 package com.dailystudio.tflite.example.transfer
 
 import android.graphics.Bitmap
-import com.dailystudio.devbricksx.annotations.InMemoryManager
-import com.dailystudio.devbricksx.annotations.InMemoryRepository
-import com.dailystudio.devbricksx.annotations.ViewModel
+import com.dailystudio.devbricksx.annotations.data.InMemoryCompanion
+import com.dailystudio.devbricksx.annotations.viewmodel.ViewModel
 import com.dailystudio.devbricksx.inmemory.InMemoryObject
 
-
-@InMemoryManager(key = String::class)
-@InMemoryRepository(key = String::class)
-@ViewModel()
+@InMemoryCompanion
+@ViewModel
 data class ClassTrainingInfo(val className: String): InMemoryObject<String> {
     var numOfSamples: Int = 0
     var lastSample: Bitmap? = null

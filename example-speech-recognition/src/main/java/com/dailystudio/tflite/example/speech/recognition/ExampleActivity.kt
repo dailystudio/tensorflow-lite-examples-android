@@ -67,7 +67,7 @@ class ExampleActivity : LiteUseCaseActivity() {
 
                     val viewModel = ViewModelProvider(this)[CommandViewModel::class.java]
 
-                    val commands = viewModel.getCommands()
+                    val commands = viewModel.allCommands
                     for (command in commands) {
                         if (results.foundCommand == command.label
                             && results.score > 0.5) {

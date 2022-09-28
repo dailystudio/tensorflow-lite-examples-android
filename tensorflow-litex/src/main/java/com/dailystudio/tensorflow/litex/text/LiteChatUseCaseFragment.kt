@@ -82,7 +82,7 @@ abstract class LiteChatUseCaseFragment: ChatRecordListFragmentExt() {
     protected open suspend fun insertLeadingRecords() {
         val viewModel = ViewModelProvider(this)[ChatRecordViewModel::class.java]
 
-        val records = viewModel.getChatRecords()
+        val records = viewModel.allChatRecords
         if (records.isNotEmpty()) {
             return
         }
@@ -93,7 +93,7 @@ abstract class LiteChatUseCaseFragment: ChatRecordListFragmentExt() {
                 MessageType.Noop
             )
 
-            viewModel.insertChatRecord(record).join()
+            viewModel.insertChatRecord(record)
         }
     }
 
@@ -119,23 +119,23 @@ abstract class LiteChatUseCaseFragment: ChatRecordListFragmentExt() {
                 MessageType.Send
             }
 
-            viewModel.insertChatRecord(record).join()
+            viewModel.insertChatRecord(record)
 
             delay(1000)
         }
     }
 
-    private suspend fun sendMessage(text: String) {
+    private fun sendMessage(text: String) {
         val viewModel = ViewModelProvider(this)[ChatRecordViewModel::class.java]
 
         val record = ChatRecord(System.currentTimeMillis(),
             text,
             MessageType.Send)
 
-        viewModel.insertChatRecord(record).join()
+        viewModel.insertChatRecord(record)
     }
 
-    private suspend fun receiveReply(text: String) {
+    private fun receiveReply(text: String) {
         val result = liteUseCaseViewModel.performUseCase(nameOfUsedUseCase, text)
         val replyText = convertResultsToReplyText(result)
 
@@ -145,7 +145,7 @@ abstract class LiteChatUseCaseFragment: ChatRecordListFragmentExt() {
             replyText,
             MessageType.Receive)
 
-        viewModel.insertChatRecord(record).join()
+        viewModel.insertChatRecord(record)
     }
 
     protected abstract val nameOfUsedUseCase: String
