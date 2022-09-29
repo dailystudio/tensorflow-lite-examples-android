@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-kapt'
 }
 
 android {
@@ -41,12 +40,6 @@ android {
         noCompress "tflite"
     }
 
-    kapt {
-        arguments {
-            arg("room.schemaLocation", "$projectDir/schemas".toString())
-        }
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -65,8 +58,6 @@ dependencies {
     implementation project(":tensorflow-lite-examples-common")
 
     implementation "com.github.divyanshub024:AndroidDraw:${project.ext.androidDrawVersion}"
-
-    kapt "cn.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
 }
 
 // Download default models; if you wish to use your own models then

@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-kapt'
 
     id("com.google.devtools.ksp") version "$ksp_version"
 }
@@ -43,12 +42,6 @@ android {
         noCompress "tflite"
     }
 
-    kapt {
-        arguments {
-            arg("room.schemaLocation", "$projectDir/schemas".toString())
-        }
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -57,7 +50,6 @@ android {
     sourceSets.configureEach {
         kotlin.srcDir("$buildDir/generated/ksp/$name/kotlin/")
     }
-
 }
 
 dependencies {
@@ -69,13 +61,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     implementation project(":tensorflow-lite-examples-common")
-
-/*
-    compileOnly 'org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT'
-    implementation("org.tensorflow:tensorflow-lite:${project.ext.tfliteVersion}") {
-        force = true
-    }
-*/
     implementation ("org.tensorflow:tensorflow-lite-select-tf-ops:${project.ext.tfliteSelectOptsVersion}") {
         force = true
     }
@@ -85,6 +70,4 @@ dependencies {
 
 // Download default models; if you wish to use your own models then
 // place them in the "assets" directory and comment out this line.
-//apply from: "download.gradle"
-
 apply from:'download.gradle'

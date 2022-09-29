@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-kapt'
 }
 
 android {
@@ -41,17 +40,10 @@ android {
         noCompress "tflite"
     }
 
-    kapt {
-        arguments {
-            arg("room.schemaLocation", "$projectDir/schemas".toString())
-        }
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
 }
 
 dependencies {
@@ -62,13 +54,11 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation "com.google.guava:guava:${project.ext.guavaVersion}"
-
     implementation files("$projectDir/libs/smartreply_runtime_aar.aar")
 
-    implementation project(":tensorflow-lite-examples-common")
+    implementation "com.google.guava:guava:${project.ext.guavaVersion}"
 
-    kapt "cn.dailystudio:devbricksx-kotlin-compiler:${DEVBRICKS_X_VERSION}"
+    implementation project(":tensorflow-lite-examples-common")
 }
 
 // Download prebuilt AAR and TF Lite model.
