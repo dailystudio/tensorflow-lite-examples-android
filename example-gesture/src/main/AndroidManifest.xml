@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dailystudio.tflite.example.image.gesture">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:name="com.dailystudio.tflite.example.common.ExampleApplication"

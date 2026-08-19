@@ -15,7 +15,7 @@ import com.nostra13.universalimageloader.core.ImageLoader
 @ListFragment(gridLayout = true, columns = 3)
 @Adapter(viewType = ViewType.Customized,
     viewHolder = StyleImageViewHolder::class,
-    layout = R.layout.style_card_view)
+    layoutByName = "style_card_view")
 @ViewModel
 @InMemoryCompanion
 data class StyleImage(val id: Int,

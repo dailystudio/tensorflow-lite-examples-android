@@ -7,7 +7,8 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.ColorInt
+import com.dailystudio.tflite.example.R
+import com.dailystudio.devbricksx.R as devbricksxR
 import com.dailystudio.devbricksx.annotations.*
 import com.dailystudio.devbricksx.annotations.data.InMemoryCompanion
 import com.dailystudio.devbricksx.annotations.fragment.ListFragment
@@ -93,7 +94,7 @@ class ExampleViewHolder(itemView: View): AbsInformativeCardViewHolder<Example>(i
         if (!item.installed) {
             builder.postProcessor { bitmap ->
                 ImageUtils.tintBitmap(bitmap,
-                    ResourcesCompatUtils.getColor(context, R.color.light_gray)
+                    ResourcesCompatUtils.getColor(context, devbricksxR.color.light_gray)
                 )
             }
         } else {
@@ -139,7 +140,7 @@ class ExampleViewHolder(itemView: View): AbsInformativeCardViewHolder<Example>(i
         val titleColor = if (item.installed) {
             ResourcesCompatUtils.getColor(context, R.color.colorAccent)
         } else {
-            ResourcesCompatUtils.getColor(context, R.color.light_gray)
+            ResourcesCompatUtils.getColor(context, devbricksxR.color.light_gray)
         }
 
         textView?.setTextColor(titleColor)

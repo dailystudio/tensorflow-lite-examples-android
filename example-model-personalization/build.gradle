@@ -1,18 +1,24 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
 
     id("com.google.devtools.ksp") version "$ksp_version"
+    id("cn.dailystudio.devbricksx.devkit") version "$devkit_version"
 }
 
 android {
+    namespace 'com.dailystudio.tflite.example.transfer'
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileSdkVersion COMPILE_SDK
     buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
         applicationId "com.dailystudio.tflite.example.transfer"
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdkVersion MIN_SDK
+        targetSdkVersion TARGET_SDK
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
@@ -46,10 +52,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    sourceSets.configureEach {
-        kotlin.srcDir("$buildDir/generated/ksp/$name/kotlin/")
-    }
 }
 
 dependencies {
@@ -62,10 +64,8 @@ dependencies {
 
     implementation project(":tensorflow-lite-examples-common")
     implementation ("org.tensorflow:tensorflow-lite-select-tf-ops:${project.ext.tfliteSelectOptsVersion}") {
-        force = true
+//        force = true
     }
-
-    ksp "cn.dailystudio:devbricksx-compiler:${DEVBRICKS_X_VERSION}"
 }
 
 // Download default models; if you wish to use your own models then

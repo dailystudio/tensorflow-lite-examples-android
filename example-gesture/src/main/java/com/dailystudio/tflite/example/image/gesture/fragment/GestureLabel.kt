@@ -13,12 +13,12 @@ import com.dailystudio.devbricksx.ui.AbsSingleLineViewHolder
 import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
 import com.dailystudio.tflite.example.image.gesture.R
 
-@ListFragment(layout = R.layout.fragment_gesture_labels_list,
+@ListFragment(layoutByName = "fragment_gesture_labels_list",
     gridLayout = true,
     columns = 4)
 @Adapter(viewHolder = GestureLabelViewHolder::class,
     viewType = ViewType.Customized,
-    layout = R.layout.layout_gesture_label
+    layoutByName = "layout_gesture_label"
 )
 @ViewModel
 @InMemoryCompanion
@@ -62,9 +62,9 @@ class GestureLabelViewHolder(itemView: View): AbsSingleLineViewHolder<GestureLab
         titleView?.let {
             val color = ResourcesCompatUtils.getColor(context,
                 if (item.selected) {
-                    R.color.colorPrimary
+                    com.dailystudio.tflite.example.common.R.color.colorPrimary
                 } else {
-                    R.color.colorAccent
+                    com.dailystudio.tflite.example.common.R.color.colorAccent
                 }
             )
 
@@ -77,7 +77,7 @@ class GestureLabelViewHolder(itemView: View): AbsSingleLineViewHolder<GestureLab
     }
 
     override fun getText(item: GestureLabel): CharSequence? {
-        return item.label.capitalize()
+        return item.label.replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }
     }
 
 }

@@ -15,6 +15,7 @@ import com.dailystudio.tflite.example.text.bertqa.fragment.QuestionsListFragment
 import com.google.android.material.chip.Chip
 import com.rasalexman.kdispatcher.KDispatcher
 import com.rasalexman.kdispatcher.call
+import java.util.Locale
 
 data class Contents(val titles: Array<Array<String>>,
                     val contents: Array<Array<String>>,
@@ -35,7 +36,7 @@ data class Article(val id: Int,
 
         return buildString {
             for ((i, p) in parts.withIndex()) {
-                append(p.capitalize())
+                append(p.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
                 if (i < parts.size - 1) {
                     append(' ')
                 }
@@ -74,9 +75,9 @@ class ArticleViewHolder(itemView: View): AbsInformativeCardViewHolder<Article>(i
 
 }
 
-@ListFragment(layout = R.layout.fragment_questions_list)
+@ListFragment(layoutByName = "fragment_questions_list")
 @Adapter(
-    layout = R.layout.layout_question,
+    layoutByName = "layout_question",
     viewType = ViewType.Customized,
     viewHolder = QuestionViewHolder::class
 )

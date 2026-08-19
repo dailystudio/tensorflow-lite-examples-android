@@ -1,17 +1,23 @@
 plugins {
     id 'com.android.library'
-    id 'kotlin-android'
 
     id("com.google.devtools.ksp") version "$ksp_version"
+    id("cn.dailystudio.devbricksx.devkit") version "$devkit_version"
 }
 
 android {
+    namespace 'com.dailystudio.tensorflow.litex'
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileSdkVersion COMPILE_SDK
     buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdkVersion MIN_SDK
+        targetSdkVersion TARGET_SDK
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
@@ -33,29 +39,26 @@ android {
             buildConfigField "boolean","USE_STETHO","true"
         }
     }
+}
 
-    sourceSets.configureEach {
-        kotlin.srcDir("$buildDir/generated/ksp/$name/kotlin/")
-    }
 
+devKit {
+    devKitComps.set([
+        'Camera',
+        'Audio'
+    ])
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    api "cn.dailystudio:devbricksx:${DEVBRICKS_X_VERSION}"
-    api "cn.dailystudio:devbricksx-annotations:${DEVBRICKS_X_VERSION}"
-    api "cn.dailystudio:devbricksx-camera:${DEVBRICKS_X_VERSION}"
-    api "cn.dailystudio:devbricksx-audio:${DEVBRICKS_X_VERSION}"
-
-    ksp "cn.dailystudio:devbricksx-compiler:${DEVBRICKS_X_VERSION}"
-
     // Build off of nightly TensorFlow Lite
-    api("org.tensorflow:tensorflow-lite:${project.ext.tfliteVersion}") { changing = true }
-    api("org.tensorflow:tensorflow-lite-gpu:${project.ext.tfliteGpuVersion}") { changing = true }
-    api("org.tensorflow:tensorflow-lite-gpu-delegate-plugin:${project.ext.tfliteGpuPluginVersion}") { changing = true }
-    api("org.tensorflow:tensorflow-lite-support:${project.ext.tfliteSupportVersion}") { changing = true }
-    api("org.tensorflow:tensorflow-lite-metadata:${project.ext.tfliteMetadataVersion}") { changing = true }
+    api("com.google.ai.edge.litert:litert:${project.ext.tfliteVersion}") { changing = true }
+    api("com.google.ai.edge.litert:litert-gpu:${project.ext.tfliteGpuVersion}") { changing = true }
+    api("com.google.ai.edge.litert:litert-gpu-api:${project.ext.tfliteGpuVersion}") { changing = true }
+    api("com.google.ai.edge.litert:litert-support:${project.ext.tfliteSupportVersion}") { changing = true }
+    api("com.google.ai.edge.litert:litert-support-api:${project.ext.tfliteSupportVersion}") { changing = true }
+    api("com.google.ai.edge.litert:litert-metadata:${project.ext.tfliteMetadataVersion}") { changing = true }
 
     // Test helpers
     testImplementation 'junit:junit:4.13.2'

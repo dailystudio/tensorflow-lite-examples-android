@@ -1,16 +1,21 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
 }
 
 android {
+    namespace 'com.dailystudio.tflite.example.image.segmentation'
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileSdkVersion COMPILE_SDK
     buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
         applicationId "com.dailystudio.tflite.example.image.segmentation"
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdkVersion MIN_SDK
+        targetSdkVersion TARGET_SDK
         versionCode VERSION_CODE
         versionName VERSION_NAME
 

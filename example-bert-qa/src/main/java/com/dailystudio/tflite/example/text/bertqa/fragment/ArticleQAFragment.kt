@@ -90,7 +90,7 @@ class ArticleQAFragment : DevBricksFragment() {
         val context = requireContext()
 
         val highlightColor = ResourcesCompatUtils.getColor(
-            context, R.color.colorPrimary)
+            context, com.dailystudio.tflite.example.common.R.color.colorPrimary)
 
         val spanText: Spannable = SpannableString(content)
         val offset: Int = content.indexOf(answer.text, 0)

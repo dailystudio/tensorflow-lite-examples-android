@@ -60,7 +60,7 @@ class CommandRecognizer(context: Context,
                     line?.let {
                         labels.add(it)
                         if (it[0] != '_') {
-                            displayedLabels.add(it.substring(0, 1).toUpperCase() + it.substring(1))
+                            displayedLabels.add(it.substring(0, 1).uppercase() + it.substring(1))
                         }
                     }
                 }

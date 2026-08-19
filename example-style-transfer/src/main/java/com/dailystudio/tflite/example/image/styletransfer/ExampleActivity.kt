@@ -74,10 +74,10 @@ class ExampleActivity: LiteUseCaseActivity() {
                 val lensFacing = it.getCurrentLensFacing()
                 if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
                     it.changeLensFacing(CameraSelector.LENS_FACING_BACK)
-                    fabCameraSelector?.setImageResource(R.drawable.ic_front_camera)
+                    fabCameraSelector?.setImageResource(com.dailystudio.devbricksx.camera.R.drawable.ic_front_camera)
                 } else {
                     it.changeLensFacing(CameraSelector.LENS_FACING_FRONT)
-                    fabCameraSelector?.setImageResource(R.drawable.ic_back_camera)
+                    fabCameraSelector?.setImageResource(com.dailystudio.devbricksx.camera.R.drawable.ic_back_camera)
                 }
             }
         }

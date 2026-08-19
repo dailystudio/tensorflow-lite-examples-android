@@ -22,7 +22,7 @@ import com.dailystudio.devbricksx.utils.ResourcesCompatUtils
     viewHolder = CommandViewHolder::class,
     viewType = ViewType.SingleLine
 )
-@ListFragment(gridLayout = true, columns = 2, layout = R.layout.fragment_commands_list)
+@ListFragment(gridLayout = true, columns = 2, layoutByName = "fragment_commands_list")
 @ViewModel
 @InMemoryCompanion
 data class Command(val id: Int,
@@ -56,9 +56,9 @@ class CommandViewHolder(itemView: View): AbsSingleLineViewHolder<Command>(itemVi
 
         val drawable = ResourcesCompatUtils.getDrawable(context, resId) ?: return null
         val tintColor = ResourcesCompatUtils.getColor(context, if (item.prop > 0) {
-            R.color.colorPrimary
+            com.dailystudio.tflite.example.common.R.color.colorPrimary
         } else {
-            R.color.colorAccent
+            com.dailystudio.tflite.example.common.R.color.colorAccent
         })
 
         return ColorUtils.tintDrawable(drawable, tintColor)
@@ -79,15 +79,16 @@ class CommandViewHolder(itemView: View): AbsSingleLineViewHolder<Command>(itemVi
     }
 
     override fun getText(item: Command): CharSequence? {
+        val capitalized = item.label.replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }
         return if (item.prop > 0f) {
             buildString {
-                append("${item.label.capitalize()}")
+                append(capitalized)
                 append(" (")
                 append("%2.1f%%".format(item.prop * 100))
                 append(")")
             }
         } else {
-            return item.label.capitalize()
+            capitalized
         }
     }
 

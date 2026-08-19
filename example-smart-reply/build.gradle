@@ -1,16 +1,21 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
 }
 
 android {
+    namespace 'com.dailystudio.tflite.example.text.smartreply'
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileSdkVersion COMPILE_SDK
     buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
         applicationId "com.dailystudio.tflite.example.text.smartreply"
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdkVersion MIN_SDK
+        targetSdkVersion TARGET_SDK
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
@@ -46,6 +51,12 @@ android {
     }
 }
 
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -54,7 +65,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation files("$projectDir/libs/smartreply_runtime_aar.aar")
+    implementation(name: 'smartreply_runtime_aar', ext: 'aar')
 
     implementation "com.google.guava:guava:${project.ext.guavaVersion}"
 

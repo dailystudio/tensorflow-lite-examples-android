@@ -1,6 +1,7 @@
 package com.dailystudio.tflite.example.common
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions
+import com.dailystudio.devbricksx.R
 
 object Constants {
 

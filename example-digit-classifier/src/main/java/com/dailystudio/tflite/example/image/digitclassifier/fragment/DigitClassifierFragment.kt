@@ -42,10 +42,10 @@ class DigitClassifierFragment : Fragment() {
         val context = requireContext()
 
         val strokeColor = ResourcesCompatUtils.getColor(context,
-            R.color.white)
+            android.R.color.white)
 
         val canvasColor = ResourcesCompatUtils.getColor(context,
-            R.color.black)
+            android.R.color.black)
 
         drawView = fragmentView.findViewById(R.id.draw_view)
         drawView?.setStrokeWidth(context.resources.getDimension(R.dimen.draw_stroke_width))
